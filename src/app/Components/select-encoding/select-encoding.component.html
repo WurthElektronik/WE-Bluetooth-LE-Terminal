@@ -1,0 +1,11 @@
+<div class="inner-content">
+  <h1>{{ 'SelectEncoding.selectencoding' | translate }}</h1>
+  <ion-list tabindex="0">
+    <ion-radio-group [(ngModel)]="selectedencoding">
+      <ion-item *ngFor="let encoding of encodingtypes" (click)="encodingselected(encoding)">
+        <ion-label>{{ encoding }}</ion-label>
+        <ion-radio value="{{encoding}}"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+</div>

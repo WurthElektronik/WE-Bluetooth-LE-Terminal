@@ -1,0 +1,21 @@
+vars:
+  VERSION:
+    default: 1.0
+  PACKAGE_NAME:
+    default: com.eismart.proteusconnect
+  DISPLAY_NAME:
+    default: Proteus Connect
+
+platforms:
+  ios:
+    targets:
+      App:
+        bundleId: $PACKAGE_NAME
+        version: $VERSION
+        displayName: $DISPLAY_NAME
+
+  android:
+    packageName: $PACKAGE_NAME
+    versionName: $VERSION
+    appName: $DISPLAY_NAME
+    # versionCode: $VERSION_CODE

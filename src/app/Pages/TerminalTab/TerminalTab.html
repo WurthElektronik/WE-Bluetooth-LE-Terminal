@@ -1,0 +1,171 @@
+<ion-header [translucent]="false">
+  <ion-toolbar color="primary">
+    <ion-buttons *ngIf="this.ble.connectedDevices.size != 0 && this.id != undefined && this.ble.connectedDevices.get(this.id) != undefined" slot="end">
+      <ion-button (click) = "disconnectclick()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click) = "terminalpopoverclick($event)">
+        <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Terminal
+    </ion-title>
+  </ion-toolbar>
+
+  <ng-container *ngIf="this.ble.connectedDevices.size != 0 && this.id != undefined && this.ble.connectedDevices.get(this.id) != undefined">
+
+    <ion-segment [scrollable]="true" [(ngModel)]="this.id">
+      <ion-segment-button *ngFor="let device of this.ble.connectedDevices | keyvalue" value="{{device.key}}" (click)="segmentClicked(device.key)">
+        <ion-label class="deviceSegmentLabel">{{device.value.getDeviceName()}}<br>{{device.key}}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col>
+          <ion-select #filterselect [multiple]="true" interface="popover" class="msgfilter" [(ngModel)]="selectedfilters" (ionChange)="filterTypeChanged($event)">
+            <ion-select-option value="Info">{{ 'TerminalTab.filters.Info' | translate }}</ion-select-option>
+            <ion-select-option value="Data">{{ 'TerminalTab.filters.Data' | translate }}</ion-select-option>
+            <ion-select-option value="GPIO" *ngIf="this.ble.connectedDevices.get(this.id).getGPIOSupport()">{{ 'TerminalTab.filters.GPIO' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-col>
+        <ion-col size="auto" *ngIf="(this.ble.connectedDevices.get(this.id).getGPIOSupport() == true && this.platform.is('desktop') == true) || this.platform.is('desktop') != true">
+          <ion-button fill="clear" (click) = "devicepopoverclick($event)">
+            <ion-icon color="dark" slot="icon-only" name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </ng-container>
+</ion-header>
+
+<ion-content #ioncontent>
+
+  <div *ngIf="this.ble.connectedDevices.size == 0 || this.id == undefined || this.ble.connectedDevices.get(this.id) == undefined" class="container">
+    <ion-label class="nodeviceconnected">{{ 'TerminalTab.nodeviceconnected' | translate }}</ion-label>
+  </div>
+
+  <ng-container *ngIf="this.ble.connectedDevices.size != 0 && this.id != undefined && this.ble.connectedDevices.get(this.id) != undefined">
+
+    <ion-grid *ngIf="this.ble.connectedDevices.get(this.id).getLogMessages(this.selectedfiltersenum).length != 0">
+      <ion-row *ngFor="let msg of this.ble.connectedDevices.get(this.id).getLogMessages(this.selectedfiltersenum)">
+
+        <ion-col size="auto" style="font-weight:bold;">
+          {{ msg.getTimestampString() }}
+        </ion-col>
+
+        <ion-col [ngClass]="getmsgclass(msg)">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              {{ msg.getMsgInfo() | translate:msg.getMsgInfoParameters() }}
+            </ion-row>
+
+            <ng-container [ngSwitch]="this.selectedencoding" *ngIf="msg.getType() == LogMessageType.DataSent || msg.getType() == LogMessageType.DataReceived">
+
+              <ion-row *ngSwitchCase="'HEX'" class="hexdata">
+                {{ BufferToHex(msg.getMsgData()) }}
+              </ion-row>
+
+              <ion-row *ngSwitchCase="'ASCII'" class="asciidata">
+                {{ BufferToAscii(msg.getMsgData()) }}
+              </ion-row>
+
+            </ng-container>
+
+            <ion-row class="hexdata" *ngIf="msg.getType() != LogMessageType.DataSent && msg.getType() != LogMessageType.DataReceived">
+              {{ BufferToHex(msg.getMsgData()) }}
+            </ion-row>
+
+          </ion-grid>
+        </ion-col>
+
+      </ion-row>
+    </ion-grid>
+
+    <div *ngIf="this.ble.connectedDevices.get(this.id).getLogMessages(this.selectedfiltersenum).length == 0" class="container">
+      <ion-label class="nodeviceconnected">{{ 'TerminalTab.nologmsgs' | translate }}</ion-label>
+    </div>
+    
+  </ng-container>
+
+</ion-content>
+
+<ion-footer *ngIf="this.ble.connectedDevices.size != 0 && this.id != undefined && this.ble.connectedDevices.get(this.id) != undefined">
+  <ion-grid>
+    <ion-row class="ion-align-items-center">
+      <ion-col>
+        <ion-input #payloadinput (ionInput)="onPayloadInput($event)" enterkeyhint="send" (keyup.enter)="sendclick()" [value]="payload" placeholder="{{ 'TerminalTab.payload' | translate }} ({{this.selectedencoding}})" (ionChange)="updatepayload($event)"></ion-input>
+      </ion-col>
+      <ion-col size="auto">
+        <ion-button (click) = "sendclick()">
+          {{ 'TerminalTab.send' | translate }}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>
+
+<ion-popover #terminalpopover showBackdrop="false" dismissOnSelect="true" [isOpen]="terminalpopoveropen" (didDismiss)="terminalpopoveropen = false" class="terminalpopover">
+  <ng-template>
+    <ion-content>
+      <ion-list class="ion-no-padding">
+        <ion-item [button]="true" (click)="selectencodingclicked()">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.terminalpopover.selectencoding' | translate }}</ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-checkbox [(ngModel)] = "this.sendtoall" labelPlacement="start">{{ 'TerminalTab.terminalpopover.sendtoalldevices' | translate }}</ion-checkbox>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>
+
+<ion-popover #devicepopover showBackdrop="false" dismissOnSelect="true" [isOpen]="devicepopoveropen" (didDismiss)="devicepopoveropen = false" class="devicepopover">
+  <ng-template>
+    <ion-content>
+      <ion-list class="ion-no-padding">
+
+        <ion-item [button]="true" *ngIf="this.ble.connectedDevices.get(this.id).getGPIOSupport() == true" (click)="configgpioclicked()">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.devicepopover.gpioconfig' | translate }}</ion-label>
+        </ion-item>
+
+        <ion-item [button]="true" *ngIf="this.ble.connectedDevices.get(this.id).getGPIOSupport() == true" (click)="rwgpioclicked()">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.devicepopover.gpioreadwrite' | translate }}</ion-label>
+        </ion-item>
+
+        <ion-item [button]="true" *ngIf="this.platform.is('android') == true" (click)="connectionprioritypopoverclick()">
+          <ion-label text-wrap class="ion-no-margin">{{ 'TerminalTab.devicepopover.requestconnectionpriority' | translate }}</ion-label>
+        </ion-item>
+
+        <ion-item [button]="true" *ngIf="this.platform.is('desktop') != true" (click)="readmtu()">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.devicepopover.readmtu' | translate }}</ion-label>
+        </ion-item>
+
+        <ion-item [button]="true" *ngIf="this.platform.is('desktop') != true" (click)="readrssi()">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.devicepopover.readrssi' | translate }}</ion-label>
+        </ion-item>
+
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>
+
+<ion-popover #requestconnectionpopover showBackdrop="false" [dismissOnSelect]="true" [isOpen]="connectionprioritypopoveropen" (didDismiss)="connectionprioritypopoveropen = false" class="connectionprioritypopover">
+  <ng-template>
+    <ion-content>
+      <ion-list class="ion-no-padding">
+        <ion-item [button]="true" (click)="requestconnectionpriority('CONNECTION_PRIORITY_HIGH')">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.requestconnectionpopover.high' | translate }}</ion-label>
+        </ion-item>
+        <ion-item [button]="true" (click)="requestconnectionpriority('CONNECTION_PRIORITY_BALANCED')">          
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.requestconnectionpopover.balanced' | translate }}</ion-label>
+        </ion-item>
+        <ion-item lines="none" [button]="true" (click)="requestconnectionpriority('CONNECTION_PRIORITY_LOW_POWER')">
+          <ion-label class="ion-no-margin">{{ 'TerminalTab.requestconnectionpopover.low' | translate }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>

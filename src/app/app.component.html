@@ -1,0 +1,4 @@
+<ion-app>
+  <ion-router-outlet *ngIf="isBluetoothInitialized == true"></ion-router-outlet>
+  <ion-label class="notsupported" *ngIf="isBluetoothInitialized == false">{{ 'notsupported' | translate }}</ion-label>
+</ion-app>

@@ -1,0 +1,65 @@
+.container{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .nodeviceconnected{
+    font-weight:bold;
+    margin: auto;
+  }
+
+  ion-segment-button {
+    text-transform:none;
+    max-width: none !important;
+  }
+
+  .datasentmsg{
+    color:#db8a06;
+  }
+  
+  .datareceivedmsg{
+    color:#bbb323;
+  }
+
+  .infomsg{
+    color:var(--ion-color-primary);
+  }
+
+  .gpiomsg{
+    color:#48a9c5;
+  }
+
+  .msgfilter{
+    width:fit-content;
+  }
+
+  .terminalpopover{
+    --width: 200px;
+  }
+
+  .devicepopover{
+    --width: 220px;
+  }
+  .connectionprioritypopover{
+    --width: 100px;
+  }
+
+  .hexdata{
+    font-family:monospace;
+    font-size: 16px;
+  }
+
+  .asciidata{
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .deviceSegmentLabel{
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  ion-select {
+    --highlight-color: var(--ion-color-primary);
+  }

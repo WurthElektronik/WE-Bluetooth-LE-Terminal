@@ -1,0 +1,15 @@
+<div class="inner-content">
+  <h1>{{ 'ChangeLanguage.header' | translate }}</h1>
+  <ion-list>
+    <ion-radio-group [(ngModel)]="selectedlang">
+      <ion-item (click)="langselected('en')">
+        <ion-label>{{ 'ChangeLanguage.English' | translate }}</ion-label>
+        <ion-radio value="en"></ion-radio>
+      </ion-item>
+      <ion-item (click)="langselected('de')">
+        <ion-label>{{ 'ChangeLanguage.German' | translate }}</ion-label>
+        <ion-radio value="de"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+</div>

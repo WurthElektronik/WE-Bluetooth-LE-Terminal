@@ -1,0 +1,85 @@
+<ion-header [translucent]="false">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start" *ngIf="firsttime == false">
+      <ion-back-button text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      {{ 'Policy.tabname' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <p class="ion-margin-horizontal">
+    We, Würth Elektronik eiSos GmbH &amp; Co. KG, provide you with Apps for communication over the Bluetooth® Low Energy standard with radio modules of the Proteus Series. (“Proteus-Connect”, “WEIlluminate” and "WE-SensorBLE", collectively named “App” from here on).<br>
+    <br>This App requires access to the Bluetooth functionality of you smart device, including all dependencies for the Bluetooth functionality as set by the smart device operating system.<br>
+    <br>In this Data Protection Information, we explain to you which personal data is collected x and processed (section “Data processing during the use of our App “) as part of the App, for which purposes, and which rights you have.<br>
+
+    <br><b>1.	Identity of the entity responsible for data protection</b><br>
+
+    <br>The entity responsible under data protection law for the collection and processing of your personal data when using our App is<br>
+    <br>Würth Elektronik eiSos GmbH &amp; Co. KG
+    <br>Max-Eyth-Strasse 1
+    <br>74638 Waldenburg, Germany.
+    <br>e-mail:   eiSos@we-online.de
+    <br>Phone: +49-7942-945-0<br>
+
+        <br><b>2.	Contact details of the data protection officer</b><br>
+
+    <br>If you have any questions, concerns or suggestions regarding data protection in conjunction with our App, you can contact our data protection officer at any time:<br>
+    <br>The Data Protection Officer of Würth Elektronik eiSos GmbH &amp; Co. KG:
+    <br>Würth Elektronik eiSos GmbH &amp; Co. KG
+    <br>Datenschutzbeauftragter
+    <br>Max-Eyth-Strasse 1
+    <br>74638 Waldenburg, Germany
+    <br>datenschutz@we-online.de<br>
+
+    <br>Our data protection officer is also there for you to assert your rights as an affected individual. Detailed information can be found in section “Your Rights”.<br>
+
+    <br><b>3.	Data processing during the download of our App</b><br>
+
+    <br>When downloading or updating the App, the necessary information is transferred to the App Store, in particular, but not limited to, the user name and customer number of your account, date of birth, language, country, e-mail address, security features, time of download and the individual device code number.<br>
+    <br>Würth Elektronik eiSos has no influence on this data collection and are not responsible for it. You can find out about the processing of your personal data when downloading the App from the App Store operator\'s privacy statement.<br>
+
+    <br><b>4.	Data processing during the use of our App</b><br>
+
+    <br>When using our App, no personal data is collected or processed.<br>
+    <br>The App works offline and does not require any internet connection. Even if an internet connection is available, the App does not use it.<br>
+    <br>The App processes all data that is entered or created actively by the user inside the App for the purpose of sending it over the Bluetooth Low Energy connection selected in the App. Also received data on the selected Bluetooth Low Energy connection is processed (e.g. displayed) by the App.<br>
+    <br>This data, independently on the data direction, is not stored permanently in the smart device and will be discarded when closing the App or clearing the display inside the App.<br>
+
+    <br><b>5.	Technical support</b><br>
+    <br>You can reach out to our technical support team via web:<br>
+        <br><a href="https://www.we-online.com/en/support/contact/wireless-connectivity">https://www.we-online.com/en/support/contact/wireless-connectivity</a><br>
+
+    <br><b>6.	Your rights</b><br>
+
+    <br>Insofar as the legal requirements pursuant to Art. 15 ff. GDPR are satisfied, you have the following rights with regard to your personal data stored with us (so-called data subject rights):<br>
+
+
+    <br>•      You can request information from us at any time as to whether personal data and which categories of personal data about you are stored by us, for what purposes it is processed, and which recipients or categories of recipients may receive it. Furthermore, you can request further information on your personal data listed in Art. 15 GDPR from us (right to access).<br>
+
+    <br>•      In accordance with the legal requirements, you also have a right to rectification (Art. 16 GDPR), a right to cancellation (Art. 17 GDPR) and a right to limitation of the processing (blocking) of your personal data (Art. 18 GDPR).<br>
+
+    <br>•      Pursuant to Art. 20 GDPR, you also have the right to receive from us your personal data which you have provided to us in a structured, common and machine-readable format; you may also transmit or have transmitted this personal data to other responsible parties (right to data transferability).<br>
+
+    <br>•      You are also entitled to revoke your consent at any time.<br>
+
+    <br>•      In addition, you have the right to object to data processing in the case of data processing that is based on the legitimate interests of the person responsible or a third party pursuant to Art. 6(1) sentence 1 f) GDPR assuming the legal requirements pursuant to Art. 21 GDPR are met.<br>
+
+    <br>In order to assert your rights, you can contact us at any time at datenschutz@we-online.de or send a message to the address given under item 1.<br>
+
+    <br>Furthermore, pursuant to Art. 77(1) GDPR, you have the right to submit a complaint to a supervisory authority, in particular in the Member State of your place of residence, workplace or place of presumed infringement, if you consider that the processing of your personal data violates the GDPR.<br>
+    <br>
+  </p>
+  <ng-container *ngIf="firsttime == true">
+    <ion-grid>
+      <ion-row class="ion-align-items-center">
+        <ion-col class="ion-text-center">
+          <ion-button class="acceptwidth" (click) ="acceptclick()">Accept</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <br>
+  </ng-container>
+</ion-content>

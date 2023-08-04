@@ -1,0 +1,76 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      {{ 'InfoTab.tabname' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list-header>
+    {{ 'InfoTab.informationsection.informationheader' | translate }}
+  </ion-list-header>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>
+        {{ 'InfoTab.informationsection.version' | translate }}
+      </ion-label>
+      <ion-label class="itemwrapnogrow">
+        {{ version }}
+      </ion-label>
+    </ion-item>
+    <ion-item (click)="languageclick()">
+      <ion-label>
+        {{ 'InfoTab.informationsection.language' | translate }}
+      </ion-label>
+      <ion-label class="itemwrapnogrow">
+        {{ 'InfoTab.informationsection.selectedlanguage' | translate }}
+      </ion-label>
+    </ion-item>
+    <ion-item (click)="policyclick()" >
+      <ion-label>
+        {{ 'InfoTab.informationsection.policy' | translate }}
+      </ion-label>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+    <ion-item (click)="imprintclick()" >
+      <ion-label>
+        {{ 'InfoTab.informationsection.imprint' | translate }}
+      </ion-label>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+    <ion-item (click)="whatsnew()" >
+      <ion-label>
+        {{ 'InfoTab.informationsection.whatsnew' | translate }}
+      </ion-label>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+  </ion-list>
+
+  <ion-list-header class="ion-margin-top">
+    {{ 'InfoTab.linksection.linksheader' | translate }}
+  </ion-list-header>
+
+  <ion-list>
+    <ion-item (click)="wirelesssensorsclick()" >
+      <ion-label>
+        {{ 'InfoTab.linksection.wirelessconnectivityandsensors' | translate }}
+      </ion-label>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+    <ion-item (click)="usermanualsclick()">
+      <ion-label>
+        {{ 'InfoTab.linksection.usermanuals' | translate }}
+      </ion-label>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+    <ion-item (click)="sourcecodeclick()">
+      <ion-label>
+        {{ 'InfoTab.linksection.sourcecode' | translate }}
+      </ion-label>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-item>
+  </ion-list>
+  
+</ion-content>

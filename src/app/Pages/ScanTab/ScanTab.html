@@ -1,0 +1,81 @@
+<ion-header [translucent]="false">
+  <ion-toolbar color="primary">
+    <ion-title>
+      {{ 'ScanTab.tabname' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)" [disabled]="scanning == true">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-grid class="scanheader">
+    <ion-row class="ion-text-center ion-align-items-center scanheaderrow">
+      <ion-col style="font-weight:bold;">
+        {{ 'ScanTab.founddevices' | translate }}
+      </ion-col>
+      <ion-col (click) ="scanclick()">
+        <ion-button fill="clear">{{'ScanTab.' + scantext | translate}}</ion-button>
+        <div *ngIf="scanning">
+          <ion-spinner name="crescent" color="primary" class="block"></ion-spinner>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-text-center ion-align-items-center">
+      <ion-col>
+        <ion-select #scanselect interface="popover" class="scansort" value="{{scanSortType}}" (ionChange)="sortTypeChanged($event)">
+          <ion-select-option value="Default">{{ 'ScanTab.scansorttype.default' | translate }}</ion-select-option>
+          <ion-select-option value="Name">{{ 'ScanTab.scansorttype.name' | translate }}</ion-select-option>
+          <ion-select-option value="Address">{{ 'ScanTab.scansorttype.address' | translate }}</ion-select-option>
+          <ion-select-option *ngIf="this.platform.is('desktop') != true" value="RSSI">{{ 'ScanTab.scansorttype.rssi' | translate }}</ion-select-option>
+        </ion-select>
+      </ion-col>
+      <ion-col>
+        <div *ngIf="this.paireddevices.length != 0">
+          <ion-button (click) ="clearscan()" fill="clear">{{'ScanTab.clearfounddevices' | translate}}</ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- App Section -->
+  <ng-container *ngIf="this.platform.is('desktop') == false">
+    <ion-list *ngIf="scanresults.length != 0">
+      <ion-item *ngFor="let result of scanresults" (click)="scanitemclick(result)">
+            <ion-label>
+              <ion-label style="font-weight:bold;">{{result.localName || '-'}}</ion-label>
+              <ion-label color="medium" class="deviceid">{{result.device.deviceId}}</ion-label>
+            </ion-label>
+            <ion-label *ngIf="!this.ble.connectedDevices.has(result.device.deviceId)" class="itemwrapnogrow ion-text-end">
+              <ion-icon class="barsredcolor" size="small" *ngIf="result.rssi > -60" src="assets/ic_signal/ic_signal_full.svg"></ion-icon>
+              <ion-icon class="barsredcolor" size="small" *ngIf="result.rssi > -70 && result.rssi <= -60" src="assets/ic_signal/ic_signal_3.svg"></ion-icon>
+              <ion-icon class="barsredcolor" size="small" *ngIf="result.rssi > -80 && result.rssi <= -70" src="assets/ic_signal/ic_signal_2.svg"></ion-icon>
+              <ion-icon class="barsredcolor" size="small" *ngIf="result.rssi <= -80" src="assets/ic_signal/ic_signal_1.svg"></ion-icon>
+              <ion-label color="medium">{{result.rssi}}</ion-label>
+            </ion-label>
+            <ion-label *ngIf="this.ble.connectedDevices.has(result.device.deviceId)" class="itemwrapnogrow ion-text-end">
+              <ion-icon size="small" color="primary" name="checkmark-outline"></ion-icon>
+            </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+  <!-- PWA Section -->
+  <ng-container *ngIf="this.platform.is('desktop') == true">
+    <ion-list *ngIf="this.paireddevices.length != 0">
+      <ion-item *ngFor="let paireddevice of paireddevices" (click)="paireddeviceclick(paireddevice)">
+            <ion-label>
+              <ion-label style="font-weight:bold;">{{paireddevice.name || '-'}}</ion-label>
+              <ion-label color="medium" class="deviceid">{{paireddevice.deviceId}}</ion-label>
+            </ion-label>
+            <ion-label *ngIf="this.ble.connectedDevices.has(paireddevice.deviceId)" class="itemwrapnogrow ion-text-end">
+              <ion-icon size="small" color="primary" name="checkmark-outline"></ion-icon>
+            </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+
+</ion-content>
+
+<ion-loading (willDismiss)="loadingdismiss()" [isOpen]="connecting" message="{{'ScanTab.connecting' | translate}}" spinner="crescent"></ion-loading>

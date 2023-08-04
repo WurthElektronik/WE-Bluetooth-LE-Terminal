@@ -1,0 +1,7 @@
+{
+  "name": "Proteus Connect",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

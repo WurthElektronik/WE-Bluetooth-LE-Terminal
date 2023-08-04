@@ -1,0 +1,75 @@
+<div class="inner-content">
+  <ion-grid class="scanheader">
+    <ion-row class="ion-align-items-center">
+      <ion-col>
+        <h1 class="ion-margin-vertical">{{ 'RWGPIO.rwgpio' | translate }}</h1>
+      </ion-col>
+      <ion-col class="ion-text-right">
+        <ion-button size="small" (click)="readpinvalues()" [disabled]="!this.isPinConfigured">{{ 'RWGPIO.readallpins' | translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-segment [scrollable]="true" [(ngModel)]="this.selectedpin">
+    <ion-segment-button *ngFor="let pin of device.getGPIOPins() | keyvalue" value="{{pin.key}}" (click)="pinchanged(pin.key)">
+      <ion-label class="pinlabel">{{pin.value.getPinName()}}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-grid class="ion-margin-top">
+    <ng-container [ngSwitch]="pinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinType()]">
+
+      <ng-container *ngSwitchCase="'Input'">
+        <ion-row>
+          <ion-label>{{ 'RWGPIO.input.input' | translate }}</ion-label>
+        </ion-row>
+
+        <ion-row class="ion-margin-top ion-justify-content-center">
+          <ion-radio-group style="pointer-events: none;" value="{{outputPinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().getUint8(0)]}}">
+            <ion-radio value="High">{{'RWGPIO.input.' + outputPinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().getUint8(0)] | translate }}</ion-radio>
+          </ion-radio-group>
+        </ion-row>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'Output'">
+        <ion-row>
+          <ion-label>{{ 'RWGPIO.output.output' | translate }}</ion-label>
+        </ion-row>
+
+        <ion-row class="ion-margin-top ion-justify-content-center">
+          <ion-toggle (ionChange)="outputToggleChanged($event)" [checked]="outputPinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().getUint8(0)] == 'High'">{{'RWGPIO.output.' + outputPinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().getUint8(0)] | translate }}</ion-toggle>
+        </ion-row>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'PWM'">
+        <ion-row>
+          <ion-label>{{ 'RWGPIO.pwm.pwm' | translate }}</ion-label>
+        </ion-row>
+
+        <ion-row class="ion-margin-end ion-margin-top">
+          <ion-range [pin]="true" [pinFormatter]="pwmRatioformatter" (ionChange)="pwmRatioChanged($event)" value="{{this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().getUint8(0) * 100 / 254}}">
+            <div slot="label" style="margin-right: 10px !important;">{{ 'RWGPIO.pwm.ratio' | translate }}</div>
+          </ion-range>
+        </ion-row>
+      </ng-container>
+
+      <ng-container *ngSwitchDefault>
+        <ion-row class="ion-justify-content-center">
+          <ion-label>{{ 'RWGPIO.noconfiguration' | translate }}</ion-label>
+        </ion-row>
+      </ng-container>
+
+    </ng-container>
+
+    <ion-row class="ion-margin-top">
+      <ion-col size="auto" class="ion-text-left ion-align-self-end">
+        <ion-button size="small" (click)="backclicked()">{{ 'RWGPIO.back' | translate }}</ion-button>
+      </ion-col>
+      <ion-col class="ion-text-right">
+        <ion-button size="small" (click)="readpinvalue()" [disabled]="!canReadPin()">{{ 'RWGPIO.readpin' | translate }}</ion-button>
+        <ion-button size="small" (click)="writepinconfig()" [disabled]="!canWritePin()">{{ 'RWGPIO.writepin' | translate }}</ion-button>
+        <ion-button size="small" (click)="writeallpinconfig()" [disabled]="!this.isPinConfigured">{{ 'RWGPIO.writeallpins' | translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+</div>
