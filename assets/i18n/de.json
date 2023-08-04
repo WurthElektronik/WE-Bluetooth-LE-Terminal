@@ -1,0 +1,161 @@
+{
+  "notsupported":"Gerät/Browser wird nicht unterstützt",
+  "ScanTab": {
+    "tabname": "Gerätesuche",
+    "founddevices": "Geräteliste",
+    "clearfounddevices": "Lösche Geräteliste",
+    "startscantext": "Start Gerätesuche",
+    "stopscantext": "Stop Gerätesuche",
+    "connecting": "Verbinde",
+    "connectionfailed": "Verbindung fehlgeschlagen",
+    "scansorttype": {
+      "default": "Standard",
+      "name": "Sortiere nach Name",
+      "address": "Sortiere nach Adresse",
+      "rssi": "Sortiere nach RSSI"
+    }
+  },
+  "SelectModule":{
+    "selectmodule":"Produktauswahl",
+    "modules":{
+      "ProteusI": "Proteus-I",
+      "ProteusII": "Proteus-II",
+      "ProteusIII": "Proteus-III",
+      "Proteuse": "Proteus-e",
+      "SetebosI": "Setebos-I",
+      "StephanoI": "Stephano-I"
+    },
+    "select": "Auswahl"
+  },
+  "TerminalTab": {
+    "nodeviceconnected": "Kein Gerät verbunden",
+    "filters":{
+      "Info": "Info",
+      "Data": "Daten",
+      "GPIO": "GPIO"
+    },
+    "nologmsgs": "Keine Log Nachrichten",
+    "payload": "Payload",
+    "send": "Senden",
+    "terminalpopover":{
+      "selectencoding": "Auswahl Encoding",
+      "sendtoalldevices": "An alle Geräte senden"
+    },
+    "devicepopover":{
+      "gpioconfig": "GPIO Konfiguration",
+      "gpioreadwrite": "GPIO Lesen/Schreiben",
+      "requestconnectionpriority": "Verbindungspriorität anfragen",
+      "readmtu": "Lese MTU",
+      "readrssi": "Lese RSSI"
+    },
+    "requestconnectionpopover":{
+      "high": "Hoch",
+      "balanced": "Ausgeglichen",
+      "low": "Niedrig"
+    }
+  },
+  "SelectEncoding": {
+    "selectencoding": "Auswahl Encoding"
+  },
+  "ConfigGPIO":{
+    "configgpio":"Konfiguriere GPIO",
+    "readconfig": "Lese Konfiguration",
+    "pintypeselection": {
+      "noconfiguration": "Keine Konfiguration",
+      "input": "Eingang",
+      "output": "Ausgang",
+      "pwm": "PWM"
+    },
+    "input": {
+      "nopull": "Kein Pull",
+      "pulldown": "Pull Down",
+      "pullup": "Pull Up"
+    },
+    "output": {
+      "low": "Low",
+      "high": "High"
+    },
+    "pwm":{
+      "period": "Periode",
+      "ratio": "Verhältnis"
+    },
+    "back": "Zurück",
+    "configpin": "Konfiguriere Pin",
+    "configallpins": "Konfiguriere alle Pins"
+  },
+  "RWGPIO":{
+    "rwgpio":"R/W GPIO",
+    "readallpins": "Alle lesen",
+    "input":{
+      "input": "Eingang",
+      "Low": "Low",
+      "High": "High"
+    },
+    "output":{
+      "output": "Ausgang",
+      "Low": "Low",
+      "High": "High"
+    },
+    "pwm":{
+      "pwm": "PWM",
+      "ratio": "Verhältnis"
+    },
+    "noconfiguration":"Keine Konfiguration",
+    "back": "Zurück",
+    "readpin": "Lese Pin",
+    "writepin": "Schreibe Pin",
+    "writeallpins": "Schreibe alle Pins"
+  },
+  "InfoTab": {
+    "tabname": "Info",
+    "informationsection": {
+      "informationheader": "Information",
+      "version": "Version",
+      "language": "Sprache",
+      "selectedlanguage": "Deutsch",
+      "policy": "Datenschutzrichtlinie ",
+      "imprint": "Impressum",
+      "whatsnew": "Was gibt es neues"
+    },
+    "linksection": {
+      "linksheader": "Links",
+      "wirelessconnectivityandsensors": "Wireless Connectivity and Sensors",
+      "usermanuals": "User Manuals",
+      "sourcecode": "Source Code"
+    }
+  },
+  "Imprint":{
+    "tabname": "Impressum"
+  },
+  "Policy":{
+    "tabname": "Datenschutzrichtlinie "
+  },
+  "Whatsnew":{
+    "tabname": "Was gibt es neues"
+  },
+  "ChangeLanguage": {
+    "header": "Sprache ändern",
+    "English": "Englisch",
+    "German": "Deutsch"
+  },
+  "Tabs":{
+    "scan": "Suche",
+    "info": "Info"
+  },
+  "LogMessages":{
+    "DataSent": "Daten gesendet",
+    "DataSentHighThroughput": "Daten mit hohem Durchsatz gesendet",
+    "DataReceived": "Daten empfangen",
+    "DataReceivedHighThroughput": "Daten mit hohem Durchsatz empfangen",
+    "DeviceConnected": "Gerät verbunden",
+    "ServicesDiscovered": "Dienste abgefragt",
+    "NotificationsEnabled": "Benachrichtigungen eingeschaltet",
+    "NotificationsDisabled": "Benachrichtigungen ausgeschaltet",
+    "RequestedConnectionPriority": "Verbindungspriorität abgefragt : {{priority}}",
+    "NotificationsDescriptorWritten": "Wert {{descriptorvalue}} geschrieben für Beschreibung {{descriptor}} der Characteristik {{characteristic}}"
+  },
+  "ParserMessages":{
+    "ASCIIError":"Ungültige ASCII Daten",
+    "HEXError":"Ungültige HEX Daten"
+  }
+}

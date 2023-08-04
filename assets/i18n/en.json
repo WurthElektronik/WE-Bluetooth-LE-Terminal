@@ -1,0 +1,161 @@
+{
+  "notsupported":"Device/Browser is Not Supported",
+  "ScanTab": {
+    "tabname": "Scan",
+    "founddevices": "Found Devices",
+    "clearfounddevices": "Clear Devices",
+    "startscantext": "Scan",
+    "stopscantext": "Stop Scanning",
+    "connecting": "Connecting",
+    "connectionfailed": "Connection Failed",
+    "scansorttype": {
+      "default": "Default",
+      "name": "Sort By Name",
+      "address": "Sort By Address",
+      "rssi": "Sort By RSSI"
+    }
+  },
+  "SelectModule":{
+    "selectmodule":"Select Module",
+    "modules":{
+      "ProteusI": "Proteus-I",
+      "ProteusII": "Proteus-II",
+      "ProteusIII": "Proteus-III",
+      "Proteuse": "Proteus-e",
+      "SetebosI": "Setebos-I",
+      "StephanoI": "Stephano-I"
+    },
+    "select": "Select"
+  },
+  "TerminalTab": {
+    "nodeviceconnected": "No Device Connected",
+    "filters":{
+      "Info": "Info",
+      "Data": "Data",
+      "GPIO": "GPIO"
+    },
+    "nologmsgs": "No Log Messages",
+    "payload": "Payload",
+    "send": "Send",
+    "terminalpopover":{
+      "selectencoding": "Select Encoding",
+      "sendtoalldevices": "Send to all devices"
+    },
+    "devicepopover":{
+      "gpioconfig": "GPIO Config",
+      "gpioreadwrite": "GPIO Read/Write",
+      "requestconnectionpriority": "Request Connection Priority",
+      "readmtu": "Read MTU",
+      "readrssi": "Read RSSI"
+    },
+    "requestconnectionpopover":{
+      "high": "High",
+      "balanced": "Balanced",
+      "low": "Low"
+    }
+  },
+  "SelectEncoding": {
+    "selectencoding": "Select Encoding"
+  },
+  "ConfigGPIO":{
+    "configgpio":"Config GPIO",
+    "readconfig": "Read Config",
+    "pintypeselection": {
+      "noconfiguration": "No Configuration",
+      "input": "Input",
+      "output": "Output",
+      "pwm": "PWM"
+    },
+    "input": {
+      "nopull": "No Pull",
+      "pulldown": "Pull Down",
+      "pullup": "Pull Up"
+    },
+    "output": {
+      "low": "Low",
+      "high": "High"
+    },
+    "pwm":{
+      "period": "Period",
+      "ratio": "Ratio"
+    },
+    "back": "Back",
+    "configpin": "Config Pin",
+    "configallpins": "Config All"
+  },
+  "RWGPIO":{
+    "rwgpio":"R/W GPIO",
+    "readallpins": "Read All",
+    "input":{
+      "input": "Input",
+      "Low": "Low",
+      "High": "High"
+    },
+    "output":{
+      "output": "Output",
+      "Low": "Low",
+      "High": "High"
+    },
+    "pwm":{
+      "pwm": "PWM",
+      "ratio": "Ratio"
+    },
+    "noconfiguration":"No Configuration",
+    "back": "Back",
+    "readpin": "Read Pin",
+    "writepin": "Write Pin",
+    "writeallpins": "Write All"
+  },
+  "InfoTab": {
+    "tabname": "Info",
+    "informationsection": {
+      "informationheader": "Information",
+      "version": "Version",
+      "language": "Language",
+      "selectedlanguage": "English",
+      "policy": "Privacy Policy",
+      "imprint": "Imprint",
+      "whatsnew": "What's New"
+    },
+    "linksection": {
+      "linksheader": "Links",
+      "wirelessconnectivityandsensors": "Wireless Connectivity and Sensors",
+      "usermanuals": "User Manuals",
+      "sourcecode": "Source Code"
+    }
+  },
+  "Imprint":{
+    "tabname": "Imprint"
+  },
+  "Policy":{
+    "tabname": "Privacy Policy"
+  },
+  "Whatsnew":{
+    "tabname": "What's New"
+  },
+  "ChangeLanguage": {
+    "header": "Change Language",
+    "English": "English",
+    "German": "German"
+  },
+  "Tabs":{
+    "scan": "Scan",
+    "info": "Info"
+  },
+  "LogMessages":{
+    "DataSent": "Data Sent",
+    "DataSentHighThroughput": "Data Sent in High Throughput",
+    "DataReceived": "Data Received",
+    "DataReceivedHighThroughput": "Data Received in High Throughput",
+    "DeviceConnected": "Device Connected",
+    "ServicesDiscovered": "Services Discovered",
+    "NotificationsEnabled": "Notifications Enabled",
+    "NotificationsDisabled": "Notifications Disabled",
+    "RequestedConnectionPriority": "Requested Connection Priority : {{priority}}",
+    "NotificationsDescriptorWritten": "Value written {{descriptorvalue}} for descriptor {{descriptor}} of characteristic {{characteristic}}"
+  },
+  "ParserMessages":{
+    "ASCIIError":"Invalid ASCII Data",
+    "HEXError":"Invalid HEX Data"
+  }
+}
