@@ -29,13 +29,20 @@ export class BleService {
   constructor() {
   }
 
-  async initializeble(): Promise<Boolean>{
-    try {
+  async initializeble(){
       await BleClient.initialize({ androidNeverForLocation: true });
-      return true;
-    } catch (error) {
-      return false;
-    }
+  }
+
+  async bluetoothenabled(){
+    return BleClient.isEnabled();
+  }
+
+  async locationenabled(){
+    return BleClient.isLocationEnabled();
+  }
+
+  async registerbluetoothstate(callback: (value: boolean) => void){
+    await BleClient.startEnabledNotifications(callback);
   }
 
   async startscan(callback: (scanresult: ScanResult) => void){

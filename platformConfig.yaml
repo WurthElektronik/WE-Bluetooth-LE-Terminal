@@ -2,7 +2,7 @@ vars:
   VERSION:
     default: 1.0
   PACKAGE_NAME:
-    default: com.eismart.proteusconnect
+    default: com.eisos.proteusconnect
   DISPLAY_NAME:
     default: Proteus Connect
 
@@ -10,12 +10,12 @@ platforms:
   ios:
     targets:
       App:
-        bundleId: $PACKAGE_NAME
+        bundleId: "com.we-online.ProteusConnect"
         version: $VERSION
         displayName: $DISPLAY_NAME
 
   android:
-    packageName: $PACKAGE_NAME
+    packageName: "com.eisos.android.terminal"
     versionName: $VERSION
     appName: $DISPLAY_NAME
-    # versionCode: $VERSION_CODE
+    versionCode: 230825

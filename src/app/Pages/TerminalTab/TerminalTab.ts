@@ -195,7 +195,7 @@ export class TerminalTab {
             if(!CheckHex(this.payload)){
               throw new Error("ParserMessages.HEXError");
             }
-            datatosend = new DataView(HexToBuffer(this.payload));
+            datatosend = new DataView(HexToBuffer(this.payload.replace(/ /g,'')));
             break;
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "proteus-connect",
-  "version": "1.4",
+  "version": "1.5",
   "author": "Würth Elektronik eiSos GmbH",
   "homepage": "https://www.we-online.com/web/de/wuerth_elektronik/start.php",
   "scripts": {
@@ -9,7 +9,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "updateplatforms": "cross-env VERSION=$npm_package_version npx trapeze run platformConfig.yaml"
+    "updateplatforms": "cross-env VERSION=$npm_package_version npx trapeze run platformConfig.yaml",
+    "publish": "ng build --base-href https://wurthelektronik.github.io/Proteus-Connect/ --configuration=production && npx ngh --dir=www/ --repo=https://github.com/WurthElektronik/Proteus-Connect.git"
   },
   "private": true,
   "dependencies": {
@@ -25,6 +26,7 @@
     "@capacitor/app": "^5.0.0",
     "@capacitor/browser": "^5.0.0",
     "@capacitor/core": "^5.0.0",
+    "@capacitor/device": "^5.0.6",
     "@capacitor/haptics": "^5.0.0",
     "@capacitor/ios": "^5.0.0",
     "@capacitor/keyboard": "^5.0.0",

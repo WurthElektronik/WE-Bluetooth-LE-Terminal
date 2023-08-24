@@ -1,5 +1,7 @@
 {
-  "notsupported":"Device/Browser is Not Supported",
+  "notsupported":"Bluetooth Device / Browser is not supported",
+  "bluetoothoff": "Bluetooth is not enabled",
+  "locationoff": "Location services are not enabled",
   "ScanTab": {
     "tabname": "Scan",
     "founddevices": "Found Devices",

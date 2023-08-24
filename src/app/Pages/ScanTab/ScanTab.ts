@@ -10,6 +10,7 @@ import { SelectModuleComponent } from 'src/app/Components/select-module/select-m
 import { environment } from '../../../environments/environment';
 import { testdevice, testscanresult } from 'src/app/TestDevice/TestBLEDevice';
 import { TestModule } from 'src/app/TestDevice/TestModule';
+import { Device } from '@capacitor/device';
 
 @Component({
   selector: 'app-scantab',
@@ -68,6 +69,21 @@ export class ScanTab {
   }
 
   async scan(){
+
+    //check for location on android 11 or less
+    if(this.platform.is('android') && ((await Device.getInfo()).androidSDKVersion <= 30) && await this.ble.locationenabled() == false){
+      this.translateService.get('locationoff').subscribe(async (res: string) => {
+        const toast = await this.toastController.create({
+          message: res,
+          duration: 500,
+          position: 'middle',
+          cssClass: 'toastwidth'
+        });
+        toast.present();
+      });
+      return;
+    }
+
     this.scanning = true;
     this.scantext = "stopscantext";
     this.scanresults = [];

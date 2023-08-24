@@ -1,5 +1,7 @@
 {
-  "notsupported":"Gerät/Browser wird nicht unterstützt",
+  "notsupported":"Bluetooth Gerät / Browser wird nicht unterstützt",
+  "bluetoothoff": "Bluetooth ist nicht aktiviert",
+  "locationoff": "Standortdienste sind nicht aktiviert",
   "ScanTab": {
     "tabname": "Gerätesuche",
     "founddevices": "Geräteliste",

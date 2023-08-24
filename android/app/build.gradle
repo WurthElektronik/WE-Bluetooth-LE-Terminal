@@ -1,14 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.eismart.proteusconnect"
+
+    namespace "com.eisos.android.terminal"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.eismart.proteusconnect"
+        applicationId "com.eisos.android.terminal"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.4"
+        versionCode 230825
+        versionName "1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

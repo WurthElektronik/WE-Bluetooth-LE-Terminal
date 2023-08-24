@@ -10,10 +10,11 @@ export function HexToBuffer(hexstring:string):ArrayBuffer {
 
 
 export function CheckHex(hexstring:string):Boolean{
-    let hexregex = /^[0-9a-fA-F]+$/;
-    return hexregex.test(hexstring) && (hexstring.length % 2 == 0);
+    let hexregex = /^[0-9A-F]+$/;
+    let hexstringnpspaces = hexstring.replace(/ /g,'');
+    return hexregex.test(hexstringnpspaces) && (hexstringnpspaces.length % 2 == 0);
 }
 
 export function InputFilterHex(inputstring:String){
-    return inputstring.replace(/[^0-9a-fA-F]/g,'');
+    return inputstring.replace(/[^0-9A-F]/g,'').replace(/(.{2})/g, "$1 ").trim();
 }
