@@ -1,5 +1,5 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { BleService } from '../../services/ble.service';
+import { BleService, PROTEUS_BLE_SERVICE } from '../../services/ble.service';
 import { BleDevice, ScanResult } from '@capacitor-community/bluetooth-le';
 import { Router } from '@angular/router';
 import { IonSelect, Platform, ToastController } from '@ionic/angular';
@@ -11,6 +11,10 @@ import { environment } from '../../../environments/environment';
 import { testdevice, testscanresult } from 'src/app/TestDevice/TestBLEDevice';
 import { TestModule } from 'src/app/TestDevice/TestModule';
 import { Device } from '@capacitor/device';
+import { ScanFilter } from 'src/app/Filters/ScanFilter';
+import { AddFilterComponent } from 'src/app/Components/add-filter/add-filter.component';
+import { FilterType } from 'src/app/Filters/FilterType';
+import { ServiceUUIDFilter } from 'src/app/Filters/ServiceUUIDFilter';
 
 @Component({
   selector: 'app-scantab',
@@ -26,7 +30,10 @@ export class ScanTab {
   scanSortType:string = ScanSort[ScanSort.Default];
   connecting:Boolean = false;
   connectingdeviceid:string = undefined;
-  
+  scanfilters:Map<FilterType,ScanFilter> = new Map<FilterType,ScanFilter>([
+    [FilterType.ServiceUUID, new ServiceUUIDFilter(PROTEUS_BLE_SERVICE)]
+  ]);
+
   @ViewChild('scanselect') select: IonSelect;
   
   constructor(public ble:BleService, private ngZone: NgZone, private router: Router, public platform: Platform, private translateService: TranslateService, private modalCtrl: ModalController ,private toastController: ToastController ) {}
@@ -91,7 +98,7 @@ export class ScanTab {
       this.scanresults.push(testscanresult);
     }
     if(this.platform.is('desktop')){
-      this.ble.requestdevice((result) => {
+      this.ble.requestdevice(this.scanfilters,(result) => {
         if(result != undefined && this.paireddevices.filter(paireddevice => paireddevice.deviceId == result.deviceId).length == 0){
           this.paireddevices.push(result);
           this.sort();
@@ -99,7 +106,7 @@ export class ScanTab {
         this.stopscan();
       })
     }else{
-      this.ble.startscan((result) => {
+      this.ble.startscan(this.scanfilters,(result) => {
         this.ngZone.run(() => {
           this.scanresults.push(result);
           this.sort();
@@ -119,6 +126,7 @@ export class ScanTab {
   async scanitemclick(item:ScanResult){
     if(!environment.production && item.device == testdevice && !this.ble.connectedDevices.has(item.device.deviceId)){
       this.ble.connectedDevices.set(item.device.deviceId, new TestModule(item.device));
+      await this.ble.connectedDevices.get(item.device.deviceId).initializeModule();
     }else{
       this.connect(item.device);
     }
@@ -127,6 +135,7 @@ export class ScanTab {
   async paireddeviceclick(item:BleDevice){
     if(!environment.production && item == testdevice && !this.ble.connectedDevices.has(item.deviceId)){
       this.ble.connectedDevices.set(item.deviceId, new TestModule(item));
+      await this.ble.connectedDevices.get(item.deviceId).initializeModule();
     }else{
       this.connect(item);
     }
@@ -229,6 +238,26 @@ export class ScanTab {
       );
     }
 
+  }
+
+  async addFilter(){
+    const modal = await this.modalCtrl.create({
+      component: AddFilterComponent,
+    });
+    modal.cssClass = 'auto-height';
+    modal.animated = false;
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      let newFilter:ScanFilter = data;
+      this.scanfilters.set(newFilter.getType(),newFilter);
+    }
+  }
+
+  deleteFilter(filterType:FilterType){
+    this.scanfilters.delete(filterType);
   }
 
 }

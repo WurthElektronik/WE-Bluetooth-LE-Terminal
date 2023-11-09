@@ -7,10 +7,18 @@
     margin: auto;
 }
 
+.scansort::part(label){
+    margin-right: 0.5ch;
+}
+
 .ios .deviceid {
     font-size: small;
 }
 
 .barsredcolor{
     filter: invert(12%) sepia(84%) saturate(7193%) hue-rotate(353deg) brightness(86%) contrast(110%);
+}
+
+ion-header{
+    background: var(--ion-background-color, #fff);
 }

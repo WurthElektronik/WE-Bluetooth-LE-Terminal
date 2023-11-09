@@ -4,13 +4,8 @@
       {{ 'ScanTab.tabname' | translate }}
     </ion-title>
   </ion-toolbar>
-</ion-header>
 
-<ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)" [disabled]="scanning == true">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-  <ion-grid class="scanheader">
+  <ion-grid class="scanheader ion-no-padding ion-margin-bottom">
     <ion-row class="ion-text-center ion-align-items-center scanheaderrow">
       <ion-col style="font-weight:bold;">
         {{ 'ScanTab.founddevices' | translate }}
@@ -24,7 +19,7 @@
     </ion-row>
     <ion-row class="ion-text-center ion-align-items-center">
       <ion-col>
-        <ion-select #scanselect interface="popover" class="scansort" value="{{scanSortType}}" (ionChange)="sortTypeChanged($event)">
+        <ion-select label="{{'ScanTab.scanby' | translate}}" #scanselect interface="popover" class="scansort" value="{{scanSortType}}" (ionChange)="sortTypeChanged($event)">
           <ion-select-option value="Default">{{ 'ScanTab.scansorttype.default' | translate }}</ion-select-option>
           <ion-select-option value="Name">{{ 'ScanTab.scansorttype.name' | translate }}</ion-select-option>
           <ion-select-option value="Address">{{ 'ScanTab.scansorttype.address' | translate }}</ion-select-option>
@@ -37,7 +32,35 @@
         </div>
       </ion-col>
     </ion-row>
+    <ion-row class="ion-text-center ion-align-items-center ion-margin-horizontal ion-margin-top" style="min-height: 42px;" >
+      <ion-label style="font-weight:bold;">Filters:</ion-label>
+      <ion-chip *ngFor="let filter of scanfilters | keyvalue">
+        <ion-label>
+          {{ 'AddFilter.filters.' + filter.value.getTypeString() | translate}} :
+          <ng-container [ngSwitch]="filter.value.getTypeString()">
+
+            <ng-container *ngSwitchCase="'Name'">
+              {{(filter.value | NameFilterPipe).getName()}}
+            </ng-container>
+        
+            <ng-container *ngSwitchCase="'ServiceUUID'">
+              Proteus Service UUID
+            </ng-container>
+        
+          </ng-container>
+        </ion-label>
+        <ion-icon name="close" size="small" (click)="deleteFilter(filter.key)"></ion-icon>
+      </ion-chip>
+      <ion-icon (click)="addFilter()" color="primary" size="large" name="add-circle"></ion-icon>
+    </ion-row>
   </ion-grid>
+
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)" [disabled]="scanning == true">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
   <!-- App Section -->
   <ng-container *ngIf="this.platform.is('desktop') == false">

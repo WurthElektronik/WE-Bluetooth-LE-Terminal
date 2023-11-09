@@ -10,6 +10,10 @@ import { ProteusII } from '../BLEModules/Proteus/ProteusII';
 import { Proteuse } from '../BLEModules/Proteus/Proteuse';
 import { SetebosI } from '../BLEModules/Proteus/SetebosI';
 import { StephanoI } from '../BLEModules/Stephano/StephanoI';
+import { ScanFilter } from '../Filters/ScanFilter';
+import { FilterType } from '../Filters/FilterType';
+import { ServiceUUIDFilter } from '../Filters/ServiceUUIDFilter';
+import { NameFilter } from '../Filters/NameFilter';
 
 export const PROTEUS_BLE_SERVICE:string = "6e400001-c352-11e5-953d-0002a5d5c51b";
 export const PROTEUS_BLE_RX_CHARACTERISTIC:string = "6e400002-c352-11e5-953d-0002a5d5c51b";
@@ -45,11 +49,15 @@ export class BleService {
     await BleClient.startEnabledNotifications(callback);
   }
 
-  async startscan(callback: (scanresult: ScanResult) => void){
+  async startscan(filters:Map<FilterType,ScanFilter>, callback: (scanresult: ScanResult) => void){
     try {
+      let serviceUUIDFilter:ServiceUUIDFilter = filters.get(FilterType.ServiceUUID) as ServiceUUIDFilter;
+      let nameFilter:NameFilter = filters.get(FilterType.Name) as NameFilter;
       await BleClient.requestLEScan(
       {
-        services:[PROTEUS_BLE_SERVICE]
+        services: serviceUUIDFilter ? [serviceUUIDFilter.getServiceUUID()] : undefined,
+        optionalServices: [PROTEUS_BLE_SERVICE],
+        namePrefix: nameFilter ? nameFilter.getName() : undefined
       },
       (result) => {
         callback(result);
@@ -58,10 +66,14 @@ export class BleService {
     }
   }
 
-  async requestdevice(callback: (paireddevice: BleDevice) => void){
+  async requestdevice(filters:Map<FilterType,ScanFilter>, callback: (paireddevice: BleDevice) => void){
     try {
+      let serviceUUIDFilter:ServiceUUIDFilter = filters.get(FilterType.ServiceUUID) as ServiceUUIDFilter;
+      let nameFilter:NameFilter = filters.get(FilterType.Name) as NameFilter;
       let device = await BleClient.requestDevice({
-        services: [PROTEUS_BLE_SERVICE]
+        services: serviceUUIDFilter ? [serviceUUIDFilter.getServiceUUID()] : undefined,
+        optionalServices: [PROTEUS_BLE_SERVICE],
+        namePrefix: nameFilter ? nameFilter.getName() : undefined
       });
       callback(device);
     } catch (error) {
@@ -141,18 +153,40 @@ export class BleService {
     await BleClient.disconnect(deviceid);
   }
 
-  async senddata(deviceId:string, data:DataView){
+  async senddata(deviceId:string, data:DataView, sendCount:number, sendDelay:number){
     if(deviceId == undefined){
       this.connectedDevices.forEach(async (module, deviceid) => {
-        let dataFormatted:DataView[] = await module.formatdatatx(data);
-        for(let packet of dataFormatted){
-          await BleClient.writeWithoutResponse(deviceid, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, packet);
+        try {
+          module.setSending(true);
+          for (let i = 0; i < sendCount; i++) {
+            let dataFormatted:DataView[] = await module.formatdatatx(data);
+            for(let packet of dataFormatted){
+              await BleClient.writeWithoutResponse(deviceid, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, packet);
+            }
+            if(i != (sendCount - 1)){
+              await new Promise(f => setTimeout(f, sendDelay));
+            }
+          }
+          module.setSending(false);
+        } catch (error) {
+          module.setSending(false);          
         }
       });
     }else{
-      let dataFormatted:DataView[] = await this.connectedDevices.get(deviceId).formatdatatx(data);
-      for(let packet of dataFormatted){
-        await BleClient.writeWithoutResponse(deviceId, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, packet);
+      try {
+        this.connectedDevices.get(deviceId).setSending(true);
+        for (let i = 0; i < sendCount; i++) {
+          let dataFormatted:DataView[] = await this.connectedDevices.get(deviceId).formatdatatx(data);
+          for(let packet of dataFormatted){
+            await BleClient.writeWithoutResponse(deviceId, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, packet);
+          }
+          if(i != (sendCount - 1)){
+            await new Promise(f => setTimeout(f, sendDelay));
+          }
+        }
+        this.connectedDevices.get(deviceId).setSending(false);
+      } catch (error) {
+        this.connectedDevices.get(deviceId).setSending(false);
       }
     }
   }
@@ -167,7 +201,7 @@ export class BleService {
   }
 
   async readmtu(deviceId:string){
-    let mtu = await BleClient.getMtu(deviceId);
+    let mtu = this.connectedDevices.get(deviceId).getMTUSize();
     this.connectedDevices.get(deviceId).logInfo(`MTU : ${mtu}`);
   }
 

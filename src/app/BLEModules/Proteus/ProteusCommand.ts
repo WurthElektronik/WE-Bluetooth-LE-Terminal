@@ -1,4 +1,6 @@
-export enum ProteusGPIOCommand {
+export enum ProteusCommand {
+    CMD_GETSTATE_REQ = 0x01,
+    CMD_GETSTATE_CNF = 0x41,
     CMD_GPIO_REMOTE_READCONFIG_REQ = 0x2C,
     CMD_GPIO_REMOTE_READCONFIG_CNF = 0x6C,
     CMD_GPIO_REMOTE_WRITECONFIG_REQ = 0x28,

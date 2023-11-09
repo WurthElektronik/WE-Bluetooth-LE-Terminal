@@ -1,21 +1,27 @@
 import { BleDevice, ConnectionPriority } from "@capacitor-community/bluetooth-le";
 import { BLEModuleType } from "../BLEModules/BLEModuleType";
 import { GPIOPin } from "../BLEModules/GPIO/GPIOPin";
-import { GeneralBLEGPIOModule } from "../BLEModules/GPIO/GeneralBLEGPIOModule";
+import { GeneralBLEModule } from "../BLEModules/GeneralBLEModule";
+import { GPIO } from "../BLEModules/GPIO/GPIO";
+import { GPIOInterface } from "../BLEModules/GPIO/GPIOInterface";
 
-export class TestModule extends GeneralBLEGPIOModule {
+export class TestModule extends GeneralBLEModule implements GPIOInterface{
+
+    private gpio:GPIO = undefined;
+
     constructor(bledevice:BleDevice){
         super(bledevice);
-        this.gpioPins = new Map<number, GPIOPin>([
-            [1,new GPIOPin(1,"Test Pin 1",false)],
-            [2,new GPIOPin(2,"Test Pin 2",true)],
-            [3,new GPIOPin(3,"Test Pin 3",true)],
-            [4,new GPIOPin(4,"Test Pin 4",true)],
-        ]);
-        this.resetTempGPIOPins(Array.from(this.gpioPins.values()));
+        this.gpio = new GPIO(
+            new Map<number, GPIOPin>([
+                [1,new GPIOPin(1,"Test Pin 1",false)],
+                [2,new GPIOPin(2,"Test Pin 2",true)],
+                [3,new GPIOPin(3,"Test Pin 3",true)],
+                [4,new GPIOPin(4,"Test Pin 4",true)],
+            ])
+        );
         this.logInfo('Test Device Started');
         this.logInfo('Info Message Test');
-        this.logGPIO('GPIO Message Test');
+        this.logRemoteCommand('GPIO Message Test');
         this.logDataSent('Data Sent Message Test');
         this.logDataReceived('Data Received Message Test');
         this.logDataReceived('Long Data Received Message Test',undefined, Uint8Array.from([
@@ -39,11 +45,11 @@ export class TestModule extends GeneralBLEGPIOModule {
     }
 
     formatreadpinconfiguration(): DataView {
-        this.gpioPins.get(1).setPinType(0);
-        this.gpioPins.get(2).setPinType(1);
-        this.gpioPins.get(3).setPinType(2);
-        this.gpioPins.get(4).setPinType(3);
-        this.resetTempGPIOPins(Array.from(this.tempgpioPins.values()));
+        this.gpio.getGPIOPins().get(1).setPinType(0);
+        this.gpio.getGPIOPins().get(2).setPinType(1);
+        this.gpio.getGPIOPins().get(3).setPinType(2);
+        this.gpio.getGPIOPins().get(4).setPinType(3);
+        this.gpio.resetTempGPIOPins(Array.from(this.gpio.getTempGPIOPins().values()));
         throw new Error("Method not implemented.");
     }
 
@@ -62,4 +68,17 @@ export class TestModule extends GeneralBLEGPIOModule {
     getType(): BLEModuleType {
         return undefined;
     }
+
+    getGPIOSupport(): Boolean {
+        return true;
+    }
+
+    getGPIO(): GPIO {
+        return this.gpio;
+    }
+
+    getRemoteCommandSupport():Boolean{
+        return this.getGPIOSupport();
+    }
+
 }

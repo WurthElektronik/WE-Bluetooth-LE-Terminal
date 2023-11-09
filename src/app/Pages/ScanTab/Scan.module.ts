@@ -11,6 +11,8 @@ export function createTranslateLoader(http: HttpClient) {
 }
 import { ScanTabRoutingModule } from './Scan-routing.module';
 import { SelectModuleComponent } from 'src/app/Components/select-module/select-module.component';
+import { AddFilterComponent } from 'src/app/Components/add-filter/add-filter.component';
+import { NameFilterPipe } from 'src/app/Filters/NameFilter';
 
 @NgModule({
   imports: [
@@ -26,6 +28,6 @@ import { SelectModuleComponent } from 'src/app/Components/select-module/select-m
       }
     })
   ],
-  declarations: [ScanTab,SelectModuleComponent]
+  declarations: [ScanTab,SelectModuleComponent,AddFilterComponent,NameFilterPipe]
 })
 export class ScanTabModule {}

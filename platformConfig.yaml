@@ -18,4 +18,4 @@ platforms:
     packageName: "com.eisos.android.terminal"
     versionName: $VERSION
     appName: $DISPLAY_NAME
-    versionCode: 230825
+    versionCode: 240110

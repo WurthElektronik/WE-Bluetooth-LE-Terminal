@@ -27,10 +27,10 @@
           <ion-select #filterselect [multiple]="true" interface="popover" class="msgfilter" [(ngModel)]="selectedfilters" (ionChange)="filterTypeChanged($event)">
             <ion-select-option value="Info">{{ 'TerminalTab.filters.Info' | translate }}</ion-select-option>
             <ion-select-option value="Data">{{ 'TerminalTab.filters.Data' | translate }}</ion-select-option>
-            <ion-select-option value="GPIO" *ngIf="this.ble.connectedDevices.get(this.id).getGPIOSupport()">{{ 'TerminalTab.filters.GPIO' | translate }}</ion-select-option>
+            <ion-select-option value="RemoteCommand" *ngIf="this.ble.connectedDevices.get(this.id).getRemoteCommandSupport()">{{ 'TerminalTab.filters.RemoteCommand' | translate }}</ion-select-option>
           </ion-select>
         </ion-col>
-        <ion-col size="auto" *ngIf="(this.ble.connectedDevices.get(this.id).getGPIOSupport() == true && this.platform.is('desktop') == true) || this.platform.is('desktop') != true">
+        <ion-col size="auto" *ngIf="this.ble.connectedDevices.get(this.id).getGPIOSupport() == true || this.ble.connectedDevices.get(this.id).getMTUSize() != undefined || this.platform.is('desktop') != true">
           <ion-button fill="clear" (click) = "devicepopoverclick($event)">
             <ion-icon color="dark" slot="icon-only" name="ellipsis-vertical"></ion-icon>
           </ion-button>
@@ -95,11 +95,26 @@
 <ion-footer *ngIf="this.ble.connectedDevices.size != 0 && this.id != undefined && this.ble.connectedDevices.get(this.id) != undefined">
   <ion-grid>
     <ion-row class="ion-align-items-center">
-      <ion-col>
-        <ion-input #payloadinput (ionInput)="onPayloadInput($event)" enterkeyhint="send" (keyup.enter)="sendclick()" [value]="payload" placeholder="{{ 'TerminalTab.payload' | translate }} ({{this.selectedencoding}})" (ionChange)="updatepayload($event)"></ion-input>
+      <ion-col class="ion-text-right">
+        <ion-input class="ion-text-left" #payloadinput (ionInput)="onPayloadInput($event)" enterkeyhint="send" (keyup.enter)="sendclick()" [value]="payload" placeholder="{{ 'TerminalTab.payload' | translate }} ({{this.selectedencoding}})" (ionChange)="updatepayload($event)"></ion-input>
+        <ion-label>
+          <small>
+            {{ this.payloadCount }} Bytes
+          </small>
+        </ion-label>
       </ion-col>
-      <ion-col size="auto">
-        <ion-button (click) = "sendclick()">
+      <ion-col size="12" size-sm="auto" *ngIf="multiplepackets">
+        <ion-item-group>
+          <ion-item class="ion-no-padding">
+            <ion-input #sendcountinput [value]="sendCount" (ionInput)="onSendCountInput($event)" (ionChange)="onSendCountChange($event)" label="{{ 'TerminalTab.sendcount' | translate }}" inputmode="numeric"></ion-input>
+          </ion-item>
+          <ion-item class="ion-no-padding">
+            <ion-input #txintervalinput [value]="txInterval" placeholder="ms" (ionInput)="onTXIntervalInput($event)" (ionChange)="onTXIntervalChange($event)" label="{{ 'TerminalTab.txinterval' | translate }}" inputmode="numeric"></ion-input>
+          </ion-item>
+        </ion-item-group>
+      </ion-col>
+      <ion-col size="12" size-sm="auto">
+        <ion-button class="sendbutton" [disabled]="this.ble.connectedDevices.get(this.id).isSending()" (click) = "sendclick()">
           {{ 'TerminalTab.send' | translate }}
         </ion-button>
       </ion-col>
@@ -114,8 +129,13 @@
         <ion-item [button]="true" (click)="selectencodingclicked()">
           <ion-label class="ion-no-margin">{{ 'TerminalTab.terminalpopover.selectencoding' | translate }}</ion-label>
         </ion-item>
+        <ion-item>
+          <ion-label class="ion-no-margin ion-text-wrap">{{ 'TerminalTab.terminalpopover.sendtoalldevices' | translate }}</ion-label>
+          <ion-checkbox class="ion-margin-start" [(ngModel)] = "this.sendtoall"></ion-checkbox>
+        </ion-item>
         <ion-item lines="none">
-          <ion-checkbox [(ngModel)] = "this.sendtoall" labelPlacement="start">{{ 'TerminalTab.terminalpopover.sendtoalldevices' | translate }}</ion-checkbox>
+          <ion-label class="ion-no-margin ion-text-wrap">{{ 'TerminalTab.terminalpopover.multiplepacketsend' | translate }}</ion-label>
+          <ion-checkbox class="ion-margin-start" [(ngModel)] = "this.multiplepackets"></ion-checkbox>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -139,7 +159,7 @@
           <ion-label text-wrap class="ion-no-margin">{{ 'TerminalTab.devicepopover.requestconnectionpriority' | translate }}</ion-label>
         </ion-item>
 
-        <ion-item [button]="true" *ngIf="this.platform.is('desktop') != true" (click)="readmtu()">
+        <ion-item [button]="true" *ngIf="this.ble.connectedDevices.get(this.id).getMTUSize() != undefined" (click)="readmtu()">
           <ion-label class="ion-no-margin">{{ 'TerminalTab.devicepopover.readmtu' | translate }}</ion-label>
         </ion-item>
 

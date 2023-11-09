@@ -28,7 +28,7 @@ export class InfoTab {
   }
 
   async sourcecodeclick(){
-    await Browser.open({ url: 'https://github.com/WurthElektronik' });
+    await Browser.open({ url: 'https://github.com/WurthElektronik/Proteus-Connect' });
   }
 
   policyclick(){

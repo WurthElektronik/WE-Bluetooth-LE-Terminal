@@ -1,11 +1,14 @@
 import { Component, NgZone, OnInit,ViewChild,ElementRef } from '@angular/core';
-import { IonInput, IonSelect, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
+import { GPIO } from 'src/app/BLEModules/GPIO/GPIO';
 import { GPIOInputPinType } from 'src/app/BLEModules/GPIO/GPIOInputPinType';
+import { GPIOInterface } from 'src/app/BLEModules/GPIO/GPIOInterface';
 import { GPIOOutputPinType } from 'src/app/BLEModules/GPIO/GPIOOutputPinType';
 import { GPIOPin } from 'src/app/BLEModules/GPIO/GPIOPin';
 import { GPIOPinType } from 'src/app/BLEModules/GPIO/GPIOPinType';
-import { GeneralBLEGPIOModule } from 'src/app/BLEModules/GPIO/GeneralBLEGPIOModule';
+import { GeneralBLEModule } from 'src/app/BLEModules/GeneralBLEModule';
+import { Proteus } from 'src/app/BLEModules/Proteus/Proteus';
 import { BleService } from 'src/app/services/ble.service';
 
 @Component({
@@ -15,7 +18,8 @@ import { BleService } from 'src/app/services/ble.service';
 })
 export class RwGpioComponent implements OnInit {
   public id:string;
-  public device:GeneralBLEGPIOModule;
+  public device:GeneralBLEModule;
+  public gpio:GPIO;
   public selectedpin:string;
   public pinTypes = GPIOPinType;
   public inputPinTypes = GPIOInputPinType;
@@ -27,10 +31,11 @@ export class RwGpioComponent implements OnInit {
   constructor(public ble:BleService,private modalCtrl: ModalController,private ngZone: NgZone) { }
 
   ngOnInit() {
-    this.device = <GeneralBLEGPIOModule>this.ble.connectedDevices.get(this.id);
-    this.selectedpin = String(this.device.getGPIOPins().keys().next().value);
-    this.device.resetTempGPIOPins(Array.from(this.device.getTempGPIOPins().values()));
-    this.isPinConfigured = Array.from(this.device.getTempGPIOPins().values()).filter(pin => pin.getIsConfigured() == true).length != 0;
+    this.device = <GeneralBLEModule>this.ble.connectedDevices.get(this.id);
+    this.gpio = (<GPIOInterface><unknown>this.device).getGPIO();
+    this.selectedpin = String(this.gpio.getGPIOPins().keys().next().value);
+    this.gpio.resetTempGPIOPins(Array.from(this.gpio.getTempGPIOPins().values()));
+    this.isPinConfigured = Array.from(this.gpio.getTempGPIOPins().values()).filter(pin => pin.getIsConfigured() == true).length != 0;
     this.datareceivedsubscription = this.device.getDataReceivedSubject().subscribe(async () => {
       this.ngZone.run(() => {
         
@@ -47,20 +52,20 @@ export class RwGpioComponent implements OnInit {
 
 
   async readpinvalues(){
-    let configuredPinsArray:GPIOPin[] = Array.from(this.device.getTempGPIOPins().values()).filter(pin => pin.getIsConfigured() == true)
-    await this.ble.senddataunformatted(this.id, this.device.formatreadpinvalues(configuredPinsArray));
+    let configuredPinsArray:GPIOPin[] = Array.from(this.gpio.getTempGPIOPins().values()).filter(pin => pin.getIsConfigured() == true)
+    await this.ble.senddataunformatted(this.id, (<GPIOInterface><unknown>this.device).formatreadpinvalues(configuredPinsArray));
   }
 
   async readpinvalue(){
-    await this.ble.senddataunformatted(this.id, this.device.formatreadpinvalues([this.device.getTempGPIOPins().get(+this.selectedpin)]));
+    await this.ble.senddataunformatted(this.id, (<GPIOInterface><unknown>this.device).formatreadpinvalues([this.gpio.getTempGPIOPins().get(+this.selectedpin)]));
   }
 
   async writeallpinconfig(){
-    await this.ble.senddataunformatted(this.id, this.device.formatwritepinvalues(Array.from(this.device.getTempGPIOPins().values())));
+    await this.ble.senddataunformatted(this.id, (<GPIOInterface><unknown>this.device).formatwritepinvalues(Array.from(this.gpio.getTempGPIOPins().values())));
   }
 
   async writepinconfig(){
-    await this.ble.senddataunformatted(this.id, this.device.formatwritepinvalues([this.device.getTempGPIOPins().get(+this.selectedpin)]));
+    await this.ble.senddataunformatted(this.id, (<GPIOInterface><unknown>this.device).formatwritepinvalues([this.gpio.getTempGPIOPins().get(+this.selectedpin)]));
   }
 
   pinchanged(pinid:number){
@@ -75,20 +80,20 @@ export class RwGpioComponent implements OnInit {
   }
 
   pwmRatioChanged(event){
-    this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().setUint8(0,(event.detail.value * 254/100));
+    this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinValue().setUint8(0,(event.detail.value * 254/100));
   }
 
 
   outputToggleChanged(event){
-    this.device.getTempGPIOPins().get(+this.selectedpin).getPinValue().setUint8(0,(<Boolean>event.detail.checked) ? 1 : 0);
+    this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinValue().setUint8(0,(<Boolean>event.detail.checked) ? 1 : 0);
   }
 
   canReadPin():Boolean{
-    return this.device.getTempGPIOPins().get(+this.selectedpin).getIsConfigured();
+    return this.gpio.getTempGPIOPins().get(+this.selectedpin).getIsConfigured();
   }
 
   canWritePin():Boolean{
-    return (this.device.getTempGPIOPins().get(+this.selectedpin).getPinType() == GPIOPinType.Output || this.device.getTempGPIOPins().get(+this.selectedpin).getPinType() == GPIOPinType.PWM);
+    return (this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinType() == GPIOPinType.Output || this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinType() == GPIOPinType.PWM);
   }
 
 }

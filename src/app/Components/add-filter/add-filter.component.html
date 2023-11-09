@@ -1,0 +1,23 @@
+<div class="inner-content">
+  <h1>{{ 'AddFilter.addfilter' | translate }}</h1>
+  <ion-select label="{{ 'AddFilter.filtertype' | translate }} :" interface="popover" class="scanfilter" value="{{filters[selectedFilter]}}" (ionChange)="filterChanged($event)">
+    <ion-select-option value="Name">{{ 'AddFilter.filters.Name' | translate }}</ion-select-option>
+    <ion-select-option value="ServiceUUID">{{ 'AddFilter.filters.ServiceUUID' | translate }}</ion-select-option>
+  </ion-select>
+  <ng-container [ngSwitch]="filters[selectedFilter]">
+
+    <ng-container *ngSwitchCase="'Name'">
+      <ion-input [value]="name" label="{{ 'AddFilter.filters.Name' | translate }}" (ionInput)="onNameInput($event)"></ion-input>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'ServiceUUID'">
+      <ion-row class="ion-margin-top">
+        Proteus Service UUID
+        <br>
+        {{PROTEUS_BLE_SERVICE}}
+      </ion-row>
+    </ng-container>
+
+  </ng-container>
+  <ion-button [disabled]="this.name.length == 0 && filters[selectedFilter] == 'Name'" class="ion-margin-top" (click)="addfilter()" style="width: 100%;">{{ 'AddFilter.add' | translate }}</ion-button>
+</div>

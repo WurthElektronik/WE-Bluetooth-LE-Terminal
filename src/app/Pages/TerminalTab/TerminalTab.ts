@@ -28,7 +28,7 @@ export class TerminalTab {
   public terminalpopoveropen:Boolean = false;
   public msgfilterskeys = Object.keys(LogMessageType).map(key => LogMessageType[key]).filter(value => typeof value === 'string') as string[];
   public msgfilters = LogMessageType;
-  public selectedfilters:string[] = ['Info','Data','GPIO'];
+  public selectedfilters:string[] = ['Info','Data','RemoteCommand'];
   public selectedfiltersenum:LogMessageType[] = [];
   @ViewChild('devicepopover') devicepopover;
   @ViewChild('requestconnectionpopover') requestconnectionpopover;
@@ -38,8 +38,15 @@ export class TerminalTab {
   public payload:string = undefined;
   public selectedencoding:string = EncodingType[EncodingType.ASCII];
   public sendtoall:Boolean = false;
+  public multiplepackets:Boolean = false;
   @ViewChild('filterselect') filterselect: IonSelect;
   @ViewChild('payloadinput') payloadinput: IonInput;
+  @ViewChild('sendcountinput') sendcountinput: IonInput;
+  @ViewChild('txintervalinput') txintervalinput: IonInput;
+
+  public payloadCount:number = 0;
+  public sendCount:number = 1;
+  public txInterval:number = 1000;
 
   BufferToHex = BufferToHex;
   BufferToAscii = BufferToAscii;
@@ -99,8 +106,10 @@ export class TerminalTab {
 
     this.disconnectsubscription = this.ble.onDeviceDisconnected.subscribe(async (disconnecteddeviceid:string) => {
       if(this.ble.connectedDevices.size == 0){
-        this.selectedfilters = ['Info','Data','GPIO'];
+        this.selectedfilters = ['Info','Data','RemoteCommand'];
         this.selectedfiltersenum = [];
+        this.sendCount = 1;
+        this.txInterval = 1000;
         this.router.navigate(
           ['/tabs/scan']
         );
@@ -200,11 +209,18 @@ export class TerminalTab {
         }
 
         this.payload = '';
-
-        if(this.sendtoall){
-          await this.ble.senddata(undefined, datatosend);
-        }else{
-          await this.ble.senddata(this.id, datatosend);
+        this.payloadinput.value = '';
+        this.payloadCounter();
+        
+        try{
+          await this.ble.senddata(
+            this.sendtoall ? undefined : this.id,
+            datatosend,
+            this.multiplepackets ? this.sendCount : 1,
+            this.multiplepackets ? this.txInterval : 0
+          );
+        }catch(error){
+          console.log(error);
         }
 
         setTimeout(() => {
@@ -242,8 +258,8 @@ export class TerminalTab {
           this.selectedfiltersenum.push(LogMessageType.DataSent,LogMessageType.DataReceived);
           break;
         }
-        case 'GPIO':{
-          this.selectedfiltersenum.push(LogMessageType.GPIO);
+        case 'RemoteCommand':{
+          this.selectedfiltersenum.push(LogMessageType.RemoteCommand);
           break;
         }
       }
@@ -252,6 +268,28 @@ export class TerminalTab {
     setTimeout(() => {
       this.content.scrollToBottom(0);
     },20); 
+  }
+
+  onSendCountInput(event){
+    let value:string = event.detail.value;
+    let filteredValue:string = value.replace(/[^0-9]+/g, '');
+    this.sendcountinput.value = filteredValue;
+  }
+
+  onSendCountChange(event){
+    let value:number = +event.detail.value;
+    this.sendcountinput.value = this.sendCount = (value <= 1) ? 1 : value;
+  }
+
+  onTXIntervalInput(event){
+    let value:string = event.detail.value;
+    let filteredValue:string = value.replace(/[^0-9]+/g, '');
+    this.txintervalinput.value = filteredValue;
+  }
+
+  onTXIntervalChange(event){
+    let value:number = +event.detail.value;
+    this.txintervalinput.value = this.txInterval = (value <= 50) ? 50 : value;
   }
 
   onPayloadInput(event){
@@ -267,6 +305,19 @@ export class TerminalTab {
         break;
     }
     this.payloadinput.value = filteredValue;
+    this.payloadCounter();
+  }
+
+  payloadCounter() {
+    switch(EncodingType[this.selectedencoding]){
+      default:
+      case EncodingType.ASCII:
+        this.payloadCount = (this.payloadinput.value as string).length;
+        break;
+      case EncodingType.HEX:
+        this.payloadCount = Math.floor((this.payloadinput.value as string).replace(/ /g,'').length / 2);
+        break;
+    }
   }
 
   getmsgclass(msg):string  {
@@ -277,8 +328,8 @@ export class TerminalTab {
         return 'datasentmsg';
       case LogMessageType.DataReceived:
         return 'datareceivedmsg';
-      case LogMessageType.GPIO:
-        return 'gpiomsg';
+      case LogMessageType.RemoteCommand:
+        return 'remotecommandmsg';
       default:
         return '';
     }

@@ -10,11 +10,12 @@
     "stopscantext": "Stop Scanning",
     "connecting": "Connecting",
     "connectionfailed": "Connection Failed",
+    "scanby":"Sort By",
     "scansorttype": {
       "default": "Default",
-      "name": "Sort By Name",
-      "address": "Sort By Address",
-      "rssi": "Sort By RSSI"
+      "name": "Name",
+      "address": "Address",
+      "rssi": "RSSI"
     }
   },
   "SelectModule":{
@@ -29,19 +30,31 @@
     },
     "select": "Select"
   },
+  "AddFilter":{
+    "addfilter":"Add Scan Filter",
+    "filtertype": "Filter Type",
+    "filters":{
+      "Name": "Name",
+      "ServiceUUID": "Service UUID"
+    },
+    "add": "Add"
+  },
   "TerminalTab": {
     "nodeviceconnected": "No Device Connected",
     "filters":{
       "Info": "Info",
       "Data": "Data",
-      "GPIO": "GPIO"
+      "RemoteCommand": "Remote Commands"
     },
     "nologmsgs": "No Log Messages",
     "payload": "Payload",
+    "sendcount": "Send count",
+    "txinterval": "TX Interval",
     "send": "Send",
     "terminalpopover":{
       "selectencoding": "Select Encoding",
-      "sendtoalldevices": "Send to all devices"
+      "sendtoalldevices": "Send to all devices",
+      "multiplepacketsend": "Multiple packets"
     },
     "devicepopover":{
       "gpioconfig": "GPIO Config",
@@ -149,6 +162,7 @@
     "DataSentHighThroughput": "Data Sent in High Throughput",
     "DataReceived": "Data Received",
     "DataReceivedHighThroughput": "Data Received in High Throughput",
+    "DataTooLarge": "Data was not sent since its larger than MTU",
     "DeviceConnected": "Device Connected",
     "ServicesDiscovered": "Services Discovered",
     "NotificationsEnabled": "Notifications Enabled",

@@ -1,4 +1,4 @@
-import { BleDevice } from "@capacitor-community/bluetooth-le";
+import { BleClient, BleDevice } from "@capacitor-community/bluetooth-le";
 import { BLEModuleType } from "./BLEModuleType";
 import { Logger } from "../Logger/Logger";
 import { LogMessageType } from "../Logger/LogMessageType";
@@ -9,7 +9,9 @@ export abstract class GeneralBLEModule{
     deviceId:string;
     protected logger:Logger = new Logger();
     onDataReceived: Subject<any> = new Subject<any>();
-
+    sending:Boolean = false;
+    mtuSize:number = undefined;
+    
     constructor(bledevice:BleDevice){
         this.devicename = bledevice.name;
         this.deviceId = bledevice.deviceId;
@@ -29,6 +31,10 @@ export abstract class GeneralBLEModule{
         this.logger.logMessage(LogMessageType.DataReceived,msginfo,msginfoparameters,msgdata);
     }
 
+    logRemoteCommand(msginfo:string, msginfoparameters: any = undefined, msgdata:ArrayBuffer = undefined){
+        this.logger.logMessage(LogMessageType.RemoteCommand,msginfo,msginfoparameters,msgdata);
+    }
+
     getDeviceName():string{
         return this.devicename;
     }
@@ -41,12 +47,22 @@ export abstract class GeneralBLEModule{
         return false;
     }
 
+    getRemoteCommandSupport():Boolean{
+        return false;
+    }
+
     handlerx(data: DataView){
         this.logDataReceived("LogMessages.DataReceived",undefined,data.buffer);
         this.onDataReceived.next(undefined);
     }
 
     async formatdatatx(data: DataView): Promise<DataView[]>{
+        var mtu = this.getMTUSize() || this.getDefaultMTUSize();
+        mtu -= 3; //this -3 is for the Bluetooth Attribute Protocol
+        if(data.byteLength > mtu){
+            this.logInfo("LogMessages.DataTooLarge");
+            return;
+        }
         this.logDataSent("LogMessages.DataSent",undefined,data.buffer);
         return [data];
     }
@@ -60,7 +76,30 @@ export abstract class GeneralBLEModule{
     }
 
     async initializeModule(){
-        return;
+        try {
+            this.setMTUSize(await BleClient.getMtu(this.deviceId));
+        } catch (error) {
+        }
+    }
+
+    isSending():Boolean{
+        return this.sending;
+    }
+
+    setSending(sending:Boolean){
+        this.sending = sending;
+    }
+
+    getMTUSize():number{
+        return this.mtuSize;
+    }
+
+    setMTUSize(mtuSize: number){
+        this.mtuSize = mtuSize;
+    }
+
+    getDefaultMTUSize():number{
+        return 23;
     }
 
 }

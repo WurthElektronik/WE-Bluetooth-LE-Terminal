@@ -10,26 +10,26 @@
     </ion-row>
   </ion-grid>
   <ion-segment [scrollable]="true" [(ngModel)]="this.selectedpin">
-    <ion-segment-button *ngFor="let pin of device.getGPIOPins() | keyvalue" value="{{pin.key}}" (click)="pinchanged(pin.key)">
+    <ion-segment-button *ngFor="let pin of this.gpio.getGPIOPins() | keyvalue" value="{{pin.key}}" (click)="pinchanged(pin.key)">
       <ion-label class="pinlabel">{{pin.value.getPinName()}}</ion-label>
     </ion-segment-button>
   </ion-segment>
 
   <ion-grid>
     <ion-row class="ion-margin-top">
-      <ion-select #pintypeselect interface="popover" value="{{pinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinType()]}}" (ionChange)="pinTypeChanged($event)">
+      <ion-select #pintypeselect interface="popover" value="{{pinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinType()]}}" (ionChange)="pinTypeChanged($event)">
         <ion-select-option value="NoConfiguration">{{ 'ConfigGPIO.pintypeselection.noconfiguration' | translate }}</ion-select-option>
         <ion-select-option value="Input">{{ 'ConfigGPIO.pintypeselection.input' | translate }}</ion-select-option>
         <ion-select-option value="Output">{{ 'ConfigGPIO.pintypeselection.output' | translate }}</ion-select-option>
-        <ion-select-option *ngIf="this.device.getTempGPIOPins().get(+this.selectedpin).getPWMSupport() == true" value="PWM">{{ 'ConfigGPIO.pintypeselection.pwm' | translate }}</ion-select-option>
+        <ion-select-option *ngIf="this.gpio.getTempGPIOPins().get(+this.selectedpin).getPWMSupport() == true" value="PWM">{{ 'ConfigGPIO.pintypeselection.pwm' | translate }}</ion-select-option>
       </ion-select>
     </ion-row>
 
-    <ng-container [ngSwitch]="pinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinType()]">
+    <ng-container [ngSwitch]="pinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinType()]">
 
       <ng-container *ngSwitchCase="'Input'">
         <ion-row class="ion-margin-top">
-          <ion-radio-group value="{{inputPinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(0)]}}" (ionChange)="inputTypeChanged($event)">
+          <ion-radio-group value="{{inputPinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(0)]}}" (ionChange)="inputTypeChanged($event)">
             <ion-radio labelPlacement="end" value="NoPull">{{ 'ConfigGPIO.input.nopull' | translate }}</ion-radio><br/>
             <ion-radio labelPlacement="end" value="PullDown">{{ 'ConfigGPIO.input.pulldown' | translate }}</ion-radio><br/>
             <ion-radio labelPlacement="end" value="PullUp">{{ 'ConfigGPIO.input.pullup' | translate }}</ion-radio>
@@ -39,7 +39,7 @@
 
       <ng-container *ngSwitchCase="'Output'">
         <ion-row class="ion-margin-top">
-          <ion-radio-group value="{{outputPinTypes[this.device.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(0)]}}" (ionChange)="outputTypeChanged($event)">
+          <ion-radio-group value="{{outputPinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(0)]}}" (ionChange)="outputTypeChanged($event)">
             <ion-radio labelPlacement="end" value="Low">{{ 'ConfigGPIO.output.low' | translate }}</ion-radio><br/>
             <ion-radio labelPlacement="end" value="High">{{ 'ConfigGPIO.output.high' | translate }}</ion-radio>
           </ion-radio-group>
@@ -48,10 +48,10 @@
 
       <ng-container *ngSwitchCase="'PWM'">
         <ion-row class="ion-margin-top">
-          <ion-input value="{{this.device.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint16(0)}}" (ionInput)="onpwmPeriodInput($event)" (ionChange)="onpwmPeriodChange($event)" #pwmperiod label="{{ 'ConfigGPIO.pwm.period' | translate }}" type="number" [min]="1" [max]="500" placeholder="<1-500> ms"></ion-input>
+          <ion-input value="{{this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint16(0)}}" (ionInput)="onpwmPeriodInput($event)" (ionChange)="onpwmPeriodChange($event)" #pwmperiod label="{{ 'ConfigGPIO.pwm.period' | translate }}" inputmode="numeric" placeholder="<1-500> ms"></ion-input>
         </ion-row>
         <ion-row class="ion-margin-end ion-margin-top">
-          <ion-range [pin]="true" [pinFormatter]="pwmRatioformatter" (ionChange)="pwmRatioChanged($event)" value="{{this.device.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(2) * 100 / 254}}">
+          <ion-range [pin]="true" [pinFormatter]="pwmRatioformatter" (ionChange)="pwmRatioChanged($event)" value="{{this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(2) * 100 / 254}}">
             <div slot="label" style="margin-right: 10px !important;">{{ 'ConfigGPIO.pwm.ratio' | translate }}</div>
           </ion-range>
         </ion-row>

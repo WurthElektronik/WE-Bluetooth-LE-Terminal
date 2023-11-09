@@ -26,7 +26,7 @@
     color:var(--ion-color-primary);
   }
 
-  .gpiomsg{
+  .remotecommandmsg{
     color:#48a9c5;
   }
 
@@ -53,6 +53,10 @@
   .asciidata{
     word-wrap: break-word;
     word-break: break-all;
+  }
+
+  .sendbutton{
+    width: 100%;
   }
 
   .deviceSegmentLabel{

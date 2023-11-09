@@ -11,5 +11,4 @@ export class ProteusI extends Proteus{
     getType(): BLEModuleType {
         return BLEModuleType.ProteusI;
     }
-
 }

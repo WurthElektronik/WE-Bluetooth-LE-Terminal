@@ -11,5 +11,8 @@ export class StephanoI extends GeneralBLEModule{
     getType(): BLEModuleType {
         return BLEModuleType.StephanoI;
     }
-
+    
+    getDefaultMTUSize():number{
+        return 517;
+    }
 }
