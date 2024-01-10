@@ -1,20 +1,21 @@
 {
-  "notsupported":"Gerät/Browser wird nicht unterstützt",
+  "notsupported":"Bluetooth Gerät / Browser wird nicht unterstützt",
   "bluetoothoff": "Bluetooth ist nicht aktiviert",
   "locationoff": "Standortdienste sind nicht aktiviert",
   "ScanTab": {
     "tabname": "Gerätesuche",
     "founddevices": "Geräteliste",
     "clearfounddevices": "Lösche Geräteliste",
-    "startscantext": "Start Gerätesuche",
-    "stopscantext": "Stop Gerätesuche",
+    "startscantext": "Gerätesuche Start",
+    "stopscantext": "Gerätesuche Stop",
     "connecting": "Verbinde",
     "connectionfailed": "Verbindung fehlgeschlagen",
+    "scanby":"Sortiere nach",
     "scansorttype": {
       "default": "Standard",
-      "name": "Sortiere nach Name",
-      "address": "Sortiere nach Adresse",
-      "rssi": "Sortiere nach RSSI"
+      "name": "Name",
+      "address": "Adresse",
+      "rssi": "RSSI"
     }
   },
   "SelectModule":{
@@ -29,19 +30,31 @@
     },
     "select": "Auswahl"
   },
+  "AddFilter":{
+    "addfilter":"Add Scan Filter",
+    "filtertype": "Filter Type",
+    "filters":{
+      "Name": "Name",
+      "ServiceUUID": "Service UUID"
+    },
+    "add": "Add"
+  },
   "TerminalTab": {
     "nodeviceconnected": "Kein Gerät verbunden",
     "filters":{
       "Info": "Info",
       "Data": "Daten",
-      "GPIO": "GPIO"
+      "RemoteCommand": "Remote-Befehle"
     },
     "nologmsgs": "Keine Log Nachrichten",
     "payload": "Payload",
+    "sendcount": "Anzahl senden",
+    "txinterval": "TX Intervall",
     "send": "Senden",
     "terminalpopover":{
       "selectencoding": "Auswahl Encoding",
-      "sendtoalldevices": "An alle Geräte senden"
+      "sendtoalldevices": "An alle Geräte senden",
+      "multiplepacketsend": "Mehrere Pakete"
     },
     "devicepopover":{
       "gpioconfig": "GPIO Konfiguration",
@@ -149,6 +162,7 @@
     "DataSentHighThroughput": "Daten mit hohem Durchsatz gesendet",
     "DataReceived": "Daten empfangen",
     "DataReceivedHighThroughput": "Daten mit hohem Durchsatz empfangen",
+    "DataTooLarge": "Daten wurden nicht gesendet, da sie größer als die MTU sind",
     "DeviceConnected": "Gerät verbunden",
     "ServicesDiscovered": "Dienste abgefragt",
     "NotificationsEnabled": "Benachrichtigungen eingeschaltet",
