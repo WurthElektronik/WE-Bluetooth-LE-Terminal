@@ -5,6 +5,8 @@ vars:
     default: com.eisos.proteusconnect
   DISPLAY_NAME:
     default: Proteus Connect
+  BUILD_NUMBER:
+    default: 240604
 
 platforms:
   ios:
@@ -13,9 +15,10 @@ platforms:
         bundleId: "com.we-online.ProteusConnect"
         version: $VERSION
         displayName: $DISPLAY_NAME
+        buildNumber: $BUILD_NUMBER
 
   android:
     packageName: "com.eisos.android.terminal"
     versionName: $VERSION
     appName: $DISPLAY_NAME
-    versionCode: 240110
+    versionCode: $BUILD_NUMBER

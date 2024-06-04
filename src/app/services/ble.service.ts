@@ -122,8 +122,26 @@ export class BleService {
 
     module.logInfo("LogMessages.DeviceConnected");
     while(!this.connectedDevices.has(device.deviceId)){
-      await BleClient.getServices(device.deviceId).then((services) => {
+      await BleClient.getServices(device.deviceId).then(async (services) => {
         if(services.length != 0){
+          let proteus_service = services.find(x => x.uuid === PROTEUS_BLE_SERVICE);
+          if(proteus_service == undefined){
+            await BleClient.disconnect(device.deviceId);
+            return;
+          }
+          
+          let proteus_characteristics_rx = proteus_service.characteristics.find(x => x.uuid === PROTEUS_BLE_RX_CHARACTERISTIC);
+          let proteus_characteristics_tx = proteus_service.characteristics.find(x => x.uuid === PROTEUS_BLE_TX_CHARACTERISTIC);
+
+          if(
+            ((proteus_characteristics_rx == undefined) || (proteus_characteristics_rx.properties.writeWithoutResponse == false)) ||
+            ((proteus_characteristics_tx == undefined) || (proteus_characteristics_tx.properties.notify == false))
+            )
+          {
+            await BleClient.disconnect(device.deviceId);
+            return;
+          }
+
           module.logInfo("LogMessages.ServicesDiscovered");
           this.connectedDevices.set(device.deviceId,module);
         }

@@ -3,12 +3,10 @@
   <ion-list>
     <ion-radio-group [(ngModel)]="selectedlang">
       <ion-item (click)="langselected('en')">
-        <ion-label>{{ 'ChangeLanguage.English' | translate }}</ion-label>
-        <ion-radio value="en"></ion-radio>
+        <ion-radio value="en">{{ 'ChangeLanguage.English' | translate }}</ion-radio>
       </ion-item>
       <ion-item (click)="langselected('de')">
-        <ion-label>{{ 'ChangeLanguage.German' | translate }}</ion-label>
-        <ion-radio value="de"></ion-radio>
+        <ion-radio value="de">{{ 'ChangeLanguage.German' | translate }}</ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>

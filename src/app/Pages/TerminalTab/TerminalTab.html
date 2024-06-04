@@ -130,12 +130,10 @@
           <ion-label class="ion-no-margin">{{ 'TerminalTab.terminalpopover.selectencoding' | translate }}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label class="ion-no-margin ion-text-wrap">{{ 'TerminalTab.terminalpopover.sendtoalldevices' | translate }}</ion-label>
-          <ion-checkbox class="ion-margin-start" [(ngModel)] = "this.sendtoall"></ion-checkbox>
+          <ion-checkbox [(ngModel)] = "this.sendtoall">{{ 'TerminalTab.terminalpopover.sendtoalldevices' | translate }}</ion-checkbox>
         </ion-item>
         <ion-item lines="none">
-          <ion-label class="ion-no-margin ion-text-wrap">{{ 'TerminalTab.terminalpopover.multiplepacketsend' | translate }}</ion-label>
-          <ion-checkbox class="ion-margin-start" [(ngModel)] = "this.multiplepackets"></ion-checkbox>
+          <ion-checkbox [(ngModel)] = "this.multiplepackets">{{ 'TerminalTab.terminalpopover.multiplepacketsend' | translate }}</ion-checkbox>
         </ion-item>
       </ion-list>
     </ion-content>

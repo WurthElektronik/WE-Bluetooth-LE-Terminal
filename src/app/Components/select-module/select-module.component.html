@@ -3,8 +3,7 @@
   <ion-list>
     <ion-radio-group [(ngModel)]="selectedmodule">
       <ion-item *ngFor="let module of modules">
-        <ion-label>{{ 'SelectModule.modules.' + module | translate }}</ion-label>
-        <ion-radio value="{{module}}"></ion-radio>
+        <ion-radio value="{{module}}">{{ 'SelectModule.modules.' + module | translate }}</ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>

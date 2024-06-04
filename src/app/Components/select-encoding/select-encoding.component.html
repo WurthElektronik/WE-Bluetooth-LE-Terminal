@@ -3,8 +3,7 @@
   <ion-list tabindex="0">
     <ion-radio-group [(ngModel)]="selectedencoding">
       <ion-item *ngFor="let encoding of encodingtypes" (click)="encodingselected(encoding)">
-        <ion-label>{{ encoding }}</ion-label>
-        <ion-radio value="{{encoding}}"></ion-radio>
+        <ion-radio value="{{encoding}}">{{ encoding }}</ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
