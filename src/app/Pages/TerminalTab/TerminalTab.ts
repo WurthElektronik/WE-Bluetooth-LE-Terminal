@@ -37,6 +37,7 @@ export class TerminalTab {
   @ViewChild('ioncontent') content: IonContent;
   public payload:string = undefined;
   public selectedencoding:string = EncodingType[EncodingType.ASCII];
+  public only_printable_ascii:boolean = false;
   public sendtoall:Boolean = false;
   public multiplepackets:Boolean = false;
   @ViewChild('filterselect') filterselect: IonSelect;
@@ -195,7 +196,7 @@ export class TerminalTab {
         switch(EncodingType[this.selectedencoding]){
           default:
           case EncodingType.ASCII:
-            if(!CheckAscii(this.payload)){
+            if(!CheckAscii(this.payload, this.only_printable_ascii)){
               throw new Error("ParserMessages.ASCIIError");
             }
             datatosend = new DataView(AsciiToBuffer(this.payload));
@@ -298,7 +299,7 @@ export class TerminalTab {
     switch(EncodingType[this.selectedencoding]){
       default:
       case EncodingType.ASCII:
-        filteredValue = InputFilterAscii(value);
+        filteredValue = InputFilterAscii(value, this.only_printable_ascii);
         break;
       case EncodingType.HEX:
         filteredValue = InputFilterHex(value);
@@ -339,7 +340,8 @@ export class TerminalTab {
       const modal = await this.modalCtrl.create({
         component: SelectEncodingComponent,
         componentProps: {
-          selectedencoding: this.selectedencoding
+          selectedencoding: this.selectedencoding,
+          only_printable_ascii: this.only_printable_ascii
         }
       });
       modal.cssClass = 'auto-height';
@@ -350,7 +352,8 @@ export class TerminalTab {
 
       if (role === 'confirm') {
         this.payload = undefined;
-        this.selectedencoding = EncodingType[data];
+        this.selectedencoding = EncodingType[data['selectedencoding']];
+        this.only_printable_ascii = data['only_printable_ascii'];
       }
     }
 

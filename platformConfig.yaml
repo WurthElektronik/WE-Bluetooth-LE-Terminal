@@ -4,9 +4,9 @@ vars:
   PACKAGE_NAME:
     default: com.eisos.proteusconnect
   DISPLAY_NAME:
-    default: Proteus Connect
+    default: WE Bluetooth LE Terminal
   BUILD_NUMBER:
-    default: 240604
+    default: 240813
 
 platforms:
   ios:

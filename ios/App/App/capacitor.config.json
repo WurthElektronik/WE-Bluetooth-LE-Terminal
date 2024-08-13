@@ -1,6 +1,6 @@
 {
 	"appId": "com.eisos.proteusconnect",
-	"appName": "Proteus Connect",
+	"appName": "WE Bluetooth LE Terminal",
 	"webDir": "www",
 	"bundledWebRuntime": false
 }

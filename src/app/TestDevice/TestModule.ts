@@ -24,6 +24,7 @@ export class TestModule extends GeneralBLEModule implements GPIOInterface{
         this.logRemoteCommand('GPIO Message Test');
         this.logDataSent('Data Sent Message Test');
         this.logDataReceived('Data Received Message Test');
+        this.logDataReceived('Data Received Message Test With CRLF',undefined, Uint8Array.from([0x41,0x0D,0x0A,0x41]).buffer);
         this.logDataReceived('Long Data Received Message Test',undefined, Uint8Array.from([
             0x73, 0x6d, 0x6d, 0x77, 0x6f, 0x76, 0x7a, 0x76, 0x69, 0x68, 0x62, 0x6a, 0x72, 
             0x6b, 0x79, 0x7a, 0x6c, 0x73, 0x69, 0x76, 0x79, 0x78, 0x69, 0x6d, 0x6b, 0x65, 

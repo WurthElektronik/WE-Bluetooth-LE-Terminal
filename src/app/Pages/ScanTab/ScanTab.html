@@ -33,7 +33,7 @@
       </ion-col>
     </ion-row>
     <ion-row class="ion-text-center ion-align-items-center ion-margin-horizontal ion-margin-top" style="min-height: 42px;" >
-      <ion-label style="font-weight:bold;">Filters:</ion-label>
+      <ion-label style="font-weight:bold;">{{ 'AddFilter.filter' | translate}}:</ion-label>
       <ion-chip *ngFor="let filter of scanfilters | keyvalue">
         <ion-label>
           {{ 'AddFilter.filters.' + filter.value.getTypeString() | translate}} :
@@ -44,7 +44,7 @@
             </ng-container>
         
             <ng-container *ngSwitchCase="'ServiceUUID'">
-              Proteus Service UUID
+              Proteus {{ 'AddFilter.filters.ServiceUUID' | translate}}
             </ng-container>
         
           </ng-container>

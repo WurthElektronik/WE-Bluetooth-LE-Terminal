@@ -10,13 +10,14 @@ import { EncodingType } from '../../Encoders/EncodingType';
 export class SelectEncodingComponent implements OnInit {
   public selectedencoding:string;
   public encodingtypes = Object.keys(EncodingType).map(key => EncodingType[key]).filter(value => typeof value === 'string') as string[];
+  public only_printable_ascii:boolean;
 
   constructor(private modalCtrl: ModalController) { }
 
   ngOnInit() {}
 
-  encodingselected(encoding: string){
-    return this.modalCtrl.dismiss(EncodingType[encoding], 'confirm');
+  encodingselected(){
+    return this.modalCtrl.dismiss({selectedencoding: EncodingType[this.selectedencoding], only_printable_ascii: this.only_printable_ascii}, 'confirm');
   }
 
 }

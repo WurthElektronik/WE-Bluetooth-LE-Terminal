@@ -28,7 +28,7 @@ export class InfoTab {
   }
 
   async sourcecodeclick(){
-    await Browser.open({ url: 'https://github.com/WurthElektronik/Proteus-Connect' });
+    await Browser.open({ url: 'https://github.com/WurthElektronik/WE-Bluetooth-LE-Terminal' });
   }
 
   policyclick(){

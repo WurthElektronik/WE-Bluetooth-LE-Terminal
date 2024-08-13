@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <resources>
-    <string name="app_name">Proteus Connect</string>
-    <string name="title_activity_main">Proteus Connect</string>
+    <string name="app_name">WE Bluetooth LE Terminal</string>
+    <string name="title_activity_main">WE Bluetooth LE Terminal</string>
     <string name="package_name">com.eisos.android.terminal</string>
     <string name="custom_url_scheme">com.eisos.android.terminal</string>
 </resources>

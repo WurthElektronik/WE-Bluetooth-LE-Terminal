@@ -2,9 +2,15 @@
   <h1>{{ 'SelectEncoding.selectencoding' | translate }}</h1>
   <ion-list tabindex="0">
     <ion-radio-group [(ngModel)]="selectedencoding">
-      <ion-item *ngFor="let encoding of encodingtypes" (click)="encodingselected(encoding)">
+      <ion-item *ngFor="let encoding of encodingtypes">
         <ion-radio value="{{encoding}}">{{ encoding }}</ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
+  <ng-container [ngSwitch]="selectedencoding">
+    <ng-container *ngSwitchCase="'ASCII'">
+      <ion-checkbox [(ngModel)]="only_printable_ascii" class="ion-margin-start">{{ 'SelectEncoding.printablechars' | translate }}</ion-checkbox>
+    </ng-container>
+  </ng-container>
+  <ion-button class="ion-margin-top" style="width: 100%;" (click)="encodingselected()">{{ 'SelectEncoding.select' | translate }}</ion-button>
 </div>

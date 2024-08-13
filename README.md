@@ -1,13 +1,13 @@
-# Proteus Connect
+# WE Bluetooth LE Terminal
 
-This Project contains the cross plattform project for the Proteus Connect Application using the Capacitor Framework.
+This Project contains the cross plattform project for the WE Bluetooth LE Terminal Application using the Capacitor Framework.
 Before using all requirements and dependencies must be resolved using the corresponding instructions below.
 
 Please note: iOS development requires Xcode which is restricted by Apple to be used on compatible Soft- and Hardware only!
 
-The released "Proteus Connect" Apps can be downloaded from the App stores of Apple and Google.
+The released "WE Bluetooth LE Terminal" Apps can be downloaded from the App stores of Apple and Google.
 
-The Web App is available here : https://wurthelektronik.github.io/Proteus-Connect/
+The Web App is available here : https://wurthelektronik.github.io/WE-Bluetooth-LE-Terminal/
 
 ## Requirements
 
@@ -26,7 +26,7 @@ In order to install the required packages/dependencies for the project itself go
 npm install
 npm install -g @ionic/cli
 ```
-which will install all dependencies listed in package.json and also install the ionic cli
+which will install all dependencies listed in package.json and will also install the ionic cli.
 
 For other ways to install Capacitor Framework by Ionic, refer to https://capacitorjs.com/. Please note that following alternative instructions may not install required dependencies.
 
@@ -38,16 +38,21 @@ For other ways to install Capacitor Framework by Ionic, refer to https://capacit
 
 | Platform | IDE                        | Target SDK Version | Minimum SDK Version |
 | :------: | :------------------------: | :----------------: | :-----------------: |
-| Android  | >= Android Studio 2023.1.1 | 34                 | 22                  |
+| Android  | >= Android Studio 2023.1.1 | 34                 | 22 (WebView 89)     |
 | iOS      | >= Xcode 15.0              | 15.0               | 13.0                |
 
 ### Generating Progressive Web App
 
 Run the following
 ```
-ionic build
+ionic build --prod
 ```
-The built Web App is in /www
+The built web app is in the directory ./www, in order to run the built web app a web server needs to host the contents of the ./www directory.
+
+The following command can be used to build the web app and host a develepment web server
+```
+ionic serve --prod
+```
 
 ### Generating Native Projects for Smartphones
 

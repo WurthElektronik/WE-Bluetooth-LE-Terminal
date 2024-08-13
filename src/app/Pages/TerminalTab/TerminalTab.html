@@ -68,8 +68,7 @@
                 {{ BufferToHex(msg.getMsgData()) }}
               </ion-row>
 
-              <ion-row *ngSwitchCase="'ASCII'" class="asciidata">
-                {{ BufferToAscii(msg.getMsgData()) }}
+              <ion-row *ngSwitchCase="'ASCII'" class="asciidata" [innerText]="BufferToAscii(msg.getMsgData(), only_printable_ascii)" >
               </ion-row>
 
             </ng-container>

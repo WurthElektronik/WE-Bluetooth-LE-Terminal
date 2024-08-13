@@ -1,6 +1,6 @@
 {
-  "name": "proteus-connect",
-  "version": "1.7",
+  "name": "we-bluetooth-le-terminal",
+  "version": "1.8",
   "author": "Würth Elektronik eiSos GmbH",
   "homepage": "https://www.we-online.com/web/de/wuerth_elektronik/start.php",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "updateplatforms": "cross-env VERSION=$npm_package_version npx trapeze run platformConfig.yaml",
-    "publish": "ng build --base-href https://wurthelektronik.github.io/Proteus-Connect/ --configuration=production && npx ngh --dir=www/ --repo=https://github.com/WurthElektronik/Proteus-Connect.git"
+    "publish": "ng build --base-href https://wurthelektronik.github.io/WE-Bluetooth-LE-Terminal/ --configuration=production && npx ngh --dir=www/ --repo=https://github.com/WurthElektronik/WE-Bluetooth-LE-Terminal.git"
   },
   "private": true,
   "dependencies": {
@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^16.2.12",
     "@angular/platform-browser-dynamic": "^16.2.12",
     "@angular/router": "^16.2.12",
+    "@angular/service-worker": "^16.2.12",
     "@awesome-cordova-plugins/globalization": "^5.44.0",
     "@capacitor-community/bluetooth-le": "^6.0.0",
     "@capacitor/android": "^6.0.0",
