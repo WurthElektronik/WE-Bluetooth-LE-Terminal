@@ -31,13 +31,14 @@
     "select": "Auswahl"
   },
   "AddFilter":{
-    "addfilter":"Add Scan Filter",
-    "filtertype": "Filter Type",
+    "filter": "Suchfilter",
+    "addfilter":"Suchfilter hinzufügen",
+    "filtertype": "Suchfilter Typ",
     "filters":{
       "Name": "Name",
-      "ServiceUUID": "Service UUID"
+      "ServiceUUID": "Dienst UUID"
     },
-    "add": "Add"
+    "add": "hinzufügen"
   },
   "TerminalTab": {
     "nodeviceconnected": "Kein Gerät verbunden",
@@ -70,7 +71,9 @@
     }
   },
   "SelectEncoding": {
-    "selectencoding": "Auswahl Encoding"
+    "selectencoding": "Auswahl Encoding",
+    "printablechars": "Nur ASCII-druckbare Zeichen",
+    "select": "Auswahl"
   },
   "ConfigGPIO":{
     "configgpio":"Konfiguriere GPIO",
