@@ -1,6 +1,6 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
-import { BleService, PROTEUS_BLE_SERVICE } from '../../services/ble.service';
-import { BleDevice, ScanResult } from '@capacitor-community/bluetooth-le';
+import { BleService } from '../../services/ble.service';
+import { BleClient, BleDevice, ScanResult } from '@capacitor-community/bluetooth-le';
 import { Router } from '@angular/router';
 import { IonSelect, Platform, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,8 @@ import { ScanFilter } from 'src/app/Filters/ScanFilter';
 import { AddFilterComponent } from 'src/app/Components/add-filter/add-filter.component';
 import { FilterType } from 'src/app/Filters/FilterType';
 import { ServiceUUIDFilter } from 'src/app/Filters/ServiceUUIDFilter';
+import { Subscription } from 'rxjs';
+import { WESPPProfile } from 'src/app/BLEProfiles/WESPPProfile';
 
 @Component({
   selector: 'app-scantab',
@@ -31,8 +33,10 @@ export class ScanTab {
   connecting:Boolean = false;
   connectingdeviceid:string = undefined;
   scanfilters:Map<FilterType,ScanFilter> = new Map<FilterType,ScanFilter>([
-    [FilterType.ServiceUUID, new ServiceUUIDFilter(PROTEUS_BLE_SERVICE)]
+    [FilterType.ServiceUUID, new ServiceUUIDFilter(WESPPProfile)]
   ]);
+
+  private disconnectsubscription: Subscription;
 
   @ViewChild('scanselect') select: IonSelect;
   
@@ -51,6 +55,30 @@ export class ScanTab {
         this.scanresults.push(testscanresult);
       }
     }
+    if(this.platform.is('electron')){
+      (window as any).capacitorionicbluetooth.scanCancelled(() => {
+        this.ngZone.run(() => {
+          this.stopscan();
+        });
+      });
+    }
+  }
+
+  ionViewWillEnter(){
+    this.disconnectsubscription = this.ble.onDeviceDisconnected.subscribe(async (disconnecteddeviceid:string) => {
+      this.ngZone.run(() => {
+        if(this.connecting && (this.connectingdeviceid == disconnecteddeviceid))
+        {
+          this.connectingdeviceid = undefined;
+          this.connecting = false;
+        }
+      });
+    });
+  }
+
+  ionViewWillLeave() {
+    this.disconnectsubscription.unsubscribe();
+    this.disconnectsubscription = undefined;
   }
 
   ionViewDidEnter(){
@@ -78,7 +106,7 @@ export class ScanTab {
   async scan(){
 
     //check for location on android 11 or less
-    if(this.platform.is('android') && ((await Device.getInfo()).androidSDKVersion <= 30) && await this.ble.locationenabled() == false){
+    if(this.platform.is('android') && ((await Device.getInfo()).androidSDKVersion <= 30) && await BleClient.isLocationEnabled() == false){
       this.translateService.get('locationoff').subscribe(async (res: string) => {
         const toast = await this.toastController.create({
           message: res,
@@ -98,12 +126,17 @@ export class ScanTab {
       this.scanresults.push(testscanresult);
     }
     if(this.platform.is('desktop')){
+      if(this.platform.is('electron')){
+        (window as any).capacitorionicbluetooth.startScan();
+      }
       this.ble.requestdevice(this.scanfilters,(result) => {
         if(result != undefined && this.paireddevices.filter(paireddevice => paireddevice.deviceId == result.deviceId).length == 0){
           this.paireddevices.push(result);
           this.sort();
         }
-        this.stopscan();
+        if((result != undefined) || !this.platform.is('electron')){
+          this.stopscan();
+        }
       })
     }else{
       this.ble.startscan(this.scanfilters,(result) => {
@@ -118,7 +151,9 @@ export class ScanTab {
   async stopscan(){
     this.scanning = false;
     this.scantext = "startscantext";
-    if(!this.platform.is('desktop')){
+    if(this.platform.is('electron')){
+        (window as any).capacitorionicbluetooth.stopScan();
+    }else if(!this.platform.is('desktop')){
       await this.ble.stopscan();
     }
   }
@@ -213,7 +248,7 @@ export class ScanTab {
         this.connectingdeviceid = device.deviceId;
         this.connecting = true;
         try {
-            await this.ble.connect(device,data);
+            await this.ble.connect(device, data['selectedmodule'], data['selectedDataMode']);
             this.connecting = false;
         } catch (error) {
           this.connectingdeviceid = undefined;

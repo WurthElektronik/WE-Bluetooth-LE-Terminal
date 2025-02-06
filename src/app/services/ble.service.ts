@@ -1,10 +1,9 @@
 import { Injectable, NgZone } from '@angular/core';
-import { BleClient, BleDevice, ConnectionPriority, ScanResult } from '@capacitor-community/bluetooth-le';
+import { BleCharacteristic, BleClient, BleDevice, ConnectionPriority, ScanResult } from '@capacitor-community/bluetooth-le';
 import { Subject } from 'rxjs';
 import { GeneralBLEModule } from '../BLEModules/GeneralBLEModule';
 import { BLEModuleType } from '../BLEModules/BLEModuleType';
 import { ProteusIII } from '../BLEModules/Proteus/ProteusIII';
-import { BufferToHex } from '../Encoders/HEX';
 import { ProteusI } from '../BLEModules/Proteus/ProteusI';
 import { ProteusII } from '../BLEModules/Proteus/ProteusII';
 import { Proteuse } from '../BLEModules/Proteus/Proteuse';
@@ -14,11 +13,13 @@ import { ScanFilter } from '../Filters/ScanFilter';
 import { FilterType } from '../Filters/FilterType';
 import { ServiceUUIDFilter } from '../Filters/ServiceUUIDFilter';
 import { NameFilter } from '../Filters/NameFilter';
-
-export const PROTEUS_BLE_SERVICE:string = "6e400001-c352-11e5-953d-0002a5d5c51b";
-export const PROTEUS_BLE_RX_CHARACTERISTIC:string = "6e400002-c352-11e5-953d-0002a5d5c51b";
-export const PROTEUS_BLE_TX_CHARACTERISTIC:string = "6e400003-c352-11e5-953d-0002a5d5c51b";
-export const BLE_NOTIFICATION_DESCRIPTOR:string = "00002902-0000-1000-8000-00805f9b34fb";
+import { HEX } from '../Encoders/HEX';
+import { BLE_CCCD_UUID, CCCD_Value } from '../BLEProfiles/CCCD';
+import { SkollI } from '../BLEModules/Skoll/SkollI';
+import { BLEProfileType } from '../BLEProfiles/BLEProfileType';
+import { WESPPProfile } from '../BLEProfiles/WESPPProfile';
+import { CYSPPProfile } from '../BLEProfiles/CYSPPProfile';
+import { DataMode } from '../BLEProfiles/DataMode';
 
 @Injectable({
   providedIn: 'root'
@@ -33,22 +34,6 @@ export class BleService {
   constructor() {
   }
 
-  async initializeble(){
-      await BleClient.initialize({ androidNeverForLocation: true });
-  }
-
-  async bluetoothenabled(){
-    return BleClient.isEnabled();
-  }
-
-  async locationenabled(){
-    return BleClient.isLocationEnabled();
-  }
-
-  async registerbluetoothstate(callback: (value: boolean) => void){
-    await BleClient.startEnabledNotifications(callback);
-  }
-
   async startscan(filters:Map<FilterType,ScanFilter>, callback: (scanresult: ScanResult) => void){
     try {
       let serviceUUIDFilter:ServiceUUIDFilter = filters.get(FilterType.ServiceUUID) as ServiceUUIDFilter;
@@ -56,7 +41,7 @@ export class BleService {
       await BleClient.requestLEScan(
       {
         services: serviceUUIDFilter ? [serviceUUIDFilter.getServiceUUID()] : undefined,
-        optionalServices: [PROTEUS_BLE_SERVICE],
+        optionalServices: [WESPPProfile.getService().uuid, CYSPPProfile.getService().uuid],
         namePrefix: nameFilter ? nameFilter.getName() : undefined
       },
       (result) => {
@@ -72,7 +57,7 @@ export class BleService {
       let nameFilter:NameFilter = filters.get(FilterType.Name) as NameFilter;
       let device = await BleClient.requestDevice({
         services: serviceUUIDFilter ? [serviceUUIDFilter.getServiceUUID()] : undefined,
-        optionalServices: [PROTEUS_BLE_SERVICE],
+        optionalServices: [WESPPProfile.getService().uuid, CYSPPProfile.getService().uuid],
         namePrefix: nameFilter ? nameFilter.getName() : undefined
       });
       callback(device);
@@ -88,7 +73,7 @@ export class BleService {
     }
   }
 
-  async connect(device:BleDevice, moduletype: BLEModuleType){
+  async connect(device:BleDevice, moduletype: BLEModuleType, dataMode: DataMode){
     await BleClient.disconnect(device.deviceId);
 
     var module:GeneralBLEModule = undefined;
@@ -111,6 +96,9 @@ export class BleService {
       case BLEModuleType.StephanoI:
         module = new StephanoI(device);
         break;
+      case BLEModuleType.SkollI:
+        module = new SkollI(device, dataMode);
+        break;
       default:
         return;
     }
@@ -121,25 +109,34 @@ export class BleService {
     });
 
     module.logInfo("LogMessages.DeviceConnected");
+
+    let bleProfile = module.getBLEProfile();
+
     while(!this.connectedDevices.has(device.deviceId)){
       await BleClient.getServices(device.deviceId).then(async (services) => {
         if(services.length != 0){
-          let proteus_service = services.find(x => x.uuid === PROTEUS_BLE_SERVICE);
-          if(proteus_service == undefined){
+          let ble_device_service = services.find(x => x.uuid === bleProfile.getService().uuid);
+          if(ble_device_service == undefined){
             await BleClient.disconnect(device.deviceId);
             return;
           }
-          
-          let proteus_characteristics_rx = proteus_service.characteristics.find(x => x.uuid === PROTEUS_BLE_RX_CHARACTERISTIC);
-          let proteus_characteristics_tx = proteus_service.characteristics.find(x => x.uuid === PROTEUS_BLE_TX_CHARACTERISTIC);
 
-          if(
-            ((proteus_characteristics_rx == undefined) || (proteus_characteristics_rx.properties.writeWithoutResponse == false)) ||
-            ((proteus_characteristics_tx == undefined) || (proteus_characteristics_tx.properties.notify == false))
-            )
-          {
-            await BleClient.disconnect(device.deviceId);
-            return;
+          for (let characteristic of bleProfile.getService().characteristics) {
+            let ble_profile_characteristic = ble_device_service.characteristics.find(x => x.uuid === characteristic.uuid);
+            if(ble_profile_characteristic == undefined)
+            {
+              await BleClient.disconnect(device.deviceId);
+              return;
+            }
+            
+            for (let property of Object.keys(characteristic.properties)){
+              if(characteristic.properties[property] != ble_profile_characteristic.properties[property])
+              {
+                await BleClient.disconnect(device.deviceId);
+                return;
+              }
+            }
+
           }
 
           module.logInfo("LogMessages.ServicesDiscovered");
@@ -148,70 +145,131 @@ export class BleService {
       });
     }
 
-    await BleClient.startNotifications(
-      device.deviceId,
-      PROTEUS_BLE_SERVICE,
-      PROTEUS_BLE_TX_CHARACTERISTIC,
-      (value) => {
-        this.connectedDevices.get(device.deviceId).handlerx(value);
-      }
-    );
-    let descriptorvalue = await BleClient.readDescriptor(device.deviceId,PROTEUS_BLE_SERVICE,PROTEUS_BLE_TX_CHARACTERISTIC,BLE_NOTIFICATION_DESCRIPTOR);
-    if(descriptorvalue.getUint16(0, true) == 0x1){
-      this.connectedDevices.get(device.deviceId).logInfo("LogMessages.NotificationsDescriptorWritten",{'descriptorvalue': BufferToHex(descriptorvalue.buffer), 'descriptor': BLE_NOTIFICATION_DESCRIPTOR, 'characteristic': PROTEUS_BLE_TX_CHARACTERISTIC});
-      this.connectedDevices.get(device.deviceId).logInfo("LogMessages.NotificationsEnabled");
+    module.logInfo("LogMessages.ProfileUsed", {profile: BLEProfileType[bleProfile.getType()]});
+
+    var txcharacteristic:BleCharacteristic;
+
+    switch(module.getDataMode())
+    {
+      default:
+      case DataMode.UnacknowledgedData:
+        await bleProfile.startReceiveDataUnacknowledged(device.deviceId, (value)=> {
+          this.connectedDevices.get(device.deviceId).handlerx(value);
+        });
+        txcharacteristic = bleProfile.getUnacknowledgedDataTXCharacteristic();
+        break;
+      case DataMode.AcknowledgedData:
+        await bleProfile.startReceiveDataAcknowledged(device.deviceId, (value)=> {
+          this.connectedDevices.get(device.deviceId).handlerx(value);
+        });
+        txcharacteristic = bleProfile.getAcknowledgedDataTXCharacteristic();
+        break;
     }
+
+    let descriptorvalue = await BleClient.readDescriptor(device.deviceId, bleProfile.getService().uuid, txcharacteristic.uuid, BLE_CCCD_UUID);
+    this.connectedDevices.get(device.deviceId).logInfo("LogMessages.CCCDWritten",{'descriptorvalue': HEX.BufferToEncoding(descriptorvalue.buffer), 'descriptor': BLE_CCCD_UUID, 'characteristic': txcharacteristic.uuid});
+
+    switch(descriptorvalue.getUint16(0, true))
+    {
+      default:
+      case CCCD_Value.Notification:
+      {
+        this.connectedDevices.get(device.deviceId).logInfo("LogMessages.NotificationsEnabled");
+        break;
+      }
+      case CCCD_Value.Indication:
+      {
+        this.connectedDevices.get(device.deviceId).logInfo("LogMessages.IndicationsEnabled");
+        break;
+      }
+    }
+
     await this.connectedDevices.get(device.deviceId).initializeModule();
 
   }
 
   async disconnect(deviceid:string){
-    await BleClient.stopNotifications(deviceid,PROTEUS_BLE_SERVICE,PROTEUS_BLE_TX_CHARACTERISTIC);
-    this.connectedDevices.get(deviceid).logInfo("LogMessages.NotificationsDisabled");
+    let module = this.connectedDevices.get(deviceid);
+    let bleProfile = module.getBLEProfile();
+    var descriptorvalue:DataView;
+    
+    switch(module.getDataMode())
+    {
+      default:
+      case DataMode.UnacknowledgedData:
+        descriptorvalue = await BleClient.readDescriptor(deviceid, bleProfile.getService().uuid, bleProfile.getUnacknowledgedDataTXCharacteristic().uuid, BLE_CCCD_UUID);
+        await bleProfile.stopReceiveDataUnacknowledged(deviceid);
+        break;
+      case DataMode.AcknowledgedData:
+        descriptorvalue = await BleClient.readDescriptor(deviceid, bleProfile.getService().uuid, bleProfile.getAcknowledgedDataTXCharacteristic().uuid, BLE_CCCD_UUID);
+        await bleProfile.stopReceiveDataAcknowledged(deviceid);
+        break;
+    }
+    switch(descriptorvalue.getUint16(0, true))
+    {
+      default:
+      case CCCD_Value.Notification:
+      {
+        this.connectedDevices.get(deviceid).logInfo("LogMessages.NotificationsDisabled");
+        break;
+      }
+      case CCCD_Value.Indication:
+      {
+        this.connectedDevices.get(deviceid).logInfo("LogMessages.IndicationsDisabled");
+        break;
+      }
+    }
     await BleClient.disconnect(deviceid);
   }
 
   async senddata(deviceId:string, data:DataView, sendCount:number, sendDelay:number){
-    if(deviceId == undefined){
-      this.connectedDevices.forEach(async (module, deviceid) => {
-        try {
-          module.setSending(true);
-          for (let i = 0; i < sendCount; i++) {
-            let dataFormatted:DataView[] = await module.formatdatatx(data);
-            for(let packet of dataFormatted){
-              await BleClient.writeWithoutResponse(deviceid, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, packet);
-            }
-            if(i != (sendCount - 1)){
-              await new Promise(f => setTimeout(f, sendDelay));
-            }
-          }
-          module.setSending(false);
-        } catch (error) {
-          module.setSending(false);          
-        }
-      });
-    }else{
+    let deviceIDs:string[] = (deviceId == undefined) ? (Array.from(this.connectedDevices.keys())) : [deviceId];
+    deviceIDs.forEach(async (deviceid) => {
+      let module = this.connectedDevices.get(deviceid);
       try {
-        this.connectedDevices.get(deviceId).setSending(true);
+        module.setSending(true);
+        let bleProfile = module.getBLEProfile();
         for (let i = 0; i < sendCount; i++) {
-          let dataFormatted:DataView[] = await this.connectedDevices.get(deviceId).formatdatatx(data);
+          let dataFormatted:DataView[] = await module.formatdatatx(data);
           for(let packet of dataFormatted){
-            await BleClient.writeWithoutResponse(deviceId, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, packet);
+            switch(module.getDataMode())
+              {
+                default:
+                case DataMode.UnacknowledgedData:
+                  await bleProfile.sendDataUnacknowledged(deviceid, packet);
+                  break;
+                case DataMode.AcknowledgedData:
+                  await bleProfile.sendDataAcknowledged(deviceid, packet);
+                  break;
+              }
           }
           if(i != (sendCount - 1)){
             await new Promise(f => setTimeout(f, sendDelay));
           }
         }
-        this.connectedDevices.get(deviceId).setSending(false);
+        module.setSending(false);
       } catch (error) {
-        this.connectedDevices.get(deviceId).setSending(false);
+        module.setSending(false);          
       }
-    }
+    });
   }
 
   async senddataunformatted(deviceId:string, data:DataView){
-      await BleClient.writeWithoutResponse(deviceId, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, data);
+    let module = this.connectedDevices.get(deviceId);
+    let bleProfile = module.getBLEProfile();
+
+    switch(module.getDataMode())
+    {
+      default:
+      case DataMode.UnacknowledgedData:
+        await bleProfile.sendDataUnacknowledged(deviceId, data);
+        break;
+      case DataMode.AcknowledgedData:
+        await bleProfile.sendDataAcknowledged(deviceId, data);
+        break;
+    }
   }
+
 
   async readrssi(deviceId:string){
       let rssi = await BleClient.readRssi(deviceId);

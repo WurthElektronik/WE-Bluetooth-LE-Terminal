@@ -1,0 +1,55 @@
+p {
+    margin: 0px;
+    flex: 1;
+    font-family: 'Titillium Web';
+}
+.seperator{
+    background-color: grey; 
+    height: 1px; 
+    border: 0; 
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+#container{
+    display: flex;
+    flex-direction: column ;
+}
+.deviceName{
+    color: black;
+    font-weight: bold;
+}
+.deviceId{
+    color: grey;
+}
+
+button{
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    background-color: #e3000b00;
+    border: none;
+    color: #e3000b;
+    text-align: center;
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: 'Titillium Web';
+}
+
+button:hover{
+    background-color: #e3000b10;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+
+    body{
+        background-color: black;
+    }
+
+    .deviceName{
+        color: white;
+    }
+}

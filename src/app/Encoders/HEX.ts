@@ -1,20 +1,35 @@
-export function BufferToHex(buffer):string {
-    return [...new Uint8Array(buffer)]
+import { Encoder } from "./Encoder";
+import { EncodingType } from "./EncodingType";
+
+export abstract class HEX extends Encoder{
+
+    static BufferToEncoding(buffer: ArrayBuffer): string {
+        return [...new Uint8Array(buffer)]
         .map (b => b.toString(16).padStart(2, "0"))
         .join (" ").toUpperCase();
-}
+    }
 
-export function HexToBuffer(hexstring:string):ArrayBuffer {
-    return new Uint8Array(hexstring.match(/../g).map(h=>parseInt(h,16))).buffer;
-}
+    static EncodingToBuffer(encodingString: string): ArrayBuffer {
+        return new Uint8Array(encodingString.replace(/ /g,'').match(/../g).map(h=>parseInt(h,16))).buffer;
+    }
 
+    static CheckEncoding(encodingString: string) {
+        let hexregex = /^[0-9A-F]+$/;
+        let hexstringnpspaces = encodingString.replace(/ /g,'');
+        return hexregex.test(hexstringnpspaces) && (hexstringnpspaces.length % 2 == 0);
+    }
 
-export function CheckHex(hexstring:string):Boolean{
-    let hexregex = /^[0-9A-F]+$/;
-    let hexstringnpspaces = hexstring.replace(/ /g,'');
-    return hexregex.test(hexstringnpspaces) && (hexstringnpspaces.length % 2 == 0);
-}
+    static InputFilterEncoding(inputString: string) {
+        return inputString.replace(/[^0-9A-F]/g,'').replace(/(.{2})/g, "$1 ").trim();
+    }
 
-export function InputFilterHex(inputstring:String){
-    return inputstring.replace(/[^0-9A-F]/g,'').replace(/(.{2})/g, "$1 ").trim();
+    static getEncodingType(): EncodingType {
+        return EncodingType.HEX;
+    }
+
+    static getEncodingTypeString(): string
+    {
+        return EncodingType[this.getEncodingType()];
+    }
+    
 }

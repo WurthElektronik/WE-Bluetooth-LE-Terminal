@@ -1,12 +1,14 @@
+import { BLEProfileType } from "../BLEProfiles/BLEProfileType";
+import { GeneralBLEProfile } from "../BLEProfiles/GeneralBLEProfile";
 import { FilterType } from "./FilterType";
 import { ScanFilter } from "./ScanFilter";
 import { Pipe, PipeTransform } from '@angular/core'
 
 export class ServiceUUIDFilter implements ScanFilter{
-    private ServiceUUID:string;
-
-    constructor(ServiceUUID:string){
-        this.ServiceUUID = ServiceUUID;
+    private profile:GeneralBLEProfile;
+    
+    constructor(profile:GeneralBLEProfile){
+        this.profile = profile;
     }
 
     public getType(): FilterType {
@@ -18,7 +20,12 @@ export class ServiceUUIDFilter implements ScanFilter{
     }
 
     public getServiceUUID(): string{
-        return this.ServiceUUID;
+        return this.profile.getService().uuid;
+    }
+
+    public getServiceName(): string
+    {
+        return BLEProfileType[this.profile.getType()];
     }
 }
 

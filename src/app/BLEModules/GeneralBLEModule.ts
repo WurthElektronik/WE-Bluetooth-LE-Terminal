@@ -3,6 +3,9 @@ import { BLEModuleType } from "./BLEModuleType";
 import { Logger } from "../Logger/Logger";
 import { LogMessageType } from "../Logger/LogMessageType";
 import { Subject } from 'rxjs';
+import { GeneralBLEProfile } from "../BLEProfiles/GeneralBLEProfile";
+import { DataMode } from "../BLEProfiles/DataMode";
+import { module_profile } from "./ModuleProfile";
 
 export abstract class GeneralBLEModule{
     private devicename:string;
@@ -11,7 +14,7 @@ export abstract class GeneralBLEModule{
     onDataReceived: Subject<any> = new Subject<any>();
     sending:Boolean = false;
     mtuSize:number = undefined;
-    
+
     constructor(bledevice:BleDevice){
         this.devicename = bledevice.name;
         this.deviceId = bledevice.deviceId;
@@ -102,4 +105,11 @@ export abstract class GeneralBLEModule{
         return 23;
     }
 
+    getBLEProfile():GeneralBLEProfile{
+        return module_profile.get(this.getType());
+    }
+
+    getDataMode():DataMode{
+        return DataMode.UnacknowledgedData;
+    }
 }

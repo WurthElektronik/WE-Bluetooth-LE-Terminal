@@ -44,7 +44,7 @@
             </ng-container>
         
             <ng-container *ngSwitchCase="'ServiceUUID'">
-              Proteus {{ 'AddFilter.filters.ServiceUUID' | translate}}
+              {{(filter.value | ServiceUUIDFilterPipe).getServiceName()}} {{ 'AddFilter.filters.ServiceUUID' | translate}}
             </ng-container>
         
           </ng-container>

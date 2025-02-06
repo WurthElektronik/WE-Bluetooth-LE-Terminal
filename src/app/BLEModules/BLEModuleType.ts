@@ -4,5 +4,6 @@ export enum BLEModuleType {
     ProteusIII,
     Proteuse,
     SetebosI,
-    StephanoI
+    StephanoI,
+    SkollI
 }

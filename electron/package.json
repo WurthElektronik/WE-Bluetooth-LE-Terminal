@@ -1,0 +1,41 @@
+{
+  "name": "we-bluetooth-le-terminal",
+  "version": "1.9.0",
+  "description": "An Amazing Capacitor App",
+  "author": {
+    "name": "Würth Elektronik eiSos GmbH",
+    "email": "wireless-sales@we-online.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WurthElektronik/WE-Bluetooth-LE-Terminal"
+  },
+  "license": "MIT",
+  "main": "build/src/index.js",
+  "scripts": {
+    "build": "tsc && electron-rebuild",
+    "electron:start-live": "node ./live-runner.js",
+    "electron:start": "npm run build && electron --inspect=5858 ./",
+    "electron:pack": "npm run build && electron-builder build --dir -c ./electron-builder.config.json",
+    "electron:make": "npm run build && electron-builder build -c ./electron-builder.config.json -p always"
+  },
+  "dependencies": {
+    "@capacitor-community/electron": "^5.0.0",
+    "chokidar": "^3.6.0",
+    "electron-is-dev": "~2.0.0",
+    "electron-serve": "~1.1.0",
+    "electron-unhandled": "~4.0.1",
+    "electron-updater": "^6.3.9",
+    "electron-window-state": "^5.0.3"
+  },
+  "devDependencies": {
+    "electron": "^26.2.2",
+    "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9",
+    "typescript": "^5.0.4"
+  },
+  "keywords": [
+    "capacitor",
+    "electron"
+  ]
+}

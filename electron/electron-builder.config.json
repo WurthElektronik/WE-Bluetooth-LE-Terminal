@@ -1,0 +1,19 @@
+{
+  "appId": "com.we-online.ProteusConnect",
+  "directories": {
+    "buildResources": "resources"
+  },
+  "files": [
+    "assets/**/*",
+    "build/**/*",
+    "capacitor.config.*",
+    "app/**/*",
+    "SelectBluetoothDevice/**/*"
+  ],
+  "win": {
+    "target": ["portable"],
+    "icon": "assets/appIcon.ico",
+    "forceCodeSigning": false,
+    "signAndEditExecutable": false
+  }
+}

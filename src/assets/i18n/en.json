@@ -2,6 +2,7 @@
   "notsupported":"Bluetooth Device / Browser is not supported",
   "bluetoothoff": "Bluetooth is not enabled",
   "locationoff": "Location services are not enabled",
+  "bluetoothnoperm": "Bluetooth permissions are not granted",
   "ScanTab": {
     "tabname": "Scan",
     "founddevices": "Found Devices",
@@ -26,8 +27,15 @@
       "ProteusIII": "Proteus-III",
       "Proteuse": "Proteus-e",
       "SetebosI": "Setebos-I",
-      "StephanoI": "Stephano-I"
+      "StephanoI": "Stephano-I",
+      "SkollI": "Skoll-I"
     },
+    "datamode": "Data Mode",
+    "datamodes":{
+      "UnacknowledgedData":"Unacknowledged Data Mode",
+      "AcknowledgedData":"Acknowledged Data Mode"
+    },
+    "profile": "Profile",
     "select": "Select"
   },
   "AddFilter":{
@@ -170,8 +178,11 @@
     "ServicesDiscovered": "Services Discovered",
     "NotificationsEnabled": "Notifications Enabled",
     "NotificationsDisabled": "Notifications Disabled",
+    "IndicationsEnabled": "Indications Enabled",
+    "IndicationsDisabled": "Indications Disabled",
+    "ProfileUsed": "Using Profile {{profile}}",
     "RequestedConnectionPriority": "Requested Connection Priority : {{priority}}",
-    "NotificationsDescriptorWritten": "Value written {{descriptorvalue}} for descriptor {{descriptor}} of characteristic {{characteristic}}"
+    "CCCDWritten": "Value written {{descriptorvalue}} for descriptor {{descriptor}} of characteristic {{characteristic}}"
   },
   "ParserMessages":{
     "ASCIIError":"Invalid ASCII Data",

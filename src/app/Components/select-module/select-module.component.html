@@ -1,11 +1,33 @@
+<ion-header class="ion-padding">
+  <h1 class="ion-no-margin">{{ 'SelectModule.selectmodule' | translate }}</h1>
+</ion-header>
+
 <div class="inner-content">
-  <h1>{{ 'SelectModule.selectmodule' | translate }}</h1>
   <ion-list>
     <ion-radio-group [(ngModel)]="selectedmodule">
-      <ion-item *ngFor="let module of modules">
-        <ion-radio value="{{module}}">{{ 'SelectModule.modules.' + module | translate }}</ion-radio>
+      <ion-item *ngFor="let module of modules_profile | keyvalue">
+        <ion-radio value="{{BLEModuleType[module.key]}}">
+          {{ 'SelectModule.modules.' + BLEModuleType[module.key] | translate }}
+          <br>
+          {{ 'SelectModule.profile' | translate }} {{module.value.getTypeString()}}
+        </ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <ion-button (click)="choosemodule()" style="width: 100%;">{{ 'SelectModule.select' | translate }}</ion-button>
+
 </div>
+
+<ion-footer class="ion-padding">
+  <ng-container [ngSwitch]="selectedmodule">
+    <ng-container *ngSwitchCase="'SkollI'">
+      <h2 style="margin-top: 0px !important;">{{ 'SelectModule.datamode' | translate }}</h2>
+      <ion-radio-group class="ion-margin-bottom ion-wrap ion-justify-content-between ion-align-items-center dataMode" style="display: flex;" [(ngModel)]="selectedDataMode">
+        <ng-container  *ngFor="let dataMode of dataModes">
+          <ion-radio labelPlacement="end" value="{{dataMode}}">{{ 'SelectModule.datamodes.' + dataMode | translate }}</ion-radio>
+        </ng-container>
+      </ion-radio-group>
+    </ng-container>
+  </ng-container>
+  <ion-button (click)="choosemodule()" style="width: 100%;">{{ 'SelectModule.select' | translate }}</ion-button>
+
+</ion-footer>

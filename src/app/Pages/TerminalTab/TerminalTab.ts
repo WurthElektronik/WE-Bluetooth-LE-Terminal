@@ -2,18 +2,19 @@ import { Component, NgZone, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonInput, IonSelect, ModalController, Platform, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { buffer, Subscription } from 'rxjs';
 import { BleService } from '../../services/ble.service';
 import { LogMessageType } from 'src/app/Logger/LogMessageType';
 import { SelectEncodingComponent } from 'src/app/Components/select-encoding/select-encoding.component';
 import { EncodingType } from 'src/app/Encoders/EncodingType';
-import { AsciiToBuffer, CheckAscii, BufferToAscii, InputFilterAscii } from 'src/app/Encoders/ASCII';
-import { CheckHex, HexToBuffer, BufferToHex, InputFilterHex } from 'src/app/Encoders/HEX';
 import { environment } from '../../../environments/environment';
 import { testdevice } from 'src/app/TestDevice/TestBLEDevice';
 import { ConfigGpioComponent } from 'src/app/Components/config-gpio/config-gpio.component';
 import { ConnectionPriority } from '@capacitor-community/bluetooth-le';
 import { RwGpioComponent } from 'src/app/Components/rw-gpio/rw-gpio.component';
+import { Encoder } from 'src/app/Encoders/Encoder';
+import { ASCII } from 'src/app/Encoders/ASCII';
+import { HEX } from 'src/app/Encoders/HEX';
 
 @Component({
   selector: 'app-terminal',
@@ -36,8 +37,7 @@ export class TerminalTab {
   public connectionprioritypopoveropen:Boolean = false;
   @ViewChild('ioncontent') content: IonContent;
   public payload:string = undefined;
-  public selectedencoding:string = EncodingType[EncodingType.ASCII];
-  public only_printable_ascii:boolean = false;
+  public selectedencoding:Encoder = ASCII;
   public sendtoall:Boolean = false;
   public multiplepackets:Boolean = false;
   @ViewChild('filterselect') filterselect: IonSelect;
@@ -49,8 +49,8 @@ export class TerminalTab {
   public sendCount:number = 1;
   public txInterval:number = 1000;
 
-  BufferToHex = BufferToHex;
-  BufferToAscii = BufferToAscii;
+  public HEX = HEX;
+
   ConnectionPriority = ConnectionPriority;
   LogMessageType = LogMessageType;
 
@@ -193,21 +193,12 @@ export class TerminalTab {
 
         var datatosend:DataView;
 
-        switch(EncodingType[this.selectedencoding]){
-          default:
-          case EncodingType.ASCII:
-            if(!CheckAscii(this.payload, this.only_printable_ascii)){
-              throw new Error("ParserMessages.ASCIIError");
-            }
-            datatosend = new DataView(AsciiToBuffer(this.payload));
-            break;
-          case EncodingType.HEX:
-            if(!CheckHex(this.payload)){
-              throw new Error("ParserMessages.HEXError");
-            }
-            datatosend = new DataView(HexToBuffer(this.payload.replace(/ /g,'')));
-            break;
+        if(!this.selectedencoding.CheckEncoding(this.payload))
+        {
+          throw new Error(`ParserMessages.${EncodingType[this.selectedencoding.getEncodingType()]}Error`);
         }
+
+        datatosend = new DataView(this.selectedencoding.EncodingToBuffer(this.payload));
 
         this.payload = '';
         this.payloadinput.value = '';
@@ -296,21 +287,13 @@ export class TerminalTab {
   onPayloadInput(event){
     let value:string = event.detail.value;
     var filteredValue:string = value;
-    switch(EncodingType[this.selectedencoding]){
-      default:
-      case EncodingType.ASCII:
-        filteredValue = InputFilterAscii(value, this.only_printable_ascii);
-        break;
-      case EncodingType.HEX:
-        filteredValue = InputFilterHex(value);
-        break;
-    }
+    filteredValue = this.selectedencoding.InputFilterEncoding(value);
     this.payloadinput.value = filteredValue;
     this.payloadCounter();
   }
 
   payloadCounter() {
-    switch(EncodingType[this.selectedencoding]){
+    switch(this.selectedencoding.getEncodingType()){
       default:
       case EncodingType.ASCII:
         this.payloadCount = (this.payloadinput.value as string).length;
@@ -341,7 +324,6 @@ export class TerminalTab {
         component: SelectEncodingComponent,
         componentProps: {
           selectedencoding: this.selectedencoding,
-          only_printable_ascii: this.only_printable_ascii
         }
       });
       modal.cssClass = 'auto-height';
@@ -352,8 +334,7 @@ export class TerminalTab {
 
       if (role === 'confirm') {
         this.payload = undefined;
-        this.selectedencoding = EncodingType[data['selectedencoding']];
-        this.only_printable_ascii = data['only_printable_ascii'];
+        this.selectedencoding = data['selectedencoding'];
       }
     }
 
