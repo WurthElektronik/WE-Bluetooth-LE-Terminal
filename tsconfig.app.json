@@ -3,8 +3,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
   },
+  "exclude": [
+    "electron/**/*.ts"
+  ],
   "files": [
     "src/main.ts",
     "src/polyfills.ts"

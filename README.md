@@ -47,7 +47,7 @@ Run the following
 ```
 ionic build --prod
 ```
-The built web app is in the directory ./www, in order to run the built web app a web server needs to host the contents of the ./www directory.
+The built web app is in the directory ```./www```, in order to run the built web app a web server needs to host the contents of the ```./www``` directory.
 
 The following command can be used to build the web app and host a develepment web server
 ```
@@ -67,3 +67,28 @@ ionic cap build android --prod
 ```
 
 This will build the project for the specified platform and open the native IDE (Android Studio or Xcode).
+
+### Generating Windows Executable
+
+---
+**NOTE**
+
+It is recommened to use the web app, however this is useful when the tool is intended to be run on a device without internet connection.
+
+---
+
+Navigate to ```./electron``` directory and run the following to install the dependencies for electron
+```
+npm install
+```
+
+Navigate to the root directory and run
+```
+ionic build --prod && npx cap copy @capacitor-community/electron
+```
+
+Navigate back to ```./electron``` directory and run the following to build the portable executable
+```
+npm run electron:make
+```
+The executable will be in the ```./electron/dist``` directory

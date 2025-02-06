@@ -1,13 +1,13 @@
 <div class="inner-content">
   <h1>{{ 'SelectEncoding.selectencoding' | translate }}</h1>
   <ion-list tabindex="0">
-    <ion-radio-group [(ngModel)]="selectedencoding">
+    <ion-radio-group [(ngModel)]="selectedencodingstring">
       <ion-item *ngFor="let encoding of encodingtypes">
         <ion-radio value="{{encoding}}">{{ encoding }}</ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <ng-container [ngSwitch]="selectedencoding">
+  <ng-container [ngSwitch]="selectedencodingstring">
     <ng-container *ngSwitchCase="'ASCII'">
       <ion-checkbox [(ngModel)]="only_printable_ascii" class="ion-margin-start">{{ 'SelectEncoding.printablechars' | translate }}</ion-checkbox>
     </ng-container>

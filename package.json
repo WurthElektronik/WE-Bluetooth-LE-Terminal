@@ -1,6 +1,6 @@
 {
   "name": "we-bluetooth-le-terminal",
-  "version": "1.8",
+  "version": "1.9",
   "author": "Würth Elektronik eiSos GmbH",
   "homepage": "https://www.we-online.com/web/de/wuerth_elektronik/start.php",
   "scripts": {
@@ -23,6 +23,7 @@
     "@angular/service-worker": "^16.2.12",
     "@awesome-cordova-plugins/globalization": "^5.44.0",
     "@capacitor-community/bluetooth-le": "^6.0.0",
+    "@capacitor-community/electron": "^5.0.1",
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/browser": "^6.0.0",

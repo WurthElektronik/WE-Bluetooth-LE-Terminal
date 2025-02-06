@@ -6,10 +6,13 @@ import { TranslateService } from '@ngx-translate/core';
 import { Globalization } from '@awesome-cordova-plugins/globalization/ngx';
 import {  Platform } from '@ionic/angular';
 import { BleService } from './services/ble.service';
+import { CapacitorException } from '@capacitor/core';
+import { BleClient } from '@capacitor-community/bluetooth-le';
 
 enum AppState {
   NotSupported = "NotSupported",
   BluetoothNotEnabled = "BluetoothNotEnabled",
+  BluetoothNoPermissions = "BluetoothNoPermissions",
   Valid = "Valid"
 }  
 
@@ -59,17 +62,32 @@ export class AppComponent {
       );
     }
     try {
-      await this.ble.initializeble();
+      await BleClient.initialize({ androidNeverForLocation: true });
     } catch (error) {
+      if(error instanceof CapacitorException)
+      {
+        switch(error.message)
+        {
+          case "BLE permission denied":
+          case "Permission denied.":
+            this.state = AppState.BluetoothNoPermissions;
+            await BleClient.openAppSettings();
+            break;
+          default:
       this.state = AppState.NotSupported;
+            break;
+        }
+      }else{
+        this.state = AppState.NotSupported;
+      }
       return;
     }
 
-    if(await this.ble.bluetoothenabled() == false){
+    if(await BleClient.isEnabled() == false){
       this.state = AppState.BluetoothNotEnabled;
     }
 
-    this.ble.registerbluetoothstate((state) => {
+    await BleClient.startEnabledNotifications((state) => {
       this.ngZone.run(() => {
         if(state){
           this.state = AppState.Valid;

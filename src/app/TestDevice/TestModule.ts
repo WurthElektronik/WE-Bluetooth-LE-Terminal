@@ -4,6 +4,8 @@ import { GPIOPin } from "../BLEModules/GPIO/GPIOPin";
 import { GeneralBLEModule } from "../BLEModules/GeneralBLEModule";
 import { GPIO } from "../BLEModules/GPIO/GPIO";
 import { GPIOInterface } from "../BLEModules/GPIO/GPIOInterface";
+import { GeneralBLEProfile } from "../BLEProfiles/GeneralBLEProfile";
+import { WESPPProfile } from "../BLEProfiles/WESPPProfile";
 
 export class TestModule extends GeneralBLEModule implements GPIOInterface{
 
@@ -80,6 +82,10 @@ export class TestModule extends GeneralBLEModule implements GPIOInterface{
 
     getRemoteCommandSupport():Boolean{
         return this.getGPIOSupport();
+    }
+
+    getBLEProfile():GeneralBLEProfile{
+        return WESPPProfile;
     }
 
 }

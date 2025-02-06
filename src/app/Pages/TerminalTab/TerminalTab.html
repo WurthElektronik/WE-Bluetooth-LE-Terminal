@@ -62,19 +62,12 @@
               {{ msg.getMsgInfo() | translate:msg.getMsgInfoParameters() }}
             </ion-row>
 
-            <ng-container [ngSwitch]="this.selectedencoding" *ngIf="msg.getType() == LogMessageType.DataSent || msg.getType() == LogMessageType.DataReceived">
 
-              <ion-row *ngSwitchCase="'HEX'" class="hexdata">
-                {{ BufferToHex(msg.getMsgData()) }}
-              </ion-row>
+            <ion-row class="{{this.selectedencoding.getEncodingTypeString()}}" *ngIf="msg.getType() == LogMessageType.DataSent || msg.getType() == LogMessageType.DataReceived" [innerText]="this.selectedencoding.BufferToEncoding(msg.getMsgData())">
+            </ion-row>
 
-              <ion-row *ngSwitchCase="'ASCII'" class="asciidata" [innerText]="BufferToAscii(msg.getMsgData(), only_printable_ascii)" >
-              </ion-row>
-
-            </ng-container>
-
-            <ion-row class="hexdata" *ngIf="msg.getType() != LogMessageType.DataSent && msg.getType() != LogMessageType.DataReceived">
-              {{ BufferToHex(msg.getMsgData()) }}
+            <ion-row class="{{HEX.getEncodingTypeString()}}" *ngIf="msg.getType() != LogMessageType.DataSent && msg.getType() != LogMessageType.DataReceived">
+              {{ HEX.BufferToEncoding(msg.getMsgData()) }}
             </ion-row>
 
           </ion-grid>
@@ -95,7 +88,7 @@
   <ion-grid>
     <ion-row class="ion-align-items-center">
       <ion-col class="ion-text-right">
-        <ion-input class="ion-text-left" #payloadinput (ionInput)="onPayloadInput($event)" enterkeyhint="send" (keyup.enter)="sendclick()" [value]="payload" placeholder="{{ 'TerminalTab.payload' | translate }} ({{this.selectedencoding}})" (ionChange)="updatepayload($event)"></ion-input>
+        <ion-input class="ion-text-left" #payloadinput (ionInput)="onPayloadInput($event)" enterkeyhint="send" (keyup.enter)="sendclick()" [value]="payload" placeholder="{{ 'TerminalTab.payload' | translate }} ({{this.selectedencoding.getEncodingTypeString()}})" (ionChange)="updatepayload($event)"></ion-input>
         <ion-label>
           <small>
             {{ this.payloadCount }} Bytes

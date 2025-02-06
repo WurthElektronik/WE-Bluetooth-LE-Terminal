@@ -13,6 +13,7 @@ import { ScanTabRoutingModule } from './Scan-routing.module';
 import { SelectModuleComponent } from 'src/app/Components/select-module/select-module.component';
 import { AddFilterComponent } from 'src/app/Components/add-filter/add-filter.component';
 import { NameFilterPipe } from 'src/app/Filters/NameFilter';
+import { ServiceUUIDFilterPipe } from 'src/app/Filters/ServiceUUIDFilter';
 
 @NgModule({
   imports: [
@@ -28,6 +29,6 @@ import { NameFilterPipe } from 'src/app/Filters/NameFilter';
       }
     })
   ],
-  declarations: [ScanTab,SelectModuleComponent,AddFilterComponent,NameFilterPipe]
+  declarations: [ScanTab,SelectModuleComponent,AddFilterComponent,NameFilterPipe, ServiceUUIDFilterPipe]
 })
 export class ScanTabModule {}

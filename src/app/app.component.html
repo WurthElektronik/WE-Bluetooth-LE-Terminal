@@ -3,5 +3,6 @@
     <ion-router-outlet *ngSwitchCase="'Valid'"></ion-router-outlet>
     <ion-label class="notsupported" *ngSwitchCase="'NotSupported'">{{ 'notsupported' | translate }}</ion-label>
     <ion-label class="notsupported" *ngSwitchCase="'BluetoothNotEnabled'">{{ 'bluetoothoff' | translate }}</ion-label>
+    <ion-label class="notsupported" *ngSwitchCase="'BluetoothNoPermissions'">{{ 'bluetoothnoperm' | translate }}</ion-label>
   </ng-container>
 </ion-app>

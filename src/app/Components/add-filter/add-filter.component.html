@@ -11,11 +11,11 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'ServiceUUID'">
-      <ion-row class="ion-margin-top">
-        Proteus {{ 'AddFilter.filters.ServiceUUID' | translate}}
-        <br>
-        {{PROTEUS_BLE_SERVICE}}
-      </ion-row>
+        <ion-radio-group class="ion-margin-top" [(ngModel)]="selectedserviceUUID">
+          <ion-item *ngFor="let serviceUUID of serviceUUIDs">
+            <ion-radio value="{{serviceUUID}}">{{serviceUUID}} {{ 'AddFilter.filters.ServiceUUID' | translate}}</ion-radio>
+          </ion-item>
+        </ion-radio-group>
     </ng-container>
 
   </ng-container>

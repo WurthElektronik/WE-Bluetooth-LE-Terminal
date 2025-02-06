@@ -1,0 +1,23 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - release
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and Deploy WE-Bluetooth-LE-Terminal
+      uses: AhsanAyaz/angular-deploy-gh-pages-actions@v1.4.0
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }} 
+        build_configuration: production
+        base_href: https://wurthelektronik.github.io/WE-Bluetooth-LE-Terminal/
+        deploy_branch: gh-pages
+        angular_dist_build_folder: www
+
+permissions:
+  contents: write

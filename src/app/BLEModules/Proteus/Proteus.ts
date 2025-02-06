@@ -1,13 +1,14 @@
-import { BleClient, BleDevice } from "@capacitor-community/bluetooth-le";
+import { BleDevice } from "@capacitor-community/bluetooth-le";
 import { GeneralBLEModule } from "../GeneralBLEModule";
 import { ProteusHeader } from "./ProteusHeader";
 import { GPIO } from "../GPIO/GPIO";
-import { PROTEUS_BLE_RX_CHARACTERISTIC, PROTEUS_BLE_SERVICE } from "src/app/services/ble.service";
 import { ProteusCommand } from "./ProteusCommand";
 import { GPIOPin } from "../GPIO/GPIOPin";
 import { GPIOPinType } from "../GPIO/GPIOPinType";
 import { GPIOInterface } from "../GPIO/GPIOInterface";
 import { ProteusHighThroughput } from "./ProteusHighThroughput";
+import { GeneralBLEProfile } from "src/app/BLEProfiles/GeneralBLEProfile";
+import { WESPPProfile } from "src/app/BLEProfiles/WESPPProfile";
 
 export abstract class Proteus extends GeneralBLEModule implements GPIOInterface{
 
@@ -257,10 +258,10 @@ export abstract class Proteus extends GeneralBLEModule implements GPIOInterface{
     async initializeModule(){
         super.initializeModule();
         if(this.getMaxPayloadRequestSupport()){
-            await BleClient.writeWithoutResponse(this.deviceId, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, this.formatmaxpayloadsize());
+            await this.getBLEProfile().sendDataUnacknowledged(this.deviceId, this.formatmaxpayloadsize());
         }
         if(this.getGPIOSupport()){
-            await BleClient.writeWithoutResponse(this.deviceId, PROTEUS_BLE_SERVICE, PROTEUS_BLE_RX_CHARACTERISTIC, this.formatreadpinconfiguration());
+            await this.getBLEProfile().sendDataUnacknowledged(this.deviceId, this.formatreadpinconfiguration());
         }
     }
 
