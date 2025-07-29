@@ -1,0 +1,53 @@
+<div class="inner-content">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <h1>{{ 'MacroManage.macromanage' | translate }}</h1>
+      </ion-col>
+      <ion-col class="ion-text-right ion-align-self-center" style="padding-top: 20px;padding-bottom: 10px;">
+        <ion-button (click)="importMacros()">
+          {{ 'MacroManage.import' | translate }}
+          <ion-icon slot="end" name="download-outline"></ion-icon>
+        </ion-button>
+        <a #exportWebLink *ngIf="this.platform.is('desktop') == true" hidden></a>
+        <ion-button (click)="exportMacros()">
+          {{ 'MacroManage.export' | translate }}
+          <ion-icon slot="end" name="share-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <div class="ion-content-scroll-host" *ngIf="macroArray.length != 0">
+    <ion-list #macroList>
+      <ion-reorder-group [disabled]="false" (ionItemReorder)="handleReorder($any($event))">
+        <ion-item-sliding *ngFor="let macro of macroArray">
+          <ion-item [ngClass]="this.editedMacro == macro ? 'edit-macro': ''">
+            <ion-label> {{macro.macroName}} </ion-label>
+            <ion-reorder slot="end"></ion-reorder>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option (click)="editMacro(macro)" color="#ffffff00">
+              <ion-icon color="primary" slot="icon-only" name="pencil-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="deleteMacro(macro)" color="#ffffff00">
+              <ion-icon color="primary" slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-reorder-group>
+    </ion-list>
+  </div>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-input #macroNameInput [value]="macroName" label="{{ 'MacroManage.macroname' | translate }}" (ionInput)="onMacroNameInput($event)"></ion-input>
+        <ion-input #macroDataInput placeholder="({{this.selectedencoding.getEncodingTypeString()}})" [value]="macroData" label="{{ 'MacroManage.macrodata' | translate }}" (ionInput)="onMacroDataInput($event)" (ionChange)="updateMacroData($event)"></ion-input>
+      </ion-col>
+      <ion-col size="4" class="ion-text-right ion-align-self-center">
+        <ion-button (click)="addMacro()" size="small"> {{ (this.editedMacro == undefined ? 'MacroManage.add' : 'MacroManage.edit') | translate }}</ion-button>
+        <br>
+        <ion-button *ngIf="this.editedMacro != undefined" (click)="cancelEditMacro()" size="small">{{ 'MacroManage.canceledit' | translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>

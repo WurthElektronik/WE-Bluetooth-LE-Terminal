@@ -4,14 +4,14 @@ import { Routes, RouterModule } from '@angular/router';
 import { WhatsnewPage } from './whatsnew.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: WhatsnewPage
-  }
+	{
+		path: '',
+		component: WhatsnewPage,
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class WhatsnewPageRoutingModule {}

@@ -1,5 +1,5 @@
 export enum GPIOInputPinType {
-    NoPull,
-    PullDown,
-    PullUp
+	NoPull,
+	PullDown,
+	PullUp,
 }

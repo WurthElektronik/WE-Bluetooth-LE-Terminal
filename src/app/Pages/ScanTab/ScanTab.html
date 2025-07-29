@@ -34,24 +34,26 @@
     </ion-row>
     <ion-row class="ion-text-center ion-align-items-center ion-margin-horizontal ion-margin-top" style="min-height: 42px;" >
       <ion-label style="font-weight:bold;">{{ 'AddFilter.filter' | translate}}:</ion-label>
-      <ion-chip *ngFor="let filter of scanfilters | keyvalue">
-        <ion-label>
-          {{ 'AddFilter.filters.' + filter.value.getTypeString() | translate}} :
-          <ng-container [ngSwitch]="filter.value.getTypeString()">
+      <ng-container *ngFor="let filters of scanfilters | keyvalue">
+        <ion-chip *ngFor="let filter of filters.value">
+          <ion-label>
+            {{ 'AddFilter.filters.' + filter.getTypeString() | translate}} :
+            <ng-container [ngSwitch]="filter.getTypeString()">
 
-            <ng-container *ngSwitchCase="'Name'">
-              {{(filter.value | NameFilterPipe).getName()}}
+              <ng-container *ngSwitchCase="'Name'">
+                {{(filter | NameFilterPipe).getName()}}
+              </ng-container>
+          
+              <ng-container *ngSwitchCase="'ServiceUUID'">
+                {{(filter | ServiceUUIDFilterPipe).getServiceName()}} {{ 'AddFilter.filters.ServiceUUID' | translate}}
+              </ng-container>
+          
             </ng-container>
-        
-            <ng-container *ngSwitchCase="'ServiceUUID'">
-              {{(filter.value | ServiceUUIDFilterPipe).getServiceName()}} {{ 'AddFilter.filters.ServiceUUID' | translate}}
-            </ng-container>
-        
-          </ng-container>
-        </ion-label>
-        <ion-icon name="close" size="small" (click)="deleteFilter(filter.key)"></ion-icon>
-      </ion-chip>
-      <ion-icon (click)="addFilter()" color="primary" size="large" name="add-circle"></ion-icon>
+          </ion-label>
+          <ion-icon *ngIf="scanning == false" name="close" size="small" (click)="deleteFilter(filters.key, filter)"></ion-icon>
+        </ion-chip>
+      </ng-container>
+      <ion-icon *ngIf="scanning == false" (click)="addFilter()" color="primary" size="large" name="add-circle"></ion-icon>
     </ion-row>
   </ion-grid>
 

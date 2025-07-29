@@ -1,4 +1,4 @@
 export enum DataMode {
-    UnacknowledgedData,
-    AcknowledgedData,
+	UnacknowledgedData,
+	AcknowledgedData,
 }

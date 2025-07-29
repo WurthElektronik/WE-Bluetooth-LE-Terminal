@@ -1,63 +1,63 @@
-import { GPIOPinType } from "./GPIOPinType";
+import { GPIOPinType } from './GPIOPinType';
 
+export class GPIOPin {
+	private pinid: number;
+	private pinname: string;
+	private pwmsupport: Boolean;
+	private pintype: GPIOPinType = GPIOPinType.NoConfiguration;
+	private pinconfigvalue: DataView;
+	private pinvalue: DataView;
 
-export class GPIOPin{
-    private pinid:number;
-    private pinname:string;
-    private pwmsupport:Boolean;
-    private pintype:GPIOPinType = GPIOPinType.NoConfiguration;
-    private pinconfigvalue:DataView;
-    private pinvalue:DataView;
-    
-    constructor(pinid:number, pinname:string, pwmsupport:Boolean){
-        this.pinid = pinid;
-        this.pinname = pinname;
-        this.pwmsupport = pwmsupport;
-        this.pinconfigvalue = new DataView(new ArrayBuffer(4));
-        this.pinvalue = new DataView(new ArrayBuffer(1));
-    }
-    
-    getPinID():number{
-        return this.pinid;
-    }
+	constructor(pinid: number, pinname: string, pwmsupport: Boolean) {
+		this.pinid = pinid;
+		this.pinname = pinname;
+		this.pwmsupport = pwmsupport;
+		this.pinconfigvalue = new DataView(new ArrayBuffer(4));
+		this.pinvalue = new DataView(new ArrayBuffer(1));
+	}
 
-    getPinName():string{
-        return this.pinname;
-    }
+	getPinID(): number {
+		return this.pinid;
+	}
 
-    getPWMSupport():Boolean{
-        return this.pwmsupport;
-    }
+	getPinName(): string {
+		return this.pinname;
+	}
 
-    setPinType(type:GPIOPinType){
-        this.pintype = type;
-    }
+	getPWMSupport(): Boolean {
+		return this.pwmsupport;
+	}
 
-    getPinType():GPIOPinType{
-        return this.pintype;
-    }
+	setPinType(type: GPIOPinType) {
+		this.pintype = type;
+	}
 
-    getIsConfigured():Boolean{
-        return this.pintype != GPIOPinType.NoConfiguration;
-    }
+	getPinType(): GPIOPinType {
+		return this.pintype;
+	}
 
-    getPinConfigValue():DataView{
-        return this.pinconfigvalue;
-    }
+	getIsConfigured(): Boolean {
+		return this.pintype != GPIOPinType.NoConfiguration;
+	}
 
-    getPinValue():DataView{
-        return this.pinvalue;
-    }
+	getPinConfigValue(): DataView {
+		return this.pinconfigvalue;
+	}
 
-    static copy(pin:GPIOPin):GPIOPin{
-        let json = JSON.parse(JSON.stringify(pin))
-        delete json.pinvalue;
-        delete json.pinconfigvalue;
-        let gpioPin:GPIOPin = new this(json.pinid,json.pinname,json.pwmsupport);
-        Object.assign(gpioPin,json)
-        gpioPin.getPinConfigValue().setUint32(0,pin.getPinConfigValue().getUint32(0));
-        gpioPin.getPinValue().setUint8(0,pin.getPinValue().getUint8(0));
-        return gpioPin;
-    }
+	getPinValue(): DataView {
+		return this.pinvalue;
+	}
 
+	static copy(pin: GPIOPin): GPIOPin {
+		let json = JSON.parse(JSON.stringify(pin));
+		delete json.pinvalue;
+		delete json.pinconfigvalue;
+		let gpioPin: GPIOPin = new this(json.pinid, json.pinname, json.pwmsupport);
+		Object.assign(gpioPin, json);
+		gpioPin
+			.getPinConfigValue()
+			.setUint32(0, pin.getPinConfigValue().getUint32(0));
+		gpioPin.getPinValue().setUint8(0, pin.getPinValue().getUint8(0));
+		return gpioPin;
+	}
 }

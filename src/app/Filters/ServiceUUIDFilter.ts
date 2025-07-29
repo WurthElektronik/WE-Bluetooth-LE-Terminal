@@ -1,40 +1,54 @@
-import { BLEProfileType } from "../BLEProfiles/BLEProfileType";
-import { GeneralBLEProfile } from "../BLEProfiles/GeneralBLEProfile";
-import { FilterType } from "./FilterType";
-import { ScanFilter } from "./ScanFilter";
-import { Pipe, PipeTransform } from '@angular/core'
+import { SPPBLEProfileType } from '../BLEProfiles/SPPBLEProfileType';
+import { FilterType } from './FilterType';
+import { ScanFilter } from './ScanFilter';
+import { Pipe, PipeTransform } from '@angular/core';
+import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
 
-export class ServiceUUIDFilter implements ScanFilter{
-    private profile:GeneralBLEProfile;
-    
-    constructor(profile:GeneralBLEProfile){
-        this.profile = profile;
-    }
+export class ServiceUUIDFilter implements ScanFilter {
+	private profile: SPPBLEProfile;
 
-    public getType(): FilterType {
-        return FilterType.ServiceUUID;
-    }
+	constructor(profile: SPPBLEProfile) {
+		this.profile = profile;
+	}
 
-    public getTypeString(): string {
-        return FilterType[FilterType.ServiceUUID];
-    }
+	public getType(): FilterType {
+		return FilterType.ServiceUUID;
+	}
 
-    public getServiceUUID(): string{
-        return this.profile.getService().uuid;
-    }
+	public getTypeString(): string {
+		return FilterType[FilterType.ServiceUUID];
+	}
 
-    public getServiceName(): string
-    {
-        return BLEProfileType[this.profile.getType()];
-    }
+	public getServiceUUID(): string {
+		return this.profile.getService().uuid;
+	}
+
+	public getServiceName(): string {
+		return SPPBLEProfileType[this.profile.getType()];
+	}
+
+	public getIsExclusiveFilterType(): boolean {
+		return false;
+	}
+
+	hasEquivalentScanFilter(filters: ScanFilter[]): boolean {
+		let ServiceUUIDsfilters: ServiceUUIDFilter[] =
+			filters as ServiceUUIDFilter[];
+
+		return ServiceUUIDsfilters.some(
+			(filter) => filter.getServiceUUID() === this.getServiceUUID(),
+		);
+	}
 }
 
 @Pipe({
-    name: 'ServiceUUIDFilterPipe',
-    pure: true,
-  })
+	name: 'ServiceUUIDFilterPipe',
+	pure: true,
+})
 export class ServiceUUIDFilterPipe implements PipeTransform {
-    transform(value: ScanFilter): ServiceUUIDFilter {
-        return value.getType() == FilterType.ServiceUUID ? value as ServiceUUIDFilter : undefined ; 
-    }
+	transform(value: ScanFilter): ServiceUUIDFilter {
+		return value.getType() == FilterType.ServiceUUID
+			? (value as ServiceUUIDFilter)
+			: undefined;
+	}
 }

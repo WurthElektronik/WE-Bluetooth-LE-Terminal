@@ -1,6 +1,10 @@
 import { Component, NgZone, ViewChild } from '@angular/core';
 import { BleService } from '../../services/ble.service';
-import { BleClient, BleDevice, ScanResult } from '@capacitor-community/bluetooth-le';
+import {
+	BleClient,
+	BleDevice,
+	ScanResult,
+} from '@capacitor-community/bluetooth-le';
 import { Router } from '@angular/router';
 import { IonSelect, Platform, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,282 +21,375 @@ import { FilterType } from 'src/app/Filters/FilterType';
 import { ServiceUUIDFilter } from 'src/app/Filters/ServiceUUIDFilter';
 import { Subscription } from 'rxjs';
 import { WESPPProfile } from 'src/app/BLEProfiles/WESPPProfile';
+import { ToastService } from 'src/app/services/toast.service';
+import { CYSPPProfile } from 'src/app/BLEProfiles/CYSPPProfile';
 
 @Component({
-  selector: 'app-scantab',
-  templateUrl: 'ScanTab.html',
-  styleUrls: ['ScanTab.scss']
+	selector: 'app-scantab',
+	templateUrl: 'ScanTab.html',
+	styleUrls: ['ScanTab.scss'],
 })
-
 export class ScanTab {
-  scanning:boolean = false;
-  scantext:String = "startscantext";
-  scanresults:ScanResult[] = [];
-  paireddevices:BleDevice[] = [];
-  scanSortType:string = ScanSort[ScanSort.Default];
-  connecting:Boolean = false;
-  connectingdeviceid:string = undefined;
-  scanfilters:Map<FilterType,ScanFilter> = new Map<FilterType,ScanFilter>([
-    [FilterType.ServiceUUID, new ServiceUUIDFilter(WESPPProfile)]
-  ]);
+	scanning: boolean = false;
+	scantext: String = 'startscantext';
+	scanresults: ScanResult[] = [];
+	scanresultsmap: Map<string, ScanResult> = new Map<string, ScanResult>();
+	paireddevices: BleDevice[] = [];
+	scanSortType: string = ScanSort[ScanSort.Default];
+	connecting: Boolean = false;
+	connectingdeviceid: string = undefined;
+	scanfilters: Map<FilterType, ScanFilter[]> = new Map<
+		FilterType,
+		ScanFilter[]
+	>([
+		[
+			FilterType.ServiceUUID,
+			[
+				new ServiceUUIDFilter(WESPPProfile),
+				new ServiceUUIDFilter(CYSPPProfile),
+			],
+		],
+	]);
 
-  private disconnectsubscription: Subscription;
+	private static readonly SCAN_UPDATE_INTERVAL_MS: number = 500;
 
-  @ViewChild('scanselect') select: IonSelect;
-  
-  constructor(public ble:BleService, private ngZone: NgZone, private router: Router, public platform: Platform, private translateService: TranslateService, private modalCtrl: ModalController ,private toastController: ToastController ) {}
+	private disconnectsubscription: Subscription;
 
-  async ngOnInit(){
-    this.translateService.onLangChange.subscribe(() => {
-      this.translateService.get("ScanTab.scansorttype." + this.scanSortType.toLowerCase()).subscribe(async (res: string) => {
-        this.select.selectedText = res;
-      });
-    });
-    if(!environment.production){
-      if(this.platform.is('desktop')){
-        this.paireddevices.push(testdevice);
-      }else{
-        this.scanresults.push(testscanresult);
-      }
-    }
-    if(this.platform.is('electron')){
-      (window as any).capacitorionicbluetooth.scanCancelled(() => {
-        this.ngZone.run(() => {
-          this.stopscan();
-        });
-      });
-    }
-  }
+	@ViewChild('scanselect') select: IonSelect;
 
-  ionViewWillEnter(){
-    this.disconnectsubscription = this.ble.onDeviceDisconnected.subscribe(async (disconnecteddeviceid:string) => {
-      this.ngZone.run(() => {
-        if(this.connecting && (this.connectingdeviceid == disconnecteddeviceid))
-        {
-          this.connectingdeviceid = undefined;
-          this.connecting = false;
-        }
-      });
-    });
-  }
+	scanInterval: ReturnType<typeof setTimeout> = undefined;
 
-  ionViewWillLeave() {
-    this.disconnectsubscription.unsubscribe();
-    this.disconnectsubscription = undefined;
-  }
+	constructor(
+		public ble: BleService,
+		private ngZone: NgZone,
+		private router: Router,
+		public platform: Platform,
+		private translateService: TranslateService,
+		private modalCtrl: ModalController,
+		private toastService: ToastService,
+	) {}
 
-  ionViewDidEnter(){
-      this.scanning = false;
-      this.scantext = "startscantext";
-  }
+	async ngOnInit() {
+		this.translateService.onLangChange.subscribe(() => {
+			this.translateService
+				.get('ScanTab.scansorttype.' + this.scanSortType.toLowerCase())
+				.subscribe(async (res: string) => {
+					this.select.selectedText = res;
+				});
+		});
+		if (!environment.production) {
+			if (this.platform.is('desktop')) {
+				this.paireddevices.push(testdevice);
+			} else {
+				this.scanresults.push(testscanresult);
+			}
+		}
+		if (this.platform.is('electron')) {
+			(window as any).capacitorionicbluetooth.scanCancelled(() => {
+				this.ngZone.run(() => {
+					this.stopscan();
+				});
+			});
+		}
+	}
 
-  async ionViewDidLeave(){
-    if(!this.platform.is('desktop')){
-      this.stopscan();
-    }
-  }
+	ionViewWillEnter() {
+		this.disconnectsubscription = this.ble.onDeviceDisconnected.subscribe(
+			async (disconnecteddeviceid: string) => {
+				this.ngZone.run(() => {
+					if (
+						this.connecting &&
+						this.connectingdeviceid == disconnecteddeviceid
+					) {
+						this.connectingdeviceid = undefined;
+						this.connecting = false;
+					}
+				});
+			},
+		);
+	}
 
-  scanclick(){
-    this.scanning ? this.stopscan() : this.scan();
-  }
+	ionViewWillLeave() {
+		this.disconnectsubscription.unsubscribe();
+		this.disconnectsubscription = undefined;
+	}
 
-  clearscan(){
-    this.paireddevices = [];
-    if(!environment.production){
-      this.paireddevices.push(testdevice);
-    }
-  }
+	ionViewDidEnter() {
+		this.scanning = false;
+		this.scantext = 'startscantext';
+	}
 
-  async scan(){
+	async ionViewDidLeave() {
+		if (!this.platform.is('desktop')) {
+			this.stopscan();
+		}
+	}
 
-    //check for location on android 11 or less
-    if(this.platform.is('android') && ((await Device.getInfo()).androidSDKVersion <= 30) && await BleClient.isLocationEnabled() == false){
-      this.translateService.get('locationoff').subscribe(async (res: string) => {
-        const toast = await this.toastController.create({
-          message: res,
-          duration: 500,
-          position: 'middle',
-          cssClass: 'toastwidth'
-        });
-        toast.present();
-      });
-      return;
-    }
+	scanclick() {
+		this.scanning ? this.stopscan() : this.scan();
+	}
 
-    this.scanning = true;
-    this.scantext = "stopscantext";
-    this.scanresults = [];
-    if(!environment.production){
-      this.scanresults.push(testscanresult);
-    }
-    if(this.platform.is('desktop')){
-      if(this.platform.is('electron')){
-        (window as any).capacitorionicbluetooth.startScan();
-      }
-      this.ble.requestdevice(this.scanfilters,(result) => {
-        if(result != undefined && this.paireddevices.filter(paireddevice => paireddevice.deviceId == result.deviceId).length == 0){
-          this.paireddevices.push(result);
-          this.sort();
-        }
-        if((result != undefined) || !this.platform.is('electron')){
-          this.stopscan();
-        }
-      })
-    }else{
-      this.ble.startscan(this.scanfilters,(result) => {
-        this.ngZone.run(() => {
-          this.scanresults.push(result);
-          this.sort();
-        });
-      });
-    }
-  }
+	clearscan() {
+		this.paireddevices = [];
+		if (!environment.production) {
+			this.paireddevices.push(testdevice);
+		}
+	}
 
-  async stopscan(){
-    this.scanning = false;
-    this.scantext = "startscantext";
-    if(this.platform.is('electron')){
-        (window as any).capacitorionicbluetooth.stopScan();
-    }else if(!this.platform.is('desktop')){
-      await this.ble.stopscan();
-    }
-  }
+	async scan() {
+		//check for location on android 11 or less
+		if (
+			this.platform.is('android') &&
+			(await Device.getInfo()).androidSDKVersion <= 30 &&
+			(await BleClient.isLocationEnabled()) == false
+		) {
+			this.translateService
+				.get('locationoff')
+				.subscribe(async (res: string) => {
+					this.toastService.showToast(res, 500, 'middle');
+				});
+			return;
+		}
 
-  async scanitemclick(item:ScanResult){
-    if(!environment.production && item.device == testdevice && !this.ble.connectedDevices.has(item.device.deviceId)){
-      this.ble.connectedDevices.set(item.device.deviceId, new TestModule(item.device));
-      await this.ble.connectedDevices.get(item.device.deviceId).initializeModule();
-    }else{
-      this.connect(item.device);
-    }
-  }
+		this.scanning = true;
+		this.scantext = 'stopscantext';
+		this.scanresults = [];
+		this.scanresultsmap.clear();
+		if (!environment.production) {
+			this.scanresults.push(testscanresult);
+			this.scanresultsmap.set(testdevice.deviceId, testscanresult);
+		}
+		if (this.platform.is('desktop')) {
+			if (this.platform.is('electron')) {
+				(window as any).capacitorionicbluetooth.startScan();
+			}
+			this.ble.requestdevice(this.scanfilters, (result) => {
+				if (
+					result != undefined &&
+					this.paireddevices.filter(
+						(paireddevice) => paireddevice.deviceId == result.deviceId,
+					).length == 0
+				) {
+					this.paireddevices.push(result);
+					this.sort();
+				}
+				if (result != undefined || !this.platform.is('electron')) {
+					this.stopscan();
+				}
+			});
+		} else {
+			this.scanInterval = setInterval(() => {
+				this.updateScanResults();
+			}, ScanTab.SCAN_UPDATE_INTERVAL_MS);
 
-  async paireddeviceclick(item:BleDevice){
-    if(!environment.production && item == testdevice && !this.ble.connectedDevices.has(item.deviceId)){
-      this.ble.connectedDevices.set(item.deviceId, new TestModule(item));
-      await this.ble.connectedDevices.get(item.deviceId).initializeModule();
-    }else{
-      this.connect(item);
-    }
-  }
+			this.ble.startscan(this.scanfilters, (result) => {
+				this.ngZone.run(() => {
+					let isNewDevice = !this.scanresultsmap.has(result.device.deviceId);
+					this.scanresultsmap.set(result.device.deviceId, result);
+					if (isNewDevice) {
+						this.updateScanResults();
+					}
+				});
+			});
+		}
+	}
 
-  async refresh(event){
-    event.target.complete();
-    setTimeout(async () => {
-      await this.scan();
-    },250);
-  }
+	updateScanResults() {
+		this.scanresults = Array.from(this.scanresultsmap.values());
+		this.sort();
+	}
 
-  async sortTypeChanged(event){
-    this.select.selectedText = undefined;
-    this.scanSortType = event.detail.value;
-    this.sort();
-  }
+	async stopscan() {
+		this.scanning = false;
+		this.scantext = 'startscantext';
+		if (this.platform.is('electron')) {
+			(window as any).capacitorionicbluetooth.stopScan();
+		} else if (!this.platform.is('desktop')) {
+			clearInterval(this.scanInterval);
+			await this.ble.stopscan();
+		}
+	}
 
-  sort(){
-    if(this.platform.is('desktop')){
-      switch(ScanSort[this.scanSortType]){
-        case ScanSort.Name:
-          this.paireddevices.sort((a, b) => a.name.localeCompare(b.name));
-          return;
-        case ScanSort.Address:
-          this.paireddevices.sort((a, b) => a.deviceId.localeCompare(b.deviceId));
-          return;
-        case ScanSort.Default:
-        default:
-          return;
-      }
-    }else{
-      switch(ScanSort[this.scanSortType]){
-        case ScanSort.Name:
-          this.scanresults.sort((a, b) => a.localName.localeCompare(b.localName));
-          return;
-        case ScanSort.Address:
-          this.scanresults.sort((a, b) => a.device.deviceId.localeCompare(b.device.deviceId));
-          return;
-        case ScanSort.RSSI:
-          this.scanresults.sort((a, b) => (a.rssi > b.rssi) ? -1 : 1);
-          return;
-        case ScanSort.Default:
-        default:
-          return;
-      }
-    }
-  }
+	async scanitemclick(item: ScanResult) {
+		if (
+			!environment.production &&
+			item.device == testdevice &&
+			!this.ble.connectedDevices.has(item.device.deviceId)
+		) {
+			this.ble.connectedDevices.set(
+				item.device.deviceId,
+				new TestModule(item.device),
+			);
+			await this.ble.connectedDevices
+				.get(item.device.deviceId)
+				.initializeModule();
+		} else {
+			this.connect(item.device);
+		}
+	}
 
-  loadingdismiss(){
-    if(this.ble.connectedDevices.has(this.connectingdeviceid)){
-      this.router.navigate(
-        ['/tabs/terminal'],
-        { 
-          queryParams: { deviceid: this.connectingdeviceid}
-        }
-      );
-    }
-    this.connectingdeviceid = undefined
-  }
+	async paireddeviceclick(item: BleDevice) {
+		if (
+			!environment.production &&
+			item == testdevice &&
+			!this.ble.connectedDevices.has(item.deviceId)
+		) {
+			this.ble.connectedDevices.set(item.deviceId, new TestModule(item));
+			await this.ble.connectedDevices.get(item.deviceId).initializeModule();
+		} else {
+			this.connect(item);
+		}
+	}
 
-  async connect(device:BleDevice){
+	async refresh(event) {
+		event.target.complete();
+		setTimeout(async () => {
+			await this.scan();
+		}, 250);
+	}
 
-    if(!this.ble.connectedDevices.has(device.deviceId)){
-      const modal = await this.modalCtrl.create({
-        component: SelectModuleComponent,
-      });
-      modal.cssClass = 'auto-height';
-      modal.animated = false;
-      modal.present();
-  
-      const { data, role } = await modal.onWillDismiss();
-  
-      if (role === 'confirm') {
-        this.connectingdeviceid = device.deviceId;
-        this.connecting = true;
-        try {
-            await this.ble.connect(device, data['selectedmodule'], data['selectedDataMode']);
-            this.connecting = false;
-        } catch (error) {
-          this.connectingdeviceid = undefined;
-          this.connecting = false;
-          this.translateService.get('ScanTab.connectionfailed').subscribe(async (res: string) => {
-            const toast = await this.toastController.create({
-              message: res,
-              duration: 500,
-              position: 'middle',
-              cssClass: 'toastwidth'
-            });
-            toast.present();
-          });
-        }
-      }
-    }else{
-      this.router.navigate(
-        ['/tabs/terminal'],
-        { 
-          queryParams: { deviceid: device.deviceId}
-        }
-      );
-    }
+	async sortTypeChanged(event) {
+		this.select.selectedText = undefined;
+		this.scanSortType = event.detail.value;
+		this.sort();
+	}
 
-  }
+	sort() {
+		if (this.platform.is('desktop')) {
+			switch (ScanSort[this.scanSortType]) {
+				case ScanSort.Name:
+					this.paireddevices.sort((a, b) => {
+						let aName: string = a.name == undefined ? '-' : a.name;
+						let bName: string = b.name == undefined ? '-' : b.name;
+						return aName.localeCompare(bName);
+					});
+					return;
+				case ScanSort.Address:
+					this.paireddevices.sort((a, b) =>
+						a.deviceId.localeCompare(b.deviceId),
+					);
+					return;
+				case ScanSort.Default:
+				default:
+					return;
+			}
+		} else {
+			switch (ScanSort[this.scanSortType]) {
+				case ScanSort.Name:
+					this.scanresults.sort((a, b) => {
+						let aName: string = a.localName == undefined ? '-' : a.localName;
+						let bName: string = b.localName == undefined ? '-' : b.localName;
+						return aName.localeCompare(bName);
+					});
+					return;
+				case ScanSort.Address:
+					this.scanresults.sort((a, b) =>
+						a.device.deviceId.localeCompare(b.device.deviceId),
+					);
+					return;
+				case ScanSort.RSSI:
+					this.scanresults.sort((a, b) => (a.rssi > b.rssi ? -1 : 1));
+					return;
+				case ScanSort.Default:
+				default:
+					return;
+			}
+		}
+	}
 
-  async addFilter(){
-    const modal = await this.modalCtrl.create({
-      component: AddFilterComponent,
-    });
-    modal.cssClass = 'auto-height';
-    modal.animated = false;
-    modal.present();
+	loadingdismiss() {
+		if (this.ble.connectedDevices.has(this.connectingdeviceid)) {
+			this.router.navigate(['/tabs/terminal'], {
+				queryParams: { deviceid: this.connectingdeviceid },
+			});
+		}
+		this.connectingdeviceid = undefined;
+	}
 
-    const { data, role } = await modal.onWillDismiss();
+	async connect(device: BleDevice) {
+		if (!this.ble.connectedDevices.has(device.deviceId)) {
+			const modal = await this.modalCtrl.create({
+				component: SelectModuleComponent,
+			});
+			modal.cssClass = 'auto-height';
+			modal.animated = false;
+			modal.present();
 
-    if (role === 'confirm') {
-      let newFilter:ScanFilter = data;
-      this.scanfilters.set(newFilter.getType(),newFilter);
-    }
-  }
+			const { data, role } = await modal.onWillDismiss();
 
-  deleteFilter(filterType:FilterType){
-    this.scanfilters.delete(filterType);
-  }
+			if (role === 'confirm') {
+				this.connectingdeviceid = device.deviceId;
+				this.connecting = true;
+				try {
+					await this.ble.connect(
+						device,
+						data['selectedmodule'],
+						data['selectedDataMode'],
+					);
+					this.connecting = false;
+				} catch (error) {
+					this.connectingdeviceid = undefined;
+					this.connecting = false;
+					this.translateService
+						.get('ScanTab.connectionfailed')
+						.subscribe(async (res: string) => {
+							this.toastService.showToast(res, 500, 'middle');
+						});
+				}
+			}
+		} else {
+			this.router.navigate(['/tabs/terminal'], {
+				queryParams: { deviceid: device.deviceId },
+			});
+		}
+	}
 
+	async addFilter() {
+		const modal = await this.modalCtrl.create({
+			component: AddFilterComponent,
+		});
+		modal.cssClass = 'auto-height';
+		modal.animated = false;
+		modal.present();
+
+		const { data, role } = await modal.onWillDismiss();
+
+		if (role !== 'confirm') {
+			return;
+		}
+
+		let newFilters: ScanFilter[] = data;
+
+		newFilters.forEach((newFilter) => {
+			if (newFilter.getIsExclusiveFilterType()) {
+				this.scanfilters.set(newFilter.getType(), [newFilter]);
+			} else {
+				if (!this.scanfilters.has(newFilter.getType())) {
+					this.scanfilters.set(newFilter.getType(), []);
+				}
+
+				if (
+					newFilter.hasEquivalentScanFilter(
+						this.scanfilters.get(newFilter.getType()),
+					)
+				) {
+					return;
+				}
+
+				this.scanfilters.get(newFilter.getType()).push(newFilter);
+			}
+		});
+	}
+
+	deleteFilter(filterType: FilterType, filter: ScanFilter) {
+		if (filter.getIsExclusiveFilterType()) {
+			this.scanfilters.delete(filterType);
+		} else {
+			let index = this.scanfilters.get(filterType).indexOf(filter);
+
+			if (index !== -1) {
+				this.scanfilters.get(filterType).splice(index, 1);
+			}
+		}
+	}
 }

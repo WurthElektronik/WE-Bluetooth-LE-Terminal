@@ -42,6 +42,10 @@ if (electronIsDev) {
 
 // Run Application
 (async () => {
+
+  app.commandLine.appendSwitch("enable-experimental-web-platform-features");
+  app.commandLine.appendSwitch("enable-web-bluetooth")
+
   // Wait for electron app to be ready.
   await app.whenReady();
   // Security - Set Content-Security-Policy based on whether or not we are in dev mode.

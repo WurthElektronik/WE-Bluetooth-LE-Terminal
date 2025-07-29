@@ -1,4 +1,4 @@
 export enum FilterType {
-    Name,
-    ServiceUUID
+	Name,
+	ServiceUUID,
 }

@@ -1,4 +1,4 @@
 export enum GPIOOutputPinType {
-    Low,
-    High
+	Low,
+	High,
 }

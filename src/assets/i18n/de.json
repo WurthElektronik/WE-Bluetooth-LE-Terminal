@@ -62,6 +62,8 @@
     "send": "Senden",
     "terminalpopover":{
       "selectencoding": "Auswahl Encoding",
+      "transferfile": "Datei übertragen",
+      "managemacros": "Makros verwalten",
       "sendtoalldevices": "An alle Geräte senden",
       "multiplepacketsend": "Mehrere Pakete"
     },
@@ -187,5 +189,18 @@
   "ParserMessages":{
     "ASCIIError":"Ungültige ASCII Daten",
     "HEXError":"Ungültige HEX Daten"
+  },
+  "MacroManage":{
+    "macromanage": "Makros verwalten",
+    "import": "importieren",
+    "export": "exportieren",
+    "macroname": "Makroname",
+    "macrodata": "Makrodaten",
+    "add": "hinzufügen",
+    "edit": "bearbeiten",
+    "canceledit": "Bearbeiten abbrechen",
+    "importfail": "Makros konnten nicht importiert werden",
+    "exportsuccess": "Makros exportiert nach {{filepath}}",
+    "exportfail": "Makros konnten nicht exportiert werden"
   }
 }

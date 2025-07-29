@@ -1,0 +1,133 @@
+name: Build Executables
+run-name: "${{ github.ref_name }}"
+
+on:
+  push:
+    tags:
+      - "v*.*"
+      - "v*.*.*"
+
+jobs:
+  build-windows:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [windows-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install -g @ionic/cli
+          cd "${env:GITHUB_WORKSPACE}\electron"
+          npm install
+      - name: Ionic production build
+        run: |
+          ionic build --prod
+      - name: Capacitor copy to @capacitor-community/electron
+        run: |
+          npx cap copy @capacitor-community/electron
+      - name: Build Capacitor Electron
+        run: |
+          cd "${env:GITHUB_WORKSPACE}\electron"
+          npm run electron:make
+          cd "${env:GITHUB_WORKSPACE}\electron\dist"
+          dir
+      - name: Upload built files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runner }}
+          path: |
+            ${{ github.workspace }}/electron/dist/*.exe
+          if-no-files-found: error
+
+  build-linux:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [ubuntu-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install depedencies
+        run: |
+          npm install
+          npm install -g @ionic/cli
+          cd '${{ github.workspace }}/electron'
+          npm install
+      - name: Ionic production build
+        run: |
+          ionic build --prod
+      - name: Capacitor copy to @capacitor-community/electron
+        run: |
+          npx cap copy @capacitor-community/electron
+      - name: Build Capacitor Electron
+        run: |
+          cd '${{ github.workspace }}/electron'
+          npm run electron:make
+          cd '${{ github.workspace }}/electron/dist'
+          ls
+      - name: Upload built files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runner }}
+          path: |
+            ${{ github.workspace }}/electron/dist/*.AppImage
+            ${{ github.workspace }}/electron/dist/*.deb
+          if-no-files-found: error
+
+  build-macos:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        runner: [macos-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install depedencies
+        run: |
+          npm install
+          npm install -g @ionic/cli
+          cd '${{ github.workspace }}/electron'
+          npm install
+      - name: Ionic production build
+        run: |
+          ionic build --prod
+      - name: Capacitor copy to @capacitor-community/electron
+        run: |
+          npx cap copy @capacitor-community/electron
+      - name: Build Capacitor Electron
+        run: |
+          cd '${{ github.workspace }}/electron'
+          npm run electron:make
+          cd '${{ github.workspace }}/electron/dist'
+          ls
+      - name: Upload built files
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.runner }}
+          path: |
+            ${{ github.workspace }}/electron/dist/*.pkg
+            ${{ github.workspace }}/electron/dist/*.dmg
+          if-no-files-found: error
+
+  release:
+    needs: [build-windows, build-linux, build-macos]
+    if: ${{ always() && !failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./artifacts/**/*  
+
+permissions:
+  contents: write
+

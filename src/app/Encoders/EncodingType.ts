@@ -1,4 +1,4 @@
 export enum EncodingType {
-    ASCII,
-    HEX
+	ASCII,
+	HEX,
 }

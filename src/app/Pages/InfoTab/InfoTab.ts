@@ -8,64 +8,65 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 
 @Component({
-  selector: 'app-info',
-  templateUrl: 'InfoTab.html',
-  styleUrls: ['InfoTab.scss']
+	selector: 'app-info',
+	templateUrl: 'InfoTab.html',
+	styleUrls: ['InfoTab.scss'],
 })
 export class InfoTab {
+	public version: string = environment.appVersion;
 
-  public version:string = environment.appVersion;
+	constructor(
+		private router: Router,
+		private modalCtrl: ModalController,
+		private translate: TranslateService,
+	) {}
 
-  constructor(private router: Router, private modalCtrl: ModalController, private translate: TranslateService) {}
+	async wirelesssensorsclick() {
+		await Browser.open({
+			url: 'https://www.we-online.com/en/products/components/service/wireless-connectivity-sensors',
+		});
+	}
 
-  async wirelesssensorsclick(){
-    await Browser.open({ url: 'https://www.we-online.com/en/products/components/service/wireless-connectivity-sensors' });
-  }
+	async usermanualsclick() {
+		await Browser.open({
+			url: 'https://www.we-online.com/en/products/components/service/wireless-connectivity-sensors?#i2345',
+		});
+	}
 
-  async usermanualsclick(){
-    await Browser.open({ url: 'https://www.we-online.com/en/products/components/service/wireless-connectivity-sensors?#i2345' });
+	async sourcecodeclick() {
+		await Browser.open({
+			url: 'https://github.com/WurthElektronik/WE-Bluetooth-LE-Terminal',
+		});
+	}
 
-  }
+	policyclick() {
+		this.router.navigate(['/policy']);
+	}
 
-  async sourcecodeclick(){
-    await Browser.open({ url: 'https://github.com/WurthElektronik/WE-Bluetooth-LE-Terminal' });
-  }
+	imprintclick() {
+		this.router.navigate(['/imprint']);
+	}
 
-  policyclick(){
-    this.router.navigate(
-      ['/policy']
-    );
-  }
+	whatsnew() {
+		this.router.navigate(['/whatsnew']);
+	}
 
-  imprintclick(){
-    this.router.navigate(
-      ['/imprint']
-    );
-  }
+	async languageclick() {
+		const modal = await this.modalCtrl.create({
+			component: ChangeLanguageComponent,
+		});
+		modal.cssClass = 'auto-height';
+		modal.animated = false;
+		modal.present();
 
-  whatsnew(){
-    this.router.navigate(
-      ['/whatsnew']
-    );
-  }
-  
-  async languageclick(){
-    const modal = await this.modalCtrl.create({
-      component: ChangeLanguageComponent,
-    });
-    modal.cssClass = 'auto-height';
-    modal.animated = false;
-    modal.present();
+		const { data, role } = await modal.onWillDismiss();
 
-    const { data, role } = await modal.onWillDismiss();
-
-    if (role === 'confirm') {
-      await Preferences.set({
-        key: 'preflang',
-        value: data,
-      });
-      this.translate.use(data);
-    }
-  }
-
+		if (role === 'confirm') {
+			await Preferences.set({
+				key: 'preflang',
+				value: data,
+			});
+			this.translate.use(data);
+		}
+	}
 }

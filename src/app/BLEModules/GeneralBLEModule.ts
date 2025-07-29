@@ -1,115 +1,146 @@
-import { BleClient, BleDevice } from "@capacitor-community/bluetooth-le";
-import { BLEModuleType } from "./BLEModuleType";
-import { Logger } from "../Logger/Logger";
-import { LogMessageType } from "../Logger/LogMessageType";
+import { BleClient, BleDevice } from '@capacitor-community/bluetooth-le';
+import { BLEModuleType } from './BLEModuleType';
+import { Logger } from '../Logger/Logger';
+import { LogMessageType } from '../Logger/LogMessageType';
 import { Subject } from 'rxjs';
-import { GeneralBLEProfile } from "../BLEProfiles/GeneralBLEProfile";
-import { DataMode } from "../BLEProfiles/DataMode";
-import { module_profile } from "./ModuleProfile";
+import { GeneralBLEProfile } from '../BLEProfiles/GeneralBLEProfile';
+import { DataMode } from '../BLEProfiles/DataMode';
+import { module_profile } from './ModuleProfile';
+import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
 
-export abstract class GeneralBLEModule{
-    private devicename:string;
-    deviceId:string;
-    protected logger:Logger = new Logger();
-    onDataReceived: Subject<any> = new Subject<any>();
-    sending:Boolean = false;
-    mtuSize:number = undefined;
+export abstract class GeneralBLEModule {
+	private devicename: string;
+	deviceId: string;
+	protected logger: Logger = new Logger();
+	onDataReceived: Subject<any> = new Subject<any>();
+	sending: Boolean = false;
+	mtuSize: number = undefined;
 
-    constructor(bledevice:BleDevice){
-        this.devicename = bledevice.name;
-        this.deviceId = bledevice.deviceId;
-    }
+	constructor(bledevice: BleDevice) {
+		this.devicename = bledevice.name;
+		this.deviceId = bledevice.deviceId;
+	}
 
-    abstract getType():BLEModuleType;
-    
-    logInfo(msginfo:string, msginfoparameters: any = undefined){
-        this.logger.logMessage(LogMessageType.Info,msginfo,msginfoparameters);
-    }
+	abstract getType(): BLEModuleType;
 
-    logDataSent(msginfo:string, msginfoparameters: any = undefined, msgdata:ArrayBuffer = undefined){
-        this.logger.logMessage(LogMessageType.DataSent,msginfo,msginfoparameters,msgdata);
-    }
+	logInfo(msginfo: string, msginfoparameters: any = undefined) {
+		this.logger.logMessage(LogMessageType.Info, msginfo, msginfoparameters);
+	}
 
-    logDataReceived(msginfo:string, msginfoparameters: any = undefined, msgdata:ArrayBuffer = undefined){
-        this.logger.logMessage(LogMessageType.DataReceived,msginfo,msginfoparameters,msgdata);
-    }
+	logDataSent(
+		msginfo: string,
+		msginfoparameters: any = undefined,
+		msgdata: ArrayBuffer = undefined,
+	) {
+		this.logger.logMessage(
+			LogMessageType.DataSent,
+			msginfo,
+			msginfoparameters,
+			msgdata,
+		);
+	}
 
-    logRemoteCommand(msginfo:string, msginfoparameters: any = undefined, msgdata:ArrayBuffer = undefined){
-        this.logger.logMessage(LogMessageType.RemoteCommand,msginfo,msginfoparameters,msgdata);
-    }
+	logDataReceived(
+		msginfo: string,
+		msginfoparameters: any = undefined,
+		msgdata: ArrayBuffer = undefined,
+	) {
+		this.logger.logMessage(
+			LogMessageType.DataReceived,
+			msginfo,
+			msginfoparameters,
+			msgdata,
+		);
+	}
 
-    getDeviceName():string{
-        return this.devicename;
-    }
+	logRemoteCommand(
+		msginfo: string,
+		msginfoparameters: any = undefined,
+		msgdata: ArrayBuffer = undefined,
+	) {
+		this.logger.logMessage(
+			LogMessageType.RemoteCommand,
+			msginfo,
+			msginfoparameters,
+			msgdata,
+		);
+	}
 
-    getLogMessages(types:LogMessageType[] = []){
-        return this.logger.getMessages(types);
-    }
+	setDeviceName(deviceName: string) {
+		this.devicename = deviceName;
+	}
 
-    getGPIOSupport():Boolean{
-        return false;
-    }
+	getDeviceName(): string {
+		return this.devicename;
+	}
 
-    getRemoteCommandSupport():Boolean{
-        return false;
-    }
+	getLogMessages(types: LogMessageType[] = []) {
+		return this.logger.getMessages(types);
+	}
 
-    handlerx(data: DataView){
-        this.logDataReceived("LogMessages.DataReceived",undefined,data.buffer);
-        this.onDataReceived.next(undefined);
-    }
+	getGPIOSupport(): Boolean {
+		return false;
+	}
 
-    async formatdatatx(data: DataView): Promise<DataView[]>{
-        var mtu = this.getMTUSize() || this.getDefaultMTUSize();
-        mtu -= 3; //this -3 is for the Bluetooth Attribute Protocol
-        if(data.byteLength > mtu){
-            this.logInfo("LogMessages.DataTooLarge");
-            return;
-        }
-        this.logDataSent("LogMessages.DataSent",undefined,data.buffer);
-        return [data];
-    }
+	getRemoteCommandSupport(): Boolean {
+		return false;
+	}
 
-    getLoggerDataLoggedSubject(): Subject<any>{
-        return this.logger.getDataLoggedSubject();
-    }
+	handlerx(data: DataView) {
+		this.logDataReceived('LogMessages.DataReceived', undefined, data.buffer);
+		this.onDataReceived.next(undefined);
+	}
 
-    getDataReceivedSubject():Subject<any>{
-        return this.onDataReceived;
-    }
+	async formatdatatx(data: DataView): Promise<DataView[]> {
+		var mtu = this.getMTUSize() || this.getDefaultMTUSize();
+		mtu -= 3; //this -3 is for the Bluetooth Attribute Protocol
+		if (data.byteLength > mtu) {
+			this.logInfo('LogMessages.DataTooLarge');
+			return;
+		}
+		this.logDataSent('LogMessages.DataSent', undefined, data.buffer);
+		return [data];
+	}
 
-    async initializeModule(){
-        try {
-            this.setMTUSize(await BleClient.getMtu(this.deviceId));
-        } catch (error) {
-        }
-    }
+	getLoggerDataLoggedSubject(): Subject<any> {
+		return this.logger.getDataLoggedSubject();
+	}
 
-    isSending():Boolean{
-        return this.sending;
-    }
+	getDataReceivedSubject(): Subject<any> {
+		return this.onDataReceived;
+	}
 
-    setSending(sending:Boolean){
-        this.sending = sending;
-    }
+	async initializeModule() {
+		try {
+			this.setMTUSize(await BleClient.getMtu(this.deviceId));
+		} catch (error) {}
+	}
 
-    getMTUSize():number{
-        return this.mtuSize;
-    }
+	isSending(): Boolean {
+		return this.sending;
+	}
 
-    setMTUSize(mtuSize: number){
-        this.mtuSize = mtuSize;
-    }
+	setSending(sending: Boolean) {
+		this.sending = sending;
+	}
 
-    getDefaultMTUSize():number{
-        return 23;
-    }
+	getMTUSize(): number {
+		return this.mtuSize;
+	}
 
-    getBLEProfile():GeneralBLEProfile{
-        return module_profile.get(this.getType());
-    }
+	setMTUSize(mtuSize: number) {
+		this.mtuSize = mtuSize;
+	}
 
-    getDataMode():DataMode{
-        return DataMode.UnacknowledgedData;
-    }
+	getDefaultMTUSize(): number {
+		return 23;
+	}
+
+	getSPPBLEProfile(): SPPBLEProfile {
+		return module_profile.get(this.getType());
+	}
+
+	getDataMode(): DataMode {
+		return DataMode.UnacknowledgedData;
+	}
 }

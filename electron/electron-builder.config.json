@@ -10,10 +10,25 @@
     "app/**/*",
     "SelectBluetoothDevice/**/*"
   ],
+  "publish": null,
   "win": {
-    "target": ["portable"],
     "icon": "assets/appIcon.ico",
+    "target": ["portable"],
     "forceCodeSigning": false,
     "signAndEditExecutable": false
+  },
+  "linux": {
+    "icon": "assets/appIcon.png",
+    "target": [
+      "AppImage",
+      "deb"
+    ]
+  },
+  "mac": {
+    "icon": "assets/appIcon.png",
+    "target": [
+      "dmg",
+      "pkg"
+    ]
   }
 }

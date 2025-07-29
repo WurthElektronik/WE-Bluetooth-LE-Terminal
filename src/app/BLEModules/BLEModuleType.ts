@@ -1,9 +1,9 @@
 export enum BLEModuleType {
-    ProteusI,
-    ProteusII,
-    ProteusIII,
-    Proteuse,
-    SetebosI,
-    StephanoI,
-    SkollI
+	ProteusI,
+	ProteusII,
+	ProteusIII,
+	Proteuse,
+	SetebosI,
+	StephanoI,
+	SkollI,
 }

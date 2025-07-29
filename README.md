@@ -34,7 +34,7 @@ For other ways to install Capacitor Framework by Ionic, refer to https://capacit
 | :--------: | :-----: |
 | Angular    | 16      |
 | Ionic      | 8       |
-| Capacitor  | 6       |
+| Capacitor  | 7       |
 
 | Platform | IDE                        | Target SDK Version | Minimum SDK Version |
 | :------: | :------------------------: | :----------------: | :-----------------: |
@@ -68,12 +68,20 @@ ionic cap build android --prod
 
 This will build the project for the specified platform and open the native IDE (Android Studio or Xcode).
 
-### Generating Windows Executable
+### Generating Executables
 
 ---
 **NOTE**
 
 It is recommened to use the web app, however this is useful when the tool is intended to be run on a device without internet connection.
+
+The resulting executable depends on which OS were these commands ran on.
+
+| OS | Build Output |
+| :------- | :-------------- |
+| Windows  | exe             |
+| macOS    | dmg, pkg        |
+| Linux    | AppImage, deb   |
 
 ---
 

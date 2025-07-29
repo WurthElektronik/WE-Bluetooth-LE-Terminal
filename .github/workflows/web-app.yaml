@@ -1,8 +1,11 @@
-name: Build and Deploy
+name: Web App Build and Deploy
+
 on:
   push:
-    branches:
-      - release
+    tags:
+      - "v*.*"
+      - "v*.*.*"
+
 jobs:
   build:
 

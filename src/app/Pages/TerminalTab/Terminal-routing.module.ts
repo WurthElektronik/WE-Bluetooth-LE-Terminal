@@ -3,14 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { TerminalTab } from './TerminalTab';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: TerminalTab,
-  }
+	{
+		path: '',
+		component: TerminalTab,
+	},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule],
 })
 export class TerminalRoutingModule {}

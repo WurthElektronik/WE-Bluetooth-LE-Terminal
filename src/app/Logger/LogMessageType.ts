@@ -1,6 +1,6 @@
 export enum LogMessageType {
-    Info,
-    DataSent,
-    DataReceived,
-    RemoteCommand
+	Info,
+	DataSent,
+	DataReceived,
+	RemoteCommand,
 }

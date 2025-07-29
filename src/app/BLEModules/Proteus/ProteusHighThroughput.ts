@@ -1,16 +1,15 @@
-export class ProteusHighThroughput{
+export class ProteusHighThroughput {
+	private fragmentsData: DataView[];
 
-    private fragmentsData:DataView[];
-    
-    constructor(){
-        this.fragmentsData = [];
-    }
+	constructor() {
+		this.fragmentsData = [];
+	}
 
-    getFragmentsDataByIndex(i: number): DataView{
-        return this.fragmentsData[i];
-    }
+	getFragmentsDataByIndex(i: number): DataView {
+		return this.fragmentsData[i];
+	}
 
-    setFragmentsDataAtIndex(i: number, data: DataView){
-        this.fragmentsData[i] = data;
-    }
+	setFragmentsDataAtIndex(i: number, data: DataView) {
+		this.fragmentsData[i] = data;
+	}
 }

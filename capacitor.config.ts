@@ -4,14 +4,22 @@ const config: CapacitorConfig = {
   appId: 'com.eisos.proteusconnect',
   appName: 'WE Bluetooth LE Terminal',
   webDir: 'www',
-  bundledWebRuntime: false,
   server:
   {
     errorPath: 'assets/error_pages/webview_version.html'
   },
   android:
   {
-    minWebViewVersion: 89
+    minWebViewVersion: 89,
+    // adjustMarginsForEdgeToEdge: 'auto'
+  },
+  plugins : {
+    Keyboard: {
+      resizeOnFullScreen: false
+    },
+    EdgeToEdge: {
+      backgroundColor: "#e3000b"
+    }
   }
 };
 

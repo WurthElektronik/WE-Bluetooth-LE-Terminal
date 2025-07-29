@@ -1,0 +1,10 @@
+.ion-content-scroll-host {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+.edit-macro{
+  --color	: var(--ion-color-primary);
+  --border-color:  var(--ion-color-primary); 
+  --border-style: dashed;
+}

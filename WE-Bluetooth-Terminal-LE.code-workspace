@@ -1,0 +1,38 @@
+{
+    "folders": [
+        {
+            "name": "Source Code",
+            "path": "src"
+        },
+        {
+            "name": "Android Project",
+            "path": "android"
+        },
+        {
+            "name": "iOS Project",
+            "path": "ios"
+        },
+        {
+            "name": "Electron Project",
+            "path": "electron"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "**/.git": true,
+            "**/.DS_Store": true,
+            "**/node_modules": true
+        },
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "typescript.tsdk": "node_modules/typescript/lib"
+    },
+    "extensions": {
+        "recommendations": [
+            "esbenp.prettier-vscode",
+        ],
+        "unwantedRecommendations": [
+            "vscjava.vscode-java-pack"
+        ]
+    }
+}
