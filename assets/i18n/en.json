@@ -62,6 +62,8 @@
     "send": "Send",
     "terminalpopover":{
       "selectencoding": "Select Encoding",
+      "transferfile": "Transfer File",
+      "managemacros": "Manage Macros",
       "sendtoalldevices": "Send to all devices",
       "multiplepacketsend": "Multiple packets"
     },
@@ -187,5 +189,18 @@
   "ParserMessages":{
     "ASCIIError":"Invalid ASCII Data",
     "HEXError":"Invalid HEX Data"
+  },
+  "MacroManage":{
+    "macromanage": "Manage Macros",
+    "import": "Import",
+    "export": "Export",
+    "macroname": "Macro Name",
+    "macrodata": "Macro Data",
+    "add": "Add",
+    "edit": "Edit",
+    "canceledit": "Cancel Edit",
+    "importfail": "Failed to import macros configuration",
+    "exportsuccess": "Macro configuration exported to {{filepath}}",
+    "exportfail": "Failed to export macro configuration"
   }
 }
