@@ -7,8 +7,14 @@ export class Logger {
 
 	constructor() {}
 
-	clearLog() {
-		this.logmessages = [];
+	clearMessages(types: LogMessageType[] = []) {
+		if (types.length == 0) {
+			this.logmessages = [];
+		} else {
+			this.logmessages = this.logmessages.filter((msg) => {
+				return !types.includes(msg.getType());
+			});
+		}
 		this.onDatalogged.next(undefined);
 	}
 

@@ -26,11 +26,13 @@ import { MacroManageComponent } from 'src/app/Components/macro-manage/macro-mana
 import { ToastService } from 'src/app/services/toast.service';
 import { Macro } from 'src/app/Macro/Macro';
 import { MacroService } from 'src/app/services/macro.service';
+import { GeneralBLEModule } from 'src/app/BLEModules/GeneralBLEModule';
 
 @Component({
 	selector: 'app-terminal',
 	templateUrl: 'TerminalTab.html',
 	styleUrls: ['TerminalTab.scss'],
+	standalone: false,
 })
 export class TerminalTab {
 	id: string = null;
@@ -51,16 +53,19 @@ export class TerminalTab {
 	@ViewChild('ioncontent') content: IonContent;
 	public payload: string = undefined;
 	public selectedencoding: Encoder = ASCII;
+	public randompayload: Boolean = false;
 	public sendtoall: Boolean = false;
 	public multiplepackets: Boolean = false;
 	@ViewChild('filterselect') filterselect: IonSelect;
 	@ViewChild('payloadinput') payloadinput: IonInput;
 	@ViewChild('sendcountinput') sendcountinput: IonInput;
 	@ViewChild('txintervalinput') txintervalinput: IonInput;
+	@ViewChild('randompayloadlengthinput') randompayloadlengthinput: IonInput;
 
 	public payloadCount: number = 0;
 	public sendCount: number = 1;
 	public txInterval: number = 1000;
+	public randomPayloadLength: number = 20;
 
 	public HEX = HEX;
 
@@ -223,11 +228,22 @@ export class TerminalTab {
 	}
 
 	async sendclick() {
-		this.payloadinput.setFocus();
-
 		try {
-			if (this.payload && this.payload.length != 0) {
-				var datatosend: DataView;
+			var datatosend: DataView;
+
+			if (this.randompayload) {
+				const buffer = new ArrayBuffer(this.randomPayloadLength);
+				datatosend = new DataView(buffer);
+
+				for (let i = 0; i < datatosend.byteLength; i++) {
+					datatosend.setUint8(i, Math.floor(Math.random() * 256));
+				}
+			} else {
+				this.payloadinput.setFocus();
+
+				if (!this.payload || this.payload.length == 0) {
+					return;
+				}
 
 				if (!this.selectedencoding.CheckEncoding(this.payload)) {
 					throw new Error(
@@ -242,22 +258,22 @@ export class TerminalTab {
 				this.payload = '';
 				this.payloadinput.value = '';
 				this.payloadCounter();
-
-				try {
-					await this.ble.senddata(
-						this.sendtoall ? undefined : this.id,
-						datatosend,
-						this.multiplepackets ? this.sendCount : 1,
-						this.multiplepackets ? this.txInterval : 0,
-					);
-				} catch (error) {
-					console.log(error);
-				}
-
-				setTimeout(() => {
-					this.content.scrollToBottom(0);
-				}, 20);
 			}
+
+			try {
+				await this.ble.senddata(
+					this.sendtoall ? undefined : this.id,
+					datatosend,
+					this.multiplepackets ? this.sendCount : 1,
+					this.multiplepackets ? this.txInterval : 0,
+				);
+			} catch (error) {
+				console.log(error);
+			}
+
+			setTimeout(() => {
+				this.content.scrollToBottom(0);
+			}, 20);
 		} catch (error) {
 			this.translateService
 				.get(error.message)
@@ -321,6 +337,18 @@ export class TerminalTab {
 		this.txintervalinput.value = this.txInterval = value <= 50 ? 50 : value;
 	}
 
+	onRandomPayloadInput(event) {
+		let value: string = event.detail.value;
+		let filteredValue: string = value.replace(/[^0-9]+/g, '');
+		this.randompayloadlengthinput.value = filteredValue;
+	}
+
+	onRandomPayloadChange(event) {
+		let value: number = +event.detail.value;
+		this.randompayloadlengthinput.value = this.randomPayloadLength =
+			value <= 1 ? 1 : value;
+	}
+
 	onPayloadInput(event) {
 		let value: string = event.detail.value;
 		var filteredValue: string = value;
@@ -375,6 +403,11 @@ export class TerminalTab {
 			this.payload = undefined;
 			this.selectedencoding = data['selectedencoding'];
 		}
+	}
+
+	async clearselectedlogs() {
+		let module: GeneralBLEModule = this.ble.connectedDevices.get(this.id);
+		module.clearLogMessages(this.selectedfiltersenum);
 	}
 
 	async configgpioclicked() {

@@ -1,0 +1,14 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug Angular in Edge",
+			"type": "msedge",
+			"request": "launch",
+			"url": "http://localhost:8100",
+			"webRoot": "${workspaceFolder:Source Code}/..",
+			"sourceMaps": true,
+			"trace": true
+		}
+	]
+}

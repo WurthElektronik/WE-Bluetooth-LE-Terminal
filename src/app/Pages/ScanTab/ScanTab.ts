@@ -21,13 +21,16 @@ import { FilterType } from 'src/app/Filters/FilterType';
 import { ServiceUUIDFilter } from 'src/app/Filters/ServiceUUIDFilter';
 import { Subscription } from 'rxjs';
 import { WESPPProfile } from 'src/app/BLEProfiles/WESPPProfile';
+import { WESPP2Profile } from 'src/app/BLEProfiles/WESPP2Profile';
 import { ToastService } from 'src/app/services/toast.service';
 import { CYSPPProfile } from 'src/app/BLEProfiles/CYSPPProfile';
+import { RSSIFilter } from 'src/app/Filters/RSSIFilter';
 
 @Component({
-	selector: 'app-scantab',
-	templateUrl: 'ScanTab.html',
-	styleUrls: ['ScanTab.scss'],
+    selector: 'app-scantab',
+    templateUrl: 'ScanTab.html',
+    styleUrls: ['ScanTab.scss'],
+    standalone: false
 })
 export class ScanTab {
 	scanning: boolean = false;
@@ -46,6 +49,7 @@ export class ScanTab {
 			FilterType.ServiceUUID,
 			[
 				new ServiceUUIDFilter(WESPPProfile),
+				new ServiceUUIDFilter(WESPP2Profile),
 				new ServiceUUIDFilter(CYSPPProfile),
 			],
 		],
@@ -184,6 +188,15 @@ export class ScanTab {
 
 			this.ble.startscan(this.scanfilters, (result) => {
 				this.ngZone.run(() => {
+					if (this.scanfilters.has(FilterType.RSSI)) {
+						let rssiFilter: RSSIFilter[] = this.scanfilters.get(
+							FilterType.RSSI,
+						) as RSSIFilter[];
+						let rssiFilterValue = rssiFilter[0].getRSSIValue();
+						if (result.rssi == undefined || result.rssi < rssiFilterValue) {
+							return;
+						}
+					}
 					let isNewDevice = !this.scanresultsmap.has(result.device.deviceId);
 					this.scanresultsmap.set(result.device.deviceId, result);
 					if (isNewDevice) {

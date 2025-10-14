@@ -32,14 +32,14 @@ For other ways to install Capacitor Framework by Ionic, refer to https://capacit
 
 | Framework | Version |
 | :--------: | :-----: |
-| Angular    | 16      |
+| Angular    | 20      |
 | Ionic      | 8       |
 | Capacitor  | 7       |
 
 | Platform | IDE                        | Target SDK Version | Minimum SDK Version |
 | :------: | :------------------------: | :----------------: | :-----------------: |
-| Android  | >= Android Studio 2023.1.1 | 34                 | 22 (WebView 89)     |
-| iOS      | >= Xcode 15.0              | 15.0               | 13.0                |
+| Android  | >= Android Studio 2024.2.1 | 35                 | 23 (WebView 107)    |
+| iOS      | >= Xcode 16.0              | N.A                | 14.0                |
 
 ### Generating Progressive Web App
 

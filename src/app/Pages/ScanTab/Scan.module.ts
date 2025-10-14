@@ -14,6 +14,7 @@ import { SelectModuleComponent } from 'src/app/Components/select-module/select-m
 import { AddFilterComponent } from 'src/app/Components/add-filter/add-filter.component';
 import { NameFilterPipe } from 'src/app/Filters/NameFilter';
 import { ServiceUUIDFilterPipe } from 'src/app/Filters/ServiceUUIDFilter';
+import { RSSIFilterPipe } from 'src/app/Filters/RSSIFilter';
 
 @NgModule({
 	imports: [
@@ -35,6 +36,7 @@ import { ServiceUUIDFilterPipe } from 'src/app/Filters/ServiceUUIDFilter';
 		AddFilterComponent,
 		NameFilterPipe,
 		ServiceUUIDFilterPipe,
+		RSSIFilterPipe,
 	],
 })
 export class ScanTabModule {}

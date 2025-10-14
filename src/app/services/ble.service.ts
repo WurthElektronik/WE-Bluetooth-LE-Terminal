@@ -11,6 +11,7 @@ import {
 import { Subject } from 'rxjs';
 import { GeneralBLEModule } from '../BLEModules/GeneralBLEModule';
 import { BLEModuleType } from '../BLEModules/BLEModuleType';
+import { ProteusIV } from '../BLEModules/Proteus/ProteusIV';
 import { ProteusIII } from '../BLEModules/Proteus/ProteusIII';
 import { ProteusI } from '../BLEModules/Proteus/ProteusI';
 import { ProteusII } from '../BLEModules/Proteus/ProteusII';
@@ -30,6 +31,8 @@ import { CYSPPProfile } from '../BLEProfiles/CYSPPProfile';
 import { DataMode } from '../BLEProfiles/DataMode';
 import { GeneralBLEProfile } from '../BLEProfiles/GeneralBLEProfile';
 import { GenericAccessProfile } from '../BLEProfiles/GenericAccessProfile';
+
+const START_NOTIFICATION_TIMEOUT_MS: number = 30000;
 
 @Injectable({
 	providedIn: 'root',
@@ -153,6 +156,9 @@ export class BleService {
 			case BLEModuleType.ProteusIII:
 				module = new ProteusIII(device);
 				break;
+			case BLEModuleType.ProteusIV:
+				module = new ProteusIV(device);
+				break;
 			case BLEModuleType.Proteuse:
 				module = new Proteuse(device);
 				break;
@@ -212,40 +218,52 @@ export class BleService {
 
 		var txcharacteristic: BleCharacteristic;
 
-		switch (module.getDataMode()) {
-			default:
-			case DataMode.UnacknowledgedData:
-				await sppProfile.startReceiveDataUnacknowledged(
-					device.deviceId,
-					(value) => {
-						this.connectedDevices.get(device.deviceId).handlerx(value);
-					},
-				);
-				txcharacteristic = sppProfile.getUnacknowledgedDataTXCharacteristic();
-				break;
-			case DataMode.AcknowledgedData:
-				await sppProfile.startReceiveDataAcknowledged(
-					device.deviceId,
-					(value) => {
-						this.connectedDevices.get(device.deviceId).handlerx(value);
-					},
-				);
-				txcharacteristic = sppProfile.getAcknowledgedDataTXCharacteristic();
-				break;
+		var descriptorvalue: DataView;
+
+		try {
+			switch (module.getDataMode()) {
+				default:
+				case DataMode.UnacknowledgedData:
+					await sppProfile.startReceiveDataUnacknowledged(
+						device.deviceId,
+						(value) => {
+							this.connectedDevices.get(device.deviceId).handlerx(value);
+						},
+						START_NOTIFICATION_TIMEOUT_MS,
+					);
+					txcharacteristic = sppProfile.getUnacknowledgedDataTXCharacteristic();
+					break;
+				case DataMode.AcknowledgedData:
+					await sppProfile.startReceiveDataAcknowledged(
+						device.deviceId,
+						(value) => {
+							this.connectedDevices.get(device.deviceId).handlerx(value);
+						},
+						START_NOTIFICATION_TIMEOUT_MS,
+					);
+					txcharacteristic = sppProfile.getAcknowledgedDataTXCharacteristic();
+					break;
+			}
+
+			descriptorvalue = await BleClient.readDescriptor(
+				device.deviceId,
+				sppProfile.getService().uuid,
+				txcharacteristic.uuid,
+				BLE_CCCD_UUID,
+			);
+		} catch (error) {
+			await BleClient.disconnect(device.deviceId);
+			throw error;
 		}
 
-		let descriptorvalue = await BleClient.readDescriptor(
-			device.deviceId,
-			sppProfile.getService().uuid,
-			txcharacteristic.uuid,
-			BLE_CCCD_UUID,
-		);
 		this.connectedDevices
 			.get(device.deviceId)
 			.logInfo('LogMessages.CCCDWritten', {
-				descriptorvalue: HEX.BufferToEncoding(descriptorvalue.buffer),
-				descriptor: BLE_CCCD_UUID,
-				characteristic: txcharacteristic.uuid,
+				descriptorvalue: HEX.BufferToEncoding(
+					descriptorvalue.buffer,
+				).toUpperCase(),
+				descriptor: BLE_CCCD_UUID.toUpperCase(),
+				characteristic: txcharacteristic.uuid.toUpperCase(),
 			});
 
 		switch (descriptorvalue.getUint16(0, true)) {

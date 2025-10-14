@@ -6,7 +6,7 @@ vars:
   DISPLAY_NAME:
     default: WE Bluetooth LE Terminal
   BUILD_NUMBER:
-    default: 250729
+    default: 251014
 
 platforms:
   ios:
@@ -22,3 +22,9 @@ platforms:
     versionName: $VERSION
     appName: $DISPLAY_NAME
     versionCode: $BUILD_NUMBER
+
+project:
+  json:
+    - file: "electron/package.json"
+      set:
+        version: $VERSION

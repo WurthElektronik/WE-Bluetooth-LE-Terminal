@@ -17,9 +17,10 @@ import { Macro } from 'src/app/Macro/Macro';
 import { MacroService } from 'src/app/services/macro.service';
 
 @Component({
-	selector: 'app-macro-manage',
-	templateUrl: './macro-manage.component.html',
-	styleUrls: ['./macro-manage.component.scss'],
+    selector: 'app-macro-manage',
+    templateUrl: './macro-manage.component.html',
+    styleUrls: ['./macro-manage.component.scss'],
+    standalone: false
 })
 export class MacroManageComponent implements OnInit {
 	public macroName: string = '';

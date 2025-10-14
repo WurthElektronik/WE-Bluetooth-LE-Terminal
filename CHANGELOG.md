@@ -1,3 +1,12 @@
+**Version 2.1.0**\
+\
+\[NEW] Add ability to generate random payloads.\
+\[NEW] Add ability to clear log messages.\
+\[NEW] Add WESPP2 profile and Proteus-IV module support.\
+\[NEW] Update app icon.\
+\[NEW] Add RSSI filter.\
+\[NEW] Update internal frameworks.\
+\
 **Version 2.0.0**\
 \
 \[FIX] Read full device name during conection setup.\

@@ -94,12 +94,14 @@ export abstract class CYSPPProfile extends SPPBLEProfile {
 	static async startReceiveDataUnacknowledged(
 		deviceId: string,
 		callback: (value: DataView) => void,
+		timeout: number,
 	) {
 		await BleClient.startNotifications(
 			deviceId,
 			this.getService().uuid,
 			this.getUnacknowledgedDataTXCharacteristic().uuid,
 			callback,
+			{ timeout: timeout },
 		);
 	}
 
@@ -127,12 +129,14 @@ export abstract class CYSPPProfile extends SPPBLEProfile {
 	static async startReceiveDataAcknowledged(
 		deviceId: string,
 		callback: (value: DataView) => void,
+		timeout: number,
 	) {
 		await BleClient.startNotifications(
 			deviceId,
 			this.getService().uuid,
 			this.getAcknowledgedDataTXCharacteristic().uuid,
 			callback,
+			{ timeout: timeout },
 		);
 	}
 

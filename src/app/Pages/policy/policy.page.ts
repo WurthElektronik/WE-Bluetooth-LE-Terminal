@@ -3,9 +3,10 @@ import { Preferences } from '@capacitor/preferences';
 import { Router } from '@angular/router';
 
 @Component({
-	selector: 'app-policy',
-	templateUrl: './policy.page.html',
-	styleUrls: ['./policy.page.scss'],
+    selector: 'app-policy',
+    templateUrl: './policy.page.html',
+    styleUrls: ['./policy.page.scss'],
+    standalone: false
 })
 export class PolicyPage implements OnInit {
 	firsttime = true;

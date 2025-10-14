@@ -78,6 +78,10 @@ export abstract class GeneralBLEModule {
 		return this.logger.getMessages(types);
 	}
 
+	clearLogMessages(types: LogMessageType[] = []) {
+		return this.logger.clearMessages(types);
+	}
+
 	getGPIOSupport(): Boolean {
 		return false;
 	}

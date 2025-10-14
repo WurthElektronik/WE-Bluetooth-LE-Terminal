@@ -8,9 +8,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 
 @Component({
-	selector: 'app-info',
-	templateUrl: 'InfoTab.html',
-	styleUrls: ['InfoTab.scss'],
+    selector: 'app-info',
+    templateUrl: 'InfoTab.html',
+    styleUrls: ['InfoTab.scss'],
+    standalone: false
 })
 export class InfoTab {
 	public version: string = environment.appVersion;

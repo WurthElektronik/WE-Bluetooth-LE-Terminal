@@ -10,9 +10,11 @@
     </ion-row>
   </ion-grid>
   <ion-segment [scrollable]="true" [(ngModel)]="this.selectedpin">
-    <ion-segment-button *ngFor="let pin of this.gpio.getGPIOPins() | keyvalue" value="{{pin.key}}" (click)="pinchanged(pin.key)">
-      <ion-label class="pinlabel">{{pin.value.getPinName()}}</ion-label>
-    </ion-segment-button>
+    @for (pin of this.gpio.getGPIOPins() | keyvalue; track pin) {
+      <ion-segment-button value="{{pin.key}}" (click)="pinchanged(pin.key)">
+        <ion-label class="pinlabel">{{pin.value.getPinName()}}</ion-label>
+      </ion-segment-button>
+    }
   </ion-segment>
 
   <ion-grid>
@@ -21,13 +23,14 @@
         <ion-select-option value="NoConfiguration">{{ 'ConfigGPIO.pintypeselection.noconfiguration' | translate }}</ion-select-option>
         <ion-select-option value="Input">{{ 'ConfigGPIO.pintypeselection.input' | translate }}</ion-select-option>
         <ion-select-option value="Output">{{ 'ConfigGPIO.pintypeselection.output' | translate }}</ion-select-option>
-        <ion-select-option *ngIf="this.gpio.getTempGPIOPins().get(+this.selectedpin).getPWMSupport() == true" value="PWM">{{ 'ConfigGPIO.pintypeselection.pwm' | translate }}</ion-select-option>
+        @if (this.gpio.getTempGPIOPins().get(+this.selectedpin).getPWMSupport() == true) {
+          <ion-select-option value="PWM">{{ 'ConfigGPIO.pintypeselection.pwm' | translate }}</ion-select-option>
+        }
       </ion-select>
     </ion-row>
 
-    <ng-container [ngSwitch]="pinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinType()]">
-
-      <ng-container *ngSwitchCase="'Input'">
+    @switch (pinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinType()]) {
+      @case ('Input') {
         <ion-row class="ion-margin-top">
           <ion-radio-group value="{{inputPinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(0)]}}" (ionChange)="inputTypeChanged($event)">
             <ion-radio labelPlacement="end" value="NoPull">{{ 'ConfigGPIO.input.nopull' | translate }}</ion-radio><br/>
@@ -35,18 +38,16 @@
             <ion-radio labelPlacement="end" value="PullUp">{{ 'ConfigGPIO.input.pullup' | translate }}</ion-radio>
           </ion-radio-group>
         </ion-row>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'Output'">
+      }
+      @case ('Output') {
         <ion-row class="ion-margin-top">
           <ion-radio-group value="{{outputPinTypes[this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint8(0)]}}" (ionChange)="outputTypeChanged($event)">
             <ion-radio labelPlacement="end" value="Low">{{ 'ConfigGPIO.output.low' | translate }}</ion-radio><br/>
             <ion-radio labelPlacement="end" value="High">{{ 'ConfigGPIO.output.high' | translate }}</ion-radio>
           </ion-radio-group>
         </ion-row>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'PWM'">
+      }
+      @case ('PWM') {
         <ion-row class="ion-margin-top">
           <ion-input value="{{this.gpio.getTempGPIOPins().get(+this.selectedpin).getPinConfigValue().getUint16(0)}}" (ionInput)="onpwmPeriodInput($event)" (ionChange)="onpwmPeriodChange($event)" #pwmperiod label="{{ 'ConfigGPIO.pwm.period' | translate }}" inputmode="numeric" placeholder="<1-500> ms"></ion-input>
         </ion-row>
@@ -55,9 +56,8 @@
             <div slot="label" style="margin-right: 10px !important;">{{ 'ConfigGPIO.pwm.ratio' | translate }}</div>
           </ion-range>
         </ion-row>
-      </ng-container>
-
-    </ng-container>
+      }
+    }
 
     <ion-row class="ion-margin-top">
       <ion-col size="auto" class="ion-text-left ion-align-self-end">

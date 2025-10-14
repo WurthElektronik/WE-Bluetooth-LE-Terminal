@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-	selector: 'app-whatsnew',
-	templateUrl: './whatsnew.page.html',
-	styleUrls: ['./whatsnew.page.scss'],
+    selector: 'app-whatsnew',
+    templateUrl: './whatsnew.page.html',
+    styleUrls: ['./whatsnew.page.scss'],
+    standalone: false
 })
 export class WhatsnewPage implements OnInit {
 	public whatsnew;

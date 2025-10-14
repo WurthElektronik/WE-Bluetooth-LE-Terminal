@@ -1,38 +1,57 @@
-var devicesIdList = [];
+const devicesIdList = new Map();
 
 let container = document.getElementById("container");
 let cancelButton = document.getElementById("cancelButton");
 
 window.electronionicbluetooth.onDeviceScanned((devices) => {
-    if(devicesIdList.length == 0)
-    {
-        container.innerHTML = '';
-    }
-    devices.forEach(device => {
-        if(!devicesIdList.includes(device.deviceId)){
-            const node = document.createElement("div");
-            const textnodeName = document.createElement("p");
-            const textnodeId = document.createElement("p");
-            const seperator = document.createElement("div");
-            textnodeName.innerText = device.deviceName;
-            textnodeId.innerText = device.deviceId;
-            textnodeName.className = "deviceName";
-            textnodeId.className = "deviceId";
-            seperator.className = "seperator";
-            node.appendChild(textnodeName);
-            node.appendChild(textnodeId);
-            node.appendChild(seperator);
-            node.addEventListener("click", (e) => {window.electronionicbluetooth.DeviceSelected(device.deviceId);});
-            container.appendChild(node);
-            devicesIdList.push(device.deviceId);
-        }
-    });
+	if (devicesIdList.size == 0) {
+		container.innerHTML = "";
+		container.className = "";
+	}
+	devices.forEach((device) => {
+		if (!devicesIdList.has(device.deviceId)) {
+			const listItem = document.createElement("li");
+			listItem.className = "device-entry";
+
+			const name = document.createElement("div");
+			name.id = "device-name";
+			name.className = "device-name";
+			name.innerText = device.deviceName || "Unknown Device";
+
+			const id = document.createElement("div");
+			id.id = "device-id";
+			id.className = "device-id";
+			id.innerText = device.deviceId;
+
+			listItem.appendChild(name);
+			listItem.appendChild(id);
+
+			listItem.addEventListener("click", () => {
+				window.electronionicbluetooth.DeviceSelected(device.deviceId);
+			});
+
+			container.appendChild(listItem);
+			devicesIdList.set(device.deviceId, listItem);
+		} else {
+			const listItem = devicesIdList.get(device.deviceId);
+			const deviceName = listItem.querySelector("#device-name");
+
+			if (deviceName.innerText == device.deviceName) {
+				return;
+			}
+
+			listItem.querySelector("#device-name").innerText = device.deviceName;
+			container.replaceChild(devicesIdList.get(device.deviceId), listItem);
+		}
+	});
 });
 window.electronionicbluetooth.clearScan(() => {
-    devicesIdList = [];
-    container.innerHTML = 'Please make sure bluetooth is enabled';
+	devicesIdList.clear();
+	container.className = "container-warning";
+	container.innerHTML =
+		'<li class="text-warning">Please make sure Bluetooth is enabled.</li>';
 });
 
-cancelButton.onclick = function() {
-    window.close();
-}
+cancelButton.onclick = function () {
+	window.close();
+};

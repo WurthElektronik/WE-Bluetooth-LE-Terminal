@@ -7,9 +7,10 @@ import { ASCII } from 'src/app/Encoders/ASCII';
 import { HEX } from 'src/app/Encoders/HEX';
 
 @Component({
-	selector: 'app-select-encoding',
-	templateUrl: './select-encoding.component.html',
-	styleUrls: ['./select-encoding.component.scss'],
+    selector: 'app-select-encoding',
+    templateUrl: './select-encoding.component.html',
+    styleUrls: ['./select-encoding.component.scss'],
+    standalone: false
 })
 export class SelectEncodingComponent implements OnInit {
 	public selectedencoding: Encoder;

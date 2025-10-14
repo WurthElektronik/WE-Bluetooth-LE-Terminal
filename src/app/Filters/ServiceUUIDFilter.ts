@@ -42,8 +42,9 @@ export class ServiceUUIDFilter implements ScanFilter {
 }
 
 @Pipe({
-	name: 'ServiceUUIDFilterPipe',
-	pure: true,
+    name: 'ServiceUUIDFilterPipe',
+    pure: true,
+    standalone: false
 })
 export class ServiceUUIDFilterPipe implements PipeTransform {
 	transform(value: ScanFilter): ServiceUUIDFilter {

@@ -9,6 +9,8 @@ import { GPIO } from '../BLEModules/GPIO/GPIO';
 import { GPIOInterface } from '../BLEModules/GPIO/GPIOInterface';
 import { GeneralBLEProfile } from '../BLEProfiles/GeneralBLEProfile';
 import { WESPPProfile } from '../BLEProfiles/WESPPProfile';
+import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
+import { TestSPPProfile } from './TestSPPProfile';
 
 export class TestModule extends GeneralBLEModule implements GPIOInterface {
 	private gpio: GPIO = undefined;
@@ -98,7 +100,7 @@ export class TestModule extends GeneralBLEModule implements GPIOInterface {
 		return this.getGPIOSupport();
 	}
 
-	getBLEProfile(): GeneralBLEProfile {
-		return WESPPProfile;
+	getSPPBLEProfile(): SPPBLEProfile {
+		return TestSPPProfile;
 	}
 }

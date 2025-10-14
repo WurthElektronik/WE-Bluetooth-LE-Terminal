@@ -5,29 +5,31 @@
 <div class="inner-content">
   <ion-list>
     <ion-radio-group [(ngModel)]="selectedmodule">
-      <ion-item *ngFor="let module of modules_profile | keyvalue">
-        <ion-radio value="{{BLEModuleType[module.key]}}">
-          {{ 'SelectModule.modules.' + BLEModuleType[module.key] | translate }}
-          <br>
-          {{ 'SelectModule.profile' | translate }} {{module.value.getTypeString()}}
-        </ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
-
-</div>
-
-<ion-footer class="ion-padding">
-  <ng-container [ngSwitch]="selectedmodule">
-    <ng-container *ngSwitchCase="'SkollI'">
-      <h2 style="margin-top: 0px !important;">{{ 'SelectModule.datamode' | translate }}</h2>
-      <ion-radio-group class="ion-margin-bottom ion-wrap ion-justify-content-between ion-align-items-center dataMode" style="display: flex;" [(ngModel)]="selectedDataMode">
-        <ng-container  *ngFor="let dataMode of dataModes">
-          <ion-radio labelPlacement="end" value="{{dataMode}}">{{ 'SelectModule.datamodes.' + dataMode | translate }}</ion-radio>
-        </ng-container>
+      @for (module of modules_profile | keyvalue; track module) {
+        <ion-item>
+          <ion-radio value="{{BLEModuleType[module.key]}}">
+            {{ 'SelectModule.modules.' + BLEModuleType[module.key] | translate }}
+            <br>
+              {{ 'SelectModule.profile' | translate }} {{module.value.getTypeString()}}
+            </ion-radio>
+          </ion-item>
+        }
       </ion-radio-group>
-    </ng-container>
-  </ng-container>
-  <ion-button (click)="choosemodule()" style="width: 100%;">{{ 'SelectModule.select' | translate }}</ion-button>
+    </ion-list>
 
-</ion-footer>
+  </div>
+
+  <ion-footer class="ion-padding">
+    @switch (selectedmodule) {
+      @case ('SkollI') {
+        <h2 style="margin-top: 0px !important;">{{ 'SelectModule.datamode' | translate }}</h2>
+        <ion-radio-group class="ion-margin-bottom ion-wrap ion-justify-content-between ion-align-items-center dataMode" style="display: flex;" [(ngModel)]="selectedDataMode">
+          @for (dataMode of dataModes; track dataMode) {
+            <ion-radio labelPlacement="end" value="{{dataMode}}">{{ 'SelectModule.datamodes.' + dataMode | translate }}</ion-radio>
+          }
+        </ion-radio-group>
+      }
+    }
+    <ion-button (click)="choosemodule()" style="width: 100%;">{{ 'SelectModule.select' | translate }}</ion-button>
+
+  </ion-footer>

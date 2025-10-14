@@ -5,9 +5,10 @@ import { ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-	selector: 'app-change-language',
-	templateUrl: './change-language.component.html',
-	styleUrls: ['./change-language.component.scss'],
+    selector: 'app-change-language',
+    templateUrl: './change-language.component.html',
+    styleUrls: ['./change-language.component.scss'],
+    standalone: false
 })
 export class ChangeLanguageComponent implements OnInit {
 	public selectedlang: string = undefined;

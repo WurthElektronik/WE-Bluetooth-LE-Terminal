@@ -5,12 +5,13 @@ import { module_profile } from 'src/app/BLEModules/ModuleProfile';
 import { DataMode } from 'src/app/BLEProfiles/DataMode';
 
 @Component({
-	selector: 'app-select-module',
-	templateUrl: './select-module.component.html',
-	styleUrls: ['./select-module.component.scss'],
+    selector: 'app-select-module',
+    templateUrl: './select-module.component.html',
+    styleUrls: ['./select-module.component.scss'],
+    standalone: false
 })
 export class SelectModuleComponent implements OnInit {
-	public selectedmodule: string = BLEModuleType[BLEModuleType.ProteusIII];
+	public selectedmodule: string = BLEModuleType[BLEModuleType.ProteusIV];
 	BLEModuleType = BLEModuleType;
 	public modules_profile = module_profile;
 	public dataModes = Object.keys(DataMode)

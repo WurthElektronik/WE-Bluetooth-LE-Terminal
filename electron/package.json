@@ -1,7 +1,7 @@
 {
   "name": "we-bluetooth-le-terminal",
-  "version": "2.0.0",
-  "description": "An Amazing Capacitor App",
+  "version": "2.1.0",
+  "description": "Bluetooth LE Terminal app that connects to Bluetooth LE wireless modules from Würth Elektronik eiSos GmbH",
   "author": {
     "name": "Würth Elektronik eiSos GmbH",
     "email": "wireless-sales@we-online.com"

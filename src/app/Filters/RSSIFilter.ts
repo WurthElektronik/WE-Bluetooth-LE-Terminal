@@ -2,23 +2,23 @@ import { FilterType } from './FilterType';
 import { ScanFilter } from './ScanFilter';
 import { Pipe, PipeTransform } from '@angular/core';
 
-export class NameFilter implements ScanFilter {
-	private Name: string;
+export class RSSIFilter implements ScanFilter {
+	private RSSIValue: number;
 
-	constructor(Name: string) {
-		this.Name = Name;
+	constructor(RSSIValue: number) {
+		this.RSSIValue = RSSIValue;
 	}
 
 	public getType(): FilterType {
-		return FilterType.Name;
+		return FilterType.RSSI;
 	}
 
 	public getTypeString(): string {
-		return FilterType[FilterType.Name];
+		return FilterType[FilterType.RSSI];
 	}
 
-	public getName(): string {
-		return this.Name;
+	public getRSSIValue(): number {
+		return this.RSSIValue;
 	}
 
 	public getIsExclusiveFilterType(): boolean {
@@ -31,14 +31,14 @@ export class NameFilter implements ScanFilter {
 }
 
 @Pipe({
-    name: 'NameFilterPipe',
+    name: 'RSSIFilterPipe',
     pure: true,
     standalone: false
 })
-export class NameFilterPipe implements PipeTransform {
-	transform(value: ScanFilter): NameFilter {
-		return value.getType() == FilterType.Name
-			? (value as NameFilter)
+export class RSSIFilterPipe implements PipeTransform {
+	transform(value: ScanFilter): RSSIFilter {
+		return value.getType() == FilterType.RSSI
+			? (value as RSSIFilter)
 			: undefined;
 	}
 }

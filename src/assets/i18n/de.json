@@ -1,206 +1,211 @@
 {
-  "notsupported":"Bluetooth Gerät / Browser wird nicht unterstützt",
-  "bluetoothoff": "Bluetooth ist nicht aktiviert",
-  "locationoff": "Standortdienste sind nicht aktiviert",
-  "bluetoothnoperm": "Bluetooth-Berechtigungen werden nicht erteilt",
-  "ScanTab": {
-    "tabname": "Gerätesuche",
-    "founddevices": "Geräteliste",
-    "clearfounddevices": "Lösche Geräteliste",
-    "startscantext": "Gerätesuche Start",
-    "stopscantext": "Gerätesuche Stop",
-    "connecting": "Verbinde",
-    "connectionfailed": "Verbindung fehlgeschlagen",
-    "scanby":"Sortiere nach",
-    "scansorttype": {
-      "default": "Standard",
-      "name": "Name",
-      "address": "Adresse",
-      "rssi": "RSSI"
-    }
-  },
-  "SelectModule":{
-    "selectmodule":"Produktauswahl",
-    "modules":{
-      "ProteusI": "Proteus-I",
-      "ProteusII": "Proteus-II",
-      "ProteusIII": "Proteus-III",
-      "Proteuse": "Proteus-e",
-      "SetebosI": "Setebos-I",
-      "StephanoI": "Stephano-I",
-      "SkollI": "Skoll-I"
-    },
-    "datamode": "Datenmodus",
-    "datamodes":{
-      "UnacknowledgedData":"Unbestätigter Datenmodus",
-      "AcknowledgedData":"Bestätigter Datenmodus"
-    },
-    "profile": "Profil",
-    "select": "Auswahl"
-  },
-  "AddFilter":{
-    "filter": "Suchfilter",
-    "addfilter":"Suchfilter hinzufügen",
-    "filtertype": "Suchfilter Typ",
-    "filters":{
-      "Name": "Name",
-      "ServiceUUID": "Dienst UUID"
-    },
-    "add": "hinzufügen"
-  },
-  "TerminalTab": {
-    "nodeviceconnected": "Kein Gerät verbunden",
-    "filters":{
-      "Info": "Info",
-      "Data": "Daten",
-      "RemoteCommand": "Remote-Befehle"
-    },
-    "nologmsgs": "Keine Log Nachrichten",
-    "payload": "Payload",
-    "sendcount": "Anzahl senden",
-    "txinterval": "TX Intervall",
-    "send": "Senden",
-    "terminalpopover":{
-      "selectencoding": "Auswahl Encoding",
-      "transferfile": "Datei übertragen",
-      "managemacros": "Makros verwalten",
-      "sendtoalldevices": "An alle Geräte senden",
-      "multiplepacketsend": "Mehrere Pakete"
-    },
-    "devicepopover":{
-      "gpioconfig": "GPIO Konfiguration",
-      "gpioreadwrite": "GPIO Lesen/Schreiben",
-      "requestconnectionpriority": "Verbindungspriorität anfragen",
-      "readmtu": "Lese MTU",
-      "readrssi": "Lese RSSI"
-    },
-    "requestconnectionpopover":{
-      "high": "Hoch",
-      "balanced": "Ausgeglichen",
-      "low": "Niedrig"
-    }
-  },
-  "SelectEncoding": {
-    "selectencoding": "Auswahl Encoding",
-    "printablechars": "Nur ASCII-druckbare Zeichen",
-    "select": "Auswahl"
-  },
-  "ConfigGPIO":{
-    "configgpio":"Konfiguriere GPIO",
-    "readconfig": "Lese Konfiguration",
-    "pintypeselection": {
-      "noconfiguration": "Keine Konfiguration",
-      "input": "Eingang",
-      "output": "Ausgang",
-      "pwm": "PWM"
-    },
-    "input": {
-      "nopull": "Kein Pull",
-      "pulldown": "Pull Down",
-      "pullup": "Pull Up"
-    },
-    "output": {
-      "low": "Low",
-      "high": "High"
-    },
-    "pwm":{
-      "period": "Periode",
-      "ratio": "Verhältnis"
-    },
-    "back": "Zurück",
-    "configpin": "Konfiguriere Pin",
-    "configallpins": "Konfiguriere alle Pins"
-  },
-  "RWGPIO":{
-    "rwgpio":"R/W GPIO",
-    "readallpins": "Alle lesen",
-    "input":{
-      "input": "Eingang",
-      "Low": "Low",
-      "High": "High"
-    },
-    "output":{
-      "output": "Ausgang",
-      "Low": "Low",
-      "High": "High"
-    },
-    "pwm":{
-      "pwm": "PWM",
-      "ratio": "Verhältnis"
-    },
-    "noconfiguration":"Keine Konfiguration",
-    "back": "Zurück",
-    "readpin": "Lese Pin",
-    "writepin": "Schreibe Pin",
-    "writeallpins": "Schreibe alle Pins"
-  },
-  "InfoTab": {
-    "tabname": "Info",
-    "informationsection": {
-      "informationheader": "Information",
-      "version": "Version",
-      "language": "Sprache",
-      "selectedlanguage": "Deutsch",
-      "policy": "Datenschutzrichtlinie ",
-      "imprint": "Impressum",
-      "whatsnew": "Was gibt es neues"
-    },
-    "linksection": {
-      "linksheader": "Links",
-      "wirelessconnectivityandsensors": "Wireless Connectivity and Sensors",
-      "usermanuals": "User Manuals",
-      "sourcecode": "Source Code"
-    }
-  },
-  "Imprint":{
-    "tabname": "Impressum"
-  },
-  "Policy":{
-    "tabname": "Datenschutzrichtlinie "
-  },
-  "Whatsnew":{
-    "tabname": "Was gibt es neues"
-  },
-  "ChangeLanguage": {
-    "header": "Sprache ändern",
-    "English": "Englisch",
-    "German": "Deutsch"
-  },
-  "Tabs":{
-    "scan": "Suche",
-    "info": "Info"
-  },
-  "LogMessages":{
-    "DataSent": "Daten gesendet",
-    "DataSentHighThroughput": "Daten mit hohem Durchsatz gesendet",
-    "DataReceived": "Daten empfangen",
-    "DataReceivedHighThroughput": "Daten mit hohem Durchsatz empfangen",
-    "DataTooLarge": "Daten wurden nicht gesendet, da sie größer als die MTU sind",
-    "DeviceConnected": "Gerät verbunden",
-    "ServicesDiscovered": "Dienste abgefragt",
-    "NotificationsEnabled": "Benachrichtigungen eingeschaltet",
-    "NotificationsDisabled": "Benachrichtigungen ausgeschaltet",
-    "IndicationsEnabled": "Hinweise eingeschaltet",
-    "IndicationsDisabled": "Hinweise ausgeschaltet",
-    "ProfileUsed": "Verwendetes Profil {{profile}}",
-    "RequestedConnectionPriority": "Verbindungspriorität abgefragt : {{priority}}",
-    "CCCDWritten": "Wert {{descriptorvalue}} geschrieben für Beschreibung {{descriptor}} der Characteristik {{characteristic}}"
-  },
-  "ParserMessages":{
-    "ASCIIError":"Ungültige ASCII Daten",
-    "HEXError":"Ungültige HEX Daten"
-  },
-  "MacroManage":{
-    "macromanage": "Makros verwalten",
-    "import": "importieren",
-    "export": "exportieren",
-    "macroname": "Makroname",
-    "macrodata": "Makrodaten",
-    "add": "hinzufügen",
-    "edit": "bearbeiten",
-    "canceledit": "Bearbeiten abbrechen",
-    "importfail": "Makros konnten nicht importiert werden",
-    "exportsuccess": "Makros exportiert nach {{filepath}}",
-    "exportfail": "Makros konnten nicht exportiert werden"
-  }
+	"notsupported": "Bluetooth Gerät / Browser wird nicht unterstützt",
+	"bluetoothoff": "Bluetooth ist nicht aktiviert",
+	"locationoff": "Standortdienste sind nicht aktiviert",
+	"bluetoothnoperm": "Bluetooth-Berechtigungen werden nicht erteilt",
+	"ScanTab": {
+		"tabname": "Gerätesuche",
+		"founddevices": "Geräteliste",
+		"clearfounddevices": "Lösche Geräteliste",
+		"startscantext": "Gerätesuche Start",
+		"stopscantext": "Gerätesuche Stop",
+		"connecting": "Verbinde",
+		"connectionfailed": "Verbindung fehlgeschlagen",
+		"scanby": "Sortiere nach",
+		"scansorttype": {
+			"default": "Standard",
+			"name": "Name",
+			"address": "Adresse",
+			"rssi": "RSSI"
+		}
+	},
+	"SelectModule": {
+		"selectmodule": "Produktauswahl",
+		"modules": {
+			"ProteusI": "Proteus-I",
+			"ProteusII": "Proteus-II",
+			"ProteusIII": "Proteus-III",
+			"ProteusIV": "Proteus-IV",
+			"Proteuse": "Proteus-e",
+			"SetebosI": "Setebos-I",
+			"StephanoI": "Stephano-I",
+			"SkollI": "Skoll-I"
+		},
+		"datamode": "Datenmodus",
+		"datamodes": {
+			"UnacknowledgedData": "Unbestätigter Datenmodus",
+			"AcknowledgedData": "Bestätigter Datenmodus"
+		},
+		"profile": "Profil",
+		"select": "Auswahl"
+	},
+	"AddFilter": {
+		"filter": "Suchfilter",
+		"addfilter": "Suchfilter hinzufügen",
+		"filtertype": "Suchfilter Typ",
+		"filters": {
+			"Name": "Name",
+			"ServiceUUID": "Dienst UUID",
+			"RSSI": "RSSI"
+		},
+		"add": "hinzufügen"
+	},
+	"TerminalTab": {
+		"nodeviceconnected": "Kein Gerät verbunden",
+		"filters": {
+			"Info": "Info",
+			"Data": "Daten",
+			"RemoteCommand": "Remote-Befehle"
+		},
+		"nologmsgs": "Keine Protokolle",
+		"payload": "Payload",
+		"sendcount": "Anzahl senden",
+		"txinterval": "TX Intervall",
+		"randompayloadlength": "Zufällige Datenlänge (Bytes)",
+		"send": "Senden",
+		"terminalpopover": {
+			"selectencoding": "Auswahl Encoding",
+			"transferfile": "Datei übertragen",
+			"managemacros": "Makros verwalten",
+			"randompayload": "Zufallsdaten",
+			"sendtoalldevices": "An alle Geräte senden",
+			"multiplepacketsend": "Mehrere Pakete"
+		},
+		"devicepopover": {
+			"clearselectedlogs": "Ausgewählte Protokolle löschen",
+			"gpioconfig": "GPIO Konfiguration",
+			"gpioreadwrite": "GPIO Lesen/Schreiben",
+			"requestconnectionpriority": "Verbindungspriorität anfragen",
+			"readmtu": "Lese MTU",
+			"readrssi": "Lese RSSI"
+		},
+		"requestconnectionpopover": {
+			"high": "Hoch",
+			"balanced": "Ausgeglichen",
+			"low": "Niedrig"
+		}
+	},
+	"SelectEncoding": {
+		"selectencoding": "Auswahl Encoding",
+		"printablechars": "Nur ASCII-druckbare Zeichen",
+		"select": "Auswahl"
+	},
+	"ConfigGPIO": {
+		"configgpio": "Konfiguriere GPIO",
+		"readconfig": "Lese Konfiguration",
+		"pintypeselection": {
+			"noconfiguration": "Keine Konfiguration",
+			"input": "Eingang",
+			"output": "Ausgang",
+			"pwm": "PWM"
+		},
+		"input": {
+			"nopull": "Kein Pull",
+			"pulldown": "Pull Down",
+			"pullup": "Pull Up"
+		},
+		"output": {
+			"low": "Low",
+			"high": "High"
+		},
+		"pwm": {
+			"period": "Periode",
+			"ratio": "Verhältnis"
+		},
+		"back": "Zurück",
+		"configpin": "Konfiguriere Pin",
+		"configallpins": "Konfiguriere alle Pins"
+	},
+	"RWGPIO": {
+		"rwgpio": "R/W GPIO",
+		"readallpins": "Alle lesen",
+		"input": {
+			"input": "Eingang",
+			"Low": "Low",
+			"High": "High"
+		},
+		"output": {
+			"output": "Ausgang",
+			"Low": "Low",
+			"High": "High"
+		},
+		"pwm": {
+			"pwm": "PWM",
+			"ratio": "Verhältnis"
+		},
+		"noconfiguration": "Keine Konfiguration",
+		"back": "Zurück",
+		"readpin": "Lese Pin",
+		"writepin": "Schreibe Pin",
+		"writeallpins": "Schreibe alle Pins"
+	},
+	"InfoTab": {
+		"tabname": "Info",
+		"informationsection": {
+			"informationheader": "Information",
+			"version": "Version",
+			"language": "Sprache",
+			"selectedlanguage": "Deutsch",
+			"policy": "Datenschutzrichtlinie ",
+			"imprint": "Impressum",
+			"whatsnew": "Was gibt es neues"
+		},
+		"linksection": {
+			"linksheader": "Links",
+			"wirelessconnectivityandsensors": "Wireless Connectivity and Sensors",
+			"usermanuals": "User Manuals",
+			"sourcecode": "Source Code"
+		}
+	},
+	"Imprint": {
+		"tabname": "Impressum"
+	},
+	"Policy": {
+		"tabname": "Datenschutzrichtlinie "
+	},
+	"Whatsnew": {
+		"tabname": "Was gibt es neues"
+	},
+	"ChangeLanguage": {
+		"header": "Sprache ändern",
+		"English": "Englisch",
+		"German": "Deutsch"
+	},
+	"Tabs": {
+		"scan": "Suche",
+		"info": "Info"
+	},
+	"LogMessages": {
+		"DataSent": "Daten gesendet",
+		"DataSentHighThroughput": "Daten mit hohem Durchsatz gesendet",
+		"DataReceived": "Daten empfangen",
+		"DataReceivedHighThroughput": "Daten mit hohem Durchsatz empfangen",
+		"DataTooLarge": "Daten wurden nicht gesendet, da sie größer als die MTU sind",
+		"DeviceConnected": "Gerät verbunden",
+		"ServicesDiscovered": "Dienste abgefragt",
+		"NotificationsEnabled": "Benachrichtigungen eingeschaltet",
+		"NotificationsDisabled": "Benachrichtigungen ausgeschaltet",
+		"IndicationsEnabled": "Hinweise eingeschaltet",
+		"IndicationsDisabled": "Hinweise ausgeschaltet",
+		"ProfileUsed": "Verwendetes Profil {{profile}}",
+		"RequestedConnectionPriority": "Verbindungspriorität abgefragt : {{priority}}",
+		"CCCDWritten": "Wert {{descriptorvalue}} geschrieben für Beschreibung {{descriptor}} der Characteristik {{characteristic}}"
+	},
+	"ParserMessages": {
+		"ASCIIError": "Ungültige ASCII Daten",
+		"HEXError": "Ungültige HEX Daten"
+	},
+	"MacroManage": {
+		"macromanage": "Makros verwalten",
+		"import": "importieren",
+		"export": "exportieren",
+		"macroname": "Makroname",
+		"macrodata": "Makrodaten",
+		"add": "hinzufügen",
+		"edit": "bearbeiten",
+		"canceledit": "Bearbeiten abbrechen",
+		"importfail": "Makros konnten nicht importiert werden",
+		"exportsuccess": "Makros exportiert nach {{filepath}}",
+		"exportfail": "Makros konnten nicht exportiert werden"
+	}
 }

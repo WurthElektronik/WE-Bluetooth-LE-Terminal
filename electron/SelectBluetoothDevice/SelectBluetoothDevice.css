@@ -1,55 +1,117 @@
-p {
-    margin: 0px;
-    flex: 1;
-    font-family: 'Titillium Web';
-}
-.seperator{
-    background-color: grey; 
-    height: 1px; 
-    border: 0; 
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-#container{
-    display: flex;
-    flex-direction: column ;
-}
-.deviceName{
-    color: black;
-    font-weight: bold;
-}
-.deviceId{
-    color: grey;
+html,
+body {
+	height: 100%;
+	margin: 0;
+	font-family: "Titillium Web", sans-serif;
 }
 
-button{
-    position: fixed;
-    right: 12px;
-    bottom: 12px;
-    background-color: #e3000b00;
-    border: none;
-    color: #e3000b;
-    text-align: center;
-    padding: 6px 12px;
-    font-weight: bold;
-    font-size: 16px;
-    font-family: 'Titillium Web';
+#container {
+	list-style: none;
+	padding: 10px;
+	margin: 0;
+	font-family: "Titillium Web", sans-serif;
 }
 
-button:hover{
-    background-color: #e3000b10;
+.container-warning {
+	padding: 0 !important;
+	display: flex;
+	justify-content: center; /* Horizontal centering */
+	align-items: center; /* Vertical centering */
+	height: 100%; /* Full viewport height */
+	text-align: center;
+}
+
+.device-entry {
+	background-color: #ffffff;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	padding: 12px 16px;
+	margin-bottom: 10px;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.device-entry:hover {
+	background-color: #f5f5f5;
+}
+
+.device-entry .device-name {
+	font-weight: bold;
+	font-size: 16px;
+	color: #000;
+}
+
+.device-entry .device-id {
+	font-size: 14px;
+	color: #666;
+	margin-top: 4px;
+}
+
+.text-warning {
+	color: #e3000b;
+	font-weight: bold;
+	padding: 10px;
+	text-align: center;
+	display: block;
+}
+
+button {
+	position: fixed;
+	right: 12px;
+	bottom: 12px;
+	background-color: #e3000b00;
+	border: none;
+	color: #e3000b;
+	text-align: center;
+	padding: 6px 12px;
+	font-weight: bold;
+	font-size: 16px;
+	font-family: "Titillium Web";
+}
+
+button:hover {
+	background-color: #e3000b10;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        color-scheme: dark;
-    }
+	:root {
+		color-scheme: dark;
+	}
 
-    body{
-        background-color: black;
-    }
+	body {
+		background-color: black;
+	}
 
-    .deviceName{
-        color: white;
-    }
+	.deviceName {
+		color: white;
+	}
+}
+
+@font-face {
+	font-family: "Titillium Web";
+	src: url("../app/assets/font/titilliumweb_regular.ttf") format("truetype");
+	font-style: normal;
+	font-weight: normal;
+}
+
+@font-face {
+	font-family: "Titillium Web";
+	src: url("../app/assets/font/titilliumweb_light.ttf") format("truetype");
+	font-style: normal;
+	font-weight: lighter;
+}
+
+@font-face {
+	font-family: "Titillium Web";
+	src: url("../app/assets/font/titilliumweb_semibold.ttf") format("truetype");
+	font-style: normal;
+	font-weight: 600;
+}
+
+@font-face {
+	font-family: "Titillium Web";
+	src: url("../app/assets/font/titilliumweb_bold.ttf") format("truetype");
+	font-style: normal;
+	font-weight: bold;
 }

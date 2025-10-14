@@ -15,6 +15,7 @@ export abstract class SPPBLEProfile extends GeneralBLEProfile {
 	abstract startReceiveDataUnacknowledged(
 		deviceId: string,
 		callback: (value: DataView) => void,
+		timeout: number,
 	);
 
 	abstract stopReceiveDataUnacknowledged(deviceId: string);
@@ -24,6 +25,7 @@ export abstract class SPPBLEProfile extends GeneralBLEProfile {
 	abstract startReceiveDataAcknowledged(
 		deviceId: string,
 		callback: (value: DataView) => void,
+		timeout: number,
 	);
 
 	abstract stopReceiveDataAcknowledged(deviceId: string);

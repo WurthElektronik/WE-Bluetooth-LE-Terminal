@@ -18,9 +18,10 @@ import { Proteus } from 'src/app/BLEModules/Proteus/Proteus';
 import { BleService } from 'src/app/services/ble.service';
 
 @Component({
-	selector: 'app-rw-gpio',
-	templateUrl: './rw-gpio.component.html',
-	styleUrls: ['./rw-gpio.component.scss'],
+    selector: 'app-rw-gpio',
+    templateUrl: './rw-gpio.component.html',
+    styleUrls: ['./rw-gpio.component.scss'],
+    standalone: false
 })
 export class RwGpioComponent implements OnInit {
 	public id: string;

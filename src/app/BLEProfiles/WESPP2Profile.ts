@@ -6,26 +6,26 @@ import {
 import { SPPBLEProfileType } from './SPPBLEProfileType';
 import { SPPBLEProfile } from './SPPBLEProfile';
 
-export abstract class WESPPProfile extends SPPBLEProfile {
+export abstract class WESPP2Profile extends SPPBLEProfile {
 	static getType(): SPPBLEProfileType {
-		return SPPBLEProfileType.WESPP;
+		return SPPBLEProfileType.WESPP2;
 	}
 
 	static getTypeString(): string {
-		return SPPBLEProfileType[SPPBLEProfileType.WESPP];
+		return SPPBLEProfileType[SPPBLEProfileType.WESPP2];
 	}
 
 	static getService(): BleService {
 		return {
-			uuid: '6e400001-c352-11e5-953d-0002a5d5c51b', // WESPP Service UUID
+			uuid: 'b70c0001-686c-4036-bb28-b797ae6a8d3a', // WESPP2 Service UUID
 			characteristics: [
 				{
-					uuid: '6e400002-c352-11e5-953d-0002a5d5c51b', // WESPP RX characteristic UUID
+					uuid: 'b70c0002-686c-4036-bb28-b797ae6a8d3a', // WESPP2 RX characteristic UUID
 					properties: {
 						broadcast: false,
 						read: false,
 						writeWithoutResponse: true,
-						write: true,
+						write: false,
 						notify: false,
 						indicate: false,
 						authenticatedSignedWrites: false,
@@ -33,7 +33,7 @@ export abstract class WESPPProfile extends SPPBLEProfile {
 					descriptors: [],
 				},
 				{
-					uuid: '6e400003-c352-11e5-953d-0002a5d5c51b', // WESPP TX characteristic UUID
+					uuid: 'b70c0003-686c-4036-bb28-b797ae6a8d3a', // WESPP2 TX characteristic UUID
 					properties: {
 						broadcast: false,
 						read: false,

@@ -16,9 +16,10 @@ import { GeneralBLEModule } from 'src/app/BLEModules/GeneralBLEModule';
 import { BleService } from 'src/app/services/ble.service';
 
 @Component({
-	selector: 'app-config-gpio',
-	templateUrl: './config-gpio.component.html',
-	styleUrls: ['./config-gpio.component.scss'],
+    selector: 'app-config-gpio',
+    templateUrl: './config-gpio.component.html',
+    styleUrls: ['./config-gpio.component.scss'],
+    standalone: false
 })
 export class ConfigGpioComponent implements OnInit {
 	public id: string;
