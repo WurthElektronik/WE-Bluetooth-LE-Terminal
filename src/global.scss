@@ -9,6 +9,8 @@
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
 
+@use "mixins" as mixins;
+
 /* Core CSS required for Ionic components to work properly */
 @import "~@ionic/angular/css/core.css";
 
@@ -16,7 +18,7 @@
 @import "~@ionic/angular/css/normalize.css";
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
-@import '~@ionic/angular/css/display.css';
+@import "~@ionic/angular/css/display.css";
 
 /* Optional CSS utils that can be commented out */
 @import "~@ionic/angular/css/padding.css";
@@ -26,53 +28,55 @@
 @import "~@ionic/angular/css/flex-utils.css";
 
 html {
-    --ion-dynamic-font: initial;
+	--ion-dynamic-font: initial;
 }
 
 ion-toolbar {
-    background: var(--ion-color-primary) !important;
+	background: var(--ion-color-primary) !important;
 }
 
-.itemwrapnogrow{
-    flex: 0 0 auto;
+.itemwrapnogrow {
+	flex: 0 0 auto;
 }
 
 .no-ripple {
-    --ripple-color: transparent;
-    --background-activated: transparent !important;
-    --background-hover: transparent !important;
+	--ripple-color: transparent;
+	--background-activated: transparent !important;
+	--background-hover: transparent !important;
 }
 
-.toastwidth{
-    --height: auto;
-    --width: fit-content;
-    --max-width: 400px;
+.toastwidth {
+	--height: auto;
+	--width: fit-content;
+	--max-width: 400px;
 }
 
 ion-modal.auto-height {
+	background: rgba(var(--ion-color-dark-rgb), 0.5);
 
-    background: rgba(var(--ion-color-dark-rgb),0.5);
+	&.bottom {
+		align-items: flex-end;
+	}
+	--height: auto;
+	--width: 85%;
+	--max-width: 400px;
+	.ion-page {
+		position: relative;
+		display: block;
+		contain: content;
 
-    &.bottom {
-        align-items: flex-end;
-    }
-    --height: auto;
-    --width: 85%;
-    --max-width: 400px;
-    .ion-page {
-        position: relative;
-        display: block;
-        contain: content;
-
-        .inner-content {
-            max-height: 80vh;
-            overflow: auto;
-            padding: 10px;
-        }
-    }
-}  
+		.inner-content {
+			max-height: 80vh;
+			overflow: auto;
+			padding: 10px;
+		}
+	}
+}
 
 ion-button {
-    font-weight: 600;
+	font-weight: 600;
 }
-  
+
+.prewrap {
+	@include mixins.prewrap;
+}

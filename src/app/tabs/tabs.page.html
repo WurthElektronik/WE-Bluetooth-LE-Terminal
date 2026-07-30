@@ -1,22 +1,30 @@
 <ion-tabs>
+	<ion-tab-bar slot="bottom">
+		<ion-tab-button tab="scan">
+			<ion-icon class="icon-default" name="search-outline"></ion-icon>
+			<ion-icon class="icon-selected" name="search"></ion-icon>
+			<ion-label>{{ 'Tabs.scan' | translate }}</ion-label>
+		</ion-tab-button>
 
-  <ion-tab-bar slot="bottom">
+		<ion-tab-button tab="terminal">
+			<ion-icon class="icon-default" name="options-outline"></ion-icon>
+			<ion-icon class="icon-selected" name="options"></ion-icon>
+			<ion-label>Terminal</ion-label>
+		</ion-tab-button>
 
-    <ion-tab-button tab="scan">
-      <ion-icon name="search-outline"></ion-icon>
-      <ion-label>{{ 'Tabs.scan' | translate }}</ion-label>
-    </ion-tab-button>
+		<ion-tab-button tab="settings">
+			<ion-icon class="icon-default" name="settings-outline"></ion-icon>
+			<ion-icon class="icon-selected" name="settings"></ion-icon>
+			<ion-label>{{ 'Tabs.settings' | translate }}</ion-label>
+		</ion-tab-button>
 
-    <ion-tab-button tab="terminal">
-      <ion-icon name="options-outline"></ion-icon>
-      <ion-label>Terminal</ion-label>
-    </ion-tab-button>
-
-    <ion-tab-button tab="info">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      <ion-label>{{ 'Tabs.info' | translate }}</ion-label>
-    </ion-tab-button>
-
-  </ion-tab-bar>
-
+		<ion-tab-button tab="info">
+			<ion-icon
+				class="icon-default"
+				name="information-circle-outline"
+			></ion-icon>
+			<ion-icon class="icon-selected" name="information-circle"></ion-icon>
+			<ion-label>{{ 'Tabs.info' | translate }}</ion-label>
+		</ion-tab-button>
+	</ion-tab-bar>
 </ion-tabs>

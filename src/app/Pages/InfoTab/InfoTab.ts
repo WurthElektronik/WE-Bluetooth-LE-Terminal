@@ -8,19 +8,15 @@ import { TranslateService } from '@ngx-translate/core';
 import { environment } from '../../../environments/environment';
 
 @Component({
-    selector: 'app-info',
-    templateUrl: 'InfoTab.html',
-    styleUrls: ['InfoTab.scss'],
-    standalone: false
+	selector: 'app-info',
+	templateUrl: 'InfoTab.html',
+	styleUrls: ['InfoTab.scss'],
+	standalone: false,
 })
 export class InfoTab {
 	public version: string = environment.appVersion;
 
-	constructor(
-		private router: Router,
-		private modalCtrl: ModalController,
-		private translate: TranslateService,
-	) {}
+	constructor(private router: Router) {}
 
 	async wirelesssensorsclick() {
 		await Browser.open({
@@ -50,24 +46,5 @@ export class InfoTab {
 
 	whatsnew() {
 		this.router.navigate(['/whatsnew']);
-	}
-
-	async languageclick() {
-		const modal = await this.modalCtrl.create({
-			component: ChangeLanguageComponent,
-		});
-		modal.cssClass = 'auto-height';
-		modal.animated = false;
-		modal.present();
-
-		const { data, role } = await modal.onWillDismiss();
-
-		if (role === 'confirm') {
-			await Preferences.set({
-				key: 'preflang',
-				value: data,
-			});
-			this.translate.use(data);
-		}
 	}
 }

@@ -2,14 +2,14 @@ import { Encoder } from './Encoder';
 import { EncodingType } from './EncodingType';
 
 export abstract class ASCII_printable extends Encoder {
-	static BufferToEncoding(buffer: ArrayBuffer): string {
+	static BufferToEncoding(buffer: ArrayBufferLike): string {
 		let regex = /[^\x20-\x7E]/g;
 		return String.fromCharCode
 			.apply(null, new Uint8Array(buffer))
 			.replace(regex, '☐');
 	}
 
-	static EncodingToBuffer(encodingString: string): ArrayBuffer {
+	static EncodingToBuffer(encodingString: string): ArrayBufferLike {
 		return Uint8Array.from(encodingString, (x) => x.charCodeAt(0)).buffer;
 	}
 

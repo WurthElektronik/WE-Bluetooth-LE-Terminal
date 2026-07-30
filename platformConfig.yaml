@@ -6,7 +6,7 @@ vars:
   DISPLAY_NAME:
     default: WE Bluetooth LE Terminal
   BUILD_NUMBER:
-    default: 251014
+    default: 260722
 
 platforms:
   ios:

@@ -25,6 +25,13 @@ const routes: Routes = [
 					),
 			},
 			{
+				path: 'settings',
+				loadChildren: () =>
+					import('../Pages/SettingsTab/SettingsTab.module').then(
+						(m) => m.SettingsTabModule,
+					),
+			},
+			{
 				path: '',
 				redirectTo: '/tabs/scan',
 				pathMatch: 'full',

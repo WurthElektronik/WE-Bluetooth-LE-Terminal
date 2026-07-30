@@ -144,8 +144,6 @@
 		"informationsection": {
 			"informationheader": "Information",
 			"version": "Version",
-			"language": "Sprache",
-			"selectedlanguage": "Deutsch",
 			"policy": "Datenschutzrichtlinie ",
 			"imprint": "Impressum",
 			"whatsnew": "Was gibt es neues"
@@ -155,6 +153,29 @@
 			"wirelessconnectivityandsensors": "Wireless Connectivity and Sensors",
 			"usermanuals": "User Manuals",
 			"sourcecode": "Source Code"
+		}
+	},
+	"SettingsTab": {
+		"tabname": "Einstellungen",
+		"generalsection": {
+			"generalheader": "Allgemein",
+			"language": "Sprache",
+			"selectedlanguage": "Deutsch"
+		},
+		"blesection": {
+			"bleheader": "Bluetooth LE",
+			"uuid_configuration": "UUID Konfiguration",
+			"ServiceUUID": "Dienst UUID",
+			"RXUUID": "RX UUID",
+			"TXUUID": "TX UUID",
+			"RXACKUUID": "RX ACK UUID",
+			"TXACKUUID": "RX ACK UUID",
+			"validation_errors": {
+				"invalid_uuid": "Ungültige UUID",
+				"RXTX_match": "RX und TX UUID müssen übereinstimmen",
+				"RXACKTXACK_match": "RX ACK and TX ACK UUID müssen übereinstimmen"
+			},
+			"confirm": "Bestätigen"
 		}
 	},
 	"Imprint": {
@@ -173,6 +194,7 @@
 	},
 	"Tabs": {
 		"scan": "Suche",
+		"settings": "Einstellungen",
 		"info": "Info"
 	},
 	"LogMessages": {

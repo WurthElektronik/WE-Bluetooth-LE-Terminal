@@ -1,26 +1,95 @@
 import {
 	BleCharacteristic,
-	BleClient,
 	BleService,
 } from '@capacitor-community/bluetooth-le';
 import { SPPBLEProfileType } from './SPPBLEProfileType';
-import { SPPBLEProfile } from './SPPBLEProfile';
+import { SPPBLEProfile, UUID_Ref } from './SPPBLEProfile';
+import { DataMode } from './DataMode';
+import { SPPBLECharacteristicType } from './SPPBLECharacteristicType';
 
-export abstract class WESPPProfile extends SPPBLEProfile {
+const WESPP_SERVICE_UUID_DEFAULT: string =
+	'6e400001-c352-11e5-953d-0002a5d5c51b';
+const WESPP_RX_CHARACTERISTIC_DEFAULT: string =
+	'6e400002-c352-11e5-953d-0002a5d5c51b';
+const WESPP_TX_CHARACTERISTIC_DEFAULT: string =
+	'6e400003-c352-11e5-953d-0002a5d5c51b';
+
+export class WESPPProfile extends SPPBLEProfile {
+	/* Template Attributes */
+	protected static readonly DefaultServiceUUID: string =
+		WESPP_SERVICE_UUID_DEFAULT;
+
+	protected static readonly DefaultCharacteristicUUIDMap: Map<
+		DataMode,
+		Map<SPPBLECharacteristicType, string>
+	> = new Map([
+		[
+			DataMode.UnacknowledgedData,
+			new Map<SPPBLECharacteristicType, string>([
+				[SPPBLECharacteristicType.RX, WESPP_RX_CHARACTERISTIC_DEFAULT],
+				[SPPBLECharacteristicType.TX, WESPP_TX_CHARACTERISTIC_DEFAULT],
+			]),
+		],
+	]);
+	protected static ServiceUUID_Template = WESPP_SERVICE_UUID_DEFAULT;
+
+	protected static RX_UUID_Template: UUID_Ref = {
+		value: WESPP_RX_CHARACTERISTIC_DEFAULT,
+	};
+
+	protected static TX_UUID_Template: UUID_Ref = {
+		value: WESPP_TX_CHARACTERISTIC_DEFAULT,
+	};
+
+	protected static CharacteristicUUIDMap_Template: Map<
+		DataMode,
+		Map<SPPBLECharacteristicType, UUID_Ref>
+	> = new Map([
+		[
+			DataMode.UnacknowledgedData,
+			new Map<SPPBLECharacteristicType, UUID_Ref>([
+				[SPPBLECharacteristicType.RX, WESPPProfile.RX_UUID_Template],
+				[SPPBLECharacteristicType.TX, WESPPProfile.TX_UUID_Template],
+			]),
+		],
+	]);
+
+	/* Instance Attributes */
+	protected readonly ServiceUUID: string;
+	protected readonly RX_UUID: string;
+	protected readonly TX_UUID: string;
+
+	protected readonly CharacteristicMap: Map<
+		DataMode,
+		Map<SPPBLECharacteristicType, BleCharacteristic>
+	>;
+
+	constructor() {
+		super();
+		this.ServiceUUID = WESPPProfile.ServiceUUID_Template;
+		this.RX_UUID = WESPPProfile.RX_UUID_Template.value;
+		this.TX_UUID = WESPPProfile.TX_UUID_Template.value;
+		this.CharacteristicMap = new Map([
+			[
+				DataMode.UnacknowledgedData,
+				new Map<SPPBLECharacteristicType, BleCharacteristic>([
+					[SPPBLECharacteristicType.RX, this.getService().characteristics[0]],
+					[SPPBLECharacteristicType.TX, this.getService().characteristics[1]],
+				]),
+			],
+		]);
+	}
+
 	static getType(): SPPBLEProfileType {
 		return SPPBLEProfileType.WESPP;
 	}
 
-	static getTypeString(): string {
-		return SPPBLEProfileType[SPPBLEProfileType.WESPP];
-	}
-
-	static getService(): BleService {
+	getService(): BleService {
 		return {
-			uuid: '6e400001-c352-11e5-953d-0002a5d5c51b', // WESPP Service UUID
+			uuid: this.ServiceUUID,
 			characteristics: [
 				{
-					uuid: '6e400002-c352-11e5-953d-0002a5d5c51b', // WESPP RX characteristic UUID
+					uuid: this.RX_UUID,
 					properties: {
 						broadcast: false,
 						read: false,
@@ -33,7 +102,7 @@ export abstract class WESPPProfile extends SPPBLEProfile {
 					descriptors: [],
 				},
 				{
-					uuid: '6e400003-c352-11e5-953d-0002a5d5c51b', // WESPP TX characteristic UUID
+					uuid: this.TX_UUID,
 					properties: {
 						broadcast: false,
 						read: false,
@@ -47,67 +116,5 @@ export abstract class WESPPProfile extends SPPBLEProfile {
 				},
 			],
 		};
-	}
-
-	static getUnacknowledgedDataRXCharacteristic(): BleCharacteristic {
-		return this.getService().characteristics[0];
-	}
-
-	static getUnacknowledgedDataTXCharacteristic(): BleCharacteristic {
-		return this.getService().characteristics[1];
-	}
-
-	static getAcknowledgedDataRXCharacteristic(): BleCharacteristic {
-		throw new Error('not implemented.');
-	}
-
-	static getAcknowledgedDataTXCharacteristic(): BleCharacteristic {
-		throw new Error('not implemented.');
-	}
-
-	static async sendDataUnacknowledged(deviceId: string, packet: DataView) {
-		await BleClient.writeWithoutResponse(
-			deviceId,
-			this.getService().uuid,
-			this.getUnacknowledgedDataRXCharacteristic().uuid,
-			packet,
-		);
-	}
-
-	static async startReceiveDataUnacknowledged(
-		deviceId: string,
-		callback: (value: DataView) => void,
-		timeout: number,
-	) {
-		await BleClient.startNotifications(
-			deviceId,
-			this.getService().uuid,
-			this.getUnacknowledgedDataTXCharacteristic().uuid,
-			callback,
-			{ timeout: timeout },
-		);
-	}
-
-	static async stopReceiveDataUnacknowledged(deviceId: string) {
-		await BleClient.stopNotifications(
-			deviceId,
-			this.getService().uuid,
-			this.getUnacknowledgedDataTXCharacteristic().uuid,
-		);
-	}
-
-	static async sendDataAcknowledged(deviceId: string, packet: DataView) {
-		throw new Error('not implemented.');
-	}
-
-	static async startReceiveDataAcknowledged(
-		deviceId: string,
-		callback: (value: DataView) => void,
-	) {
-		throw new Error('not implemented.');
-	}
-
-	static async stopReceiveDataAcknowledged(deviceId: string) {
-		throw new Error('not implemented.');
 	}
 }

@@ -1,12 +1,15 @@
 import { CYSPPProfile } from '../BLEProfiles/CYSPPProfile';
-import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
+import {
+	SPPBLEProfile,
+	SPPBLEProfileClass,
+} from '../BLEProfiles/SPPBLEProfile';
 import { WESPPProfile } from '../BLEProfiles/WESPPProfile';
 import { WESPP2Profile } from '../BLEProfiles/WESPP2Profile';
 import { BLEModuleType } from './BLEModuleType';
 
-export const module_profile: Map<BLEModuleType, SPPBLEProfile> = new Map<
+export const module_profile: Map<BLEModuleType, SPPBLEProfileClass> = new Map<
 	BLEModuleType,
-	SPPBLEProfile
+	SPPBLEProfileClass
 >([
 	[BLEModuleType.ProteusI, WESPPProfile],
 	[BLEModuleType.ProteusII, WESPPProfile],

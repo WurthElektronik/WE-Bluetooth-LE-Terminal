@@ -1,0 +1,183 @@
+<ion-header [translucent]="true">
+	<ion-toolbar color="primary">
+		<ion-title> {{ 'SettingsTab.tabname' | translate }} </ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<ion-list-header>
+		{{ 'SettingsTab.generalsection.generalheader' | translate }}
+	</ion-list-header>
+
+	<ion-list>
+		<ion-item (click)="languageclick()">
+			<ion-label>
+				{{ 'SettingsTab.generalsection.language' | translate }}
+			</ion-label>
+			<ion-label class="itemwrapnogrow">
+				{{ 'SettingsTab.generalsection.selectedlanguage' | translate }}
+			</ion-label>
+		</ion-item>
+	</ion-list>
+
+	<ion-list-header class="ion-margin-top">
+		{{ 'SettingsTab.blesection.bleheader' | translate }}
+	</ion-list-header>
+
+	<ion-list-header class="sub-header">
+		{{ 'SettingsTab.blesection.uuid_configuration' | translate }}
+	</ion-list-header>
+
+	<!-- prettier-ignore -->
+	@let PLACEHOLDER_UUID='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+
+	<!-- prettier-ignore -->
+	@let INVALID_UUID= 'SettingsTab.blesection.validation_errors.invalid_uuid' | translate;
+
+	<ion-accordion-group>
+		@for (profile of BLE_PROFILES; track profile) {
+		<form
+			[formGroup]="profileForms.get(profile)"
+			(ngSubmit)="applyProfile(profile)"
+		>
+			<ion-accordion value="{{profile.getTypeString()}}">
+				<ion-item slot="header">
+					<ion-label>{{profile.getTypeString()}}</ion-label>
+				</ion-item>
+
+				<div slot="content">
+					<ion-list>
+						<ion-item lines="none">
+							<ion-label position="stacked">
+								{{'SettingsTab.blesection.ServiceUUID' | translate}}
+							</ion-label>
+							<ion-input
+								[formControlName]="SERVICE_UUID_FORM_CONTROL_NAME"
+								[clearInput]="true"
+								[placeholder]="PLACEHOLDER_UUID"
+								[errorText]="INVALID_UUID"
+							>
+								<ion-button
+									(click)="resetUuid(profile, SERVICE_UUID_FORM_CONTROL_NAME)"
+									class="reset-uuid-button"
+									fill="clear"
+									slot="end"
+								>
+									<ion-icon
+										slot="icon-only"
+										name="refresh-outline"
+									></ion-icon> </ion-button
+							></ion-input>
+						</ion-item>
+						<ion-item lines="none">
+							<ion-label position="stacked">
+								{{'SettingsTab.blesection.RXUUID' | translate}}
+							</ion-label>
+							<ion-input
+								[formControlName]="RX_UUID_FORM_CONTROL_NAME"
+								[clearInput]="true"
+								[placeholder]="PLACEHOLDER_UUID"
+								[errorText]="INVALID_UUID"
+							>
+								<ion-button
+									(click)="resetUuid(profile, RX_UUID_FORM_CONTROL_NAME)"
+									class="reset-uuid-button"
+									fill="clear"
+									slot="end"
+								>
+									<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+								</ion-button>
+							</ion-input>
+						</ion-item>
+						<ion-item lines="none">
+							<ion-label position="stacked">
+								{{'SettingsTab.blesection.TXUUID' | translate}}
+							</ion-label>
+							<ion-input
+								[formControlName]="TX_UUID_FORM_CONTROL_NAME"
+								[clearInput]="true"
+								[placeholder]="PLACEHOLDER_UUID"
+								[errorText]="INVALID_UUID"
+							>
+								<ion-button
+									(click)="resetUuid(profile, TX_UUID_FORM_CONTROL_NAME)"
+									class="reset-uuid-button"
+									fill="clear"
+									slot="end"
+								>
+									<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+								</ion-button>
+							</ion-input>
+						</ion-item>
+						@if(profile.isAcknowledgedDataModeSupported()) {
+						<ion-item lines="none">
+							<ion-label position="stacked">
+								{{'SettingsTab.blesection.RXACKUUID' | translate}}
+							</ion-label>
+							<ion-input
+								[formControlName]="RX_ACK_UUID_FORM_CONTROL_NAME"
+								[clearInput]="true"
+								[placeholder]="PLACEHOLDER_UUID"
+								[errorText]="INVALID_UUID"
+							>
+								<ion-button
+									(click)="resetUuid(profile, RX_ACK_UUID_FORM_CONTROL_NAME)"
+									class="reset-uuid-button"
+									fill="clear"
+									slot="end"
+								>
+									<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+								</ion-button>
+							</ion-input>
+						</ion-item>
+						<ion-item lines="none">
+							<ion-label position="stacked">
+								{{'SettingsTab.blesection.TXACKUUID' | translate}}
+							</ion-label>
+							<ion-input
+								[formControlName]="TX_ACK_UUID_FORM_CONTROL_NAME"
+								[clearInput]="true"
+								[placeholder]="PLACEHOLDER_UUID"
+								[errorText]="INVALID_UUID"
+							>
+								<ion-button
+									(click)="resetUuid(profile, TX_ACK_UUID_FORM_CONTROL_NAME)"
+									class="reset-uuid-button"
+									fill="clear"
+									slot="end"
+								>
+									<ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+								</ion-button>
+							</ion-input>
+						</ion-item>
+						}
+						<ion-item lines="none">
+							@if(profileForms.get(profile)?.errors?.rxTxMustMatch) {
+							<ion-note slot="start" color="primary">
+								{{ 'SettingsTab.blesection.validation_errors.RXTX_match' |
+								translate }}
+							</ion-note>
+							} @if(profileForms.get(profile)?.errors?.rxTxAckMustMatch) {
+							<ion-note slot="start" color="primary">
+								{{ 'SettingsTab.blesection.validation_errors.RXACKTXACK_match' |
+								translate }}
+							</ion-note>
+							} @if(profileForms.get(profile).dirty &&
+							profileForms.get(profile).valid) {
+							<ion-button
+								slot="end"
+								expand="block"
+								type="submit"
+								color="primary"
+							>
+								{{'SettingsTab.blesection.confirm' | translate}}
+							</ion-button>
+							}
+						</ion-item>
+					</ion-list>
+				</div>
+			</ion-accordion>
+		</form>
+		}
+	</ion-accordion-group>
+</ion-content>

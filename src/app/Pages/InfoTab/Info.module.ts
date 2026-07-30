@@ -11,7 +11,6 @@ export function createTranslateLoader(http: HttpClient) {
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 import { InfoRoutingModule } from './Info-routing.module';
-import { ChangeLanguageComponent } from 'src/app/Components/change-language/change-language.component';
 
 @NgModule({
 	imports: [
@@ -27,6 +26,6 @@ import { ChangeLanguageComponent } from 'src/app/Components/change-language/chan
 			},
 		}),
 	],
-	declarations: [InfoTab, ChangeLanguageComponent],
+	declarations: [InfoTab],
 })
 export class InfoModule {}

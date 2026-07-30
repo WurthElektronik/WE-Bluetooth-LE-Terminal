@@ -1,3 +1,10 @@
+**Version 2.2.0**\
+\
+\[FIX] Improved reliability of sent data logging.\
+\[NEW] Add Auto-Scroll enable/disable button.\
+\[NEW] Add ability to override UUIDs of the profiles.\
+\[NEW] Update internal frameworks.\
+\
 **Version 2.1.0**\
 \
 \[NEW] Add ability to generate random payloads.\
@@ -51,7 +58,7 @@
 \
 \[FIX] Fixed requesting bluetooth permissions on Android 12.\
 \[NEW] Added support for PWM gpio pins.\
-\[NEW] Use monospace font for hex data.\
+\[NEW] Use monospace span for hex data.\
 \[NEW] Add support for more boards.\
 \[NEW] Complete app rewrite.\
 \

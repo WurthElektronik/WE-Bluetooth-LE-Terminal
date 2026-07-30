@@ -1,1 +1,15 @@
+ion-tab-button {
+	.icon-selected {
+		display: none;
+	}
 
+	&.tab-selected {
+		.icon-default {
+			display: none;
+		}
+
+		.icon-selected {
+			display: block;
+		}
+	}
+}

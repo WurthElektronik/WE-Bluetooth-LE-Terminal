@@ -1,0 +1,34 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+export function createTranslateLoader(http: HttpClient) {
+	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+import { SettingsTabRoutingModule } from './SettingsTab-routing.module';
+
+import { SettingsTab } from './SettingsTab';
+import { ChangeLanguageComponent } from 'src/app/Components/change-language/change-language.component';
+
+@NgModule({
+	imports: [
+		IonicModule,
+		CommonModule,
+		FormsModule,
+		SettingsTabRoutingModule,
+		ReactiveFormsModule,
+		TranslateModule.forChild({
+			loader: {
+				provide: TranslateLoader,
+				useFactory: createTranslateLoader,
+				deps: [HttpClient],
+			},
+		}),
+	],
+	declarations: [SettingsTab, ChangeLanguageComponent],
+})
+export class SettingsTabModule {}

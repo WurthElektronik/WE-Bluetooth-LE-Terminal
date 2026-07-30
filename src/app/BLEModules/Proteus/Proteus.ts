@@ -9,6 +9,15 @@ import { GPIOInterface } from '../GPIO/GPIOInterface';
 import { ProteusHighThroughput } from './ProteusHighThroughput';
 import { GeneralBLEProfile } from 'src/app/BLEProfiles/GeneralBLEProfile';
 import { WESPPProfile } from 'src/app/BLEProfiles/WESPPProfile';
+import { DataMode } from 'src/app/BLEProfiles/DataMode';
+import { TxLogEntry } from 'src/app/services/ble.service';
+
+class TimeoutError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'TimeoutError';
+	}
+}
 
 export abstract class Proteus
 	extends GeneralBLEModule
@@ -311,9 +320,10 @@ export abstract class Proteus
 		this.onDataReceived.next(undefined);
 	}
 
-	async formatdatatx(data: DataView): Promise<DataView[]> {
+	async formatdatatx(data: DataView): Promise<TxLogEntry[]> {
 		var mtu = this.getMTUSize() || this.getDefaultMTUSize();
 		mtu -= 3; //this -3 is for the Bluetooth Attribute Protocol
+		let packets: TxLogEntry[] = [];
 		if (data.byteLength <= mtu - 1) {
 			// -1 is for the overhead of ProteusHeader.RF_HEADER_TYPE_DATA
 			let dataheader = Uint8Array.from([ProteusHeader.RF_HEADER_TYPE_DATA]);
@@ -321,12 +331,17 @@ export abstract class Proteus
 			let fulldata = new Uint8Array(dataheader.length + datapayload.length);
 			fulldata.set(dataheader);
 			fulldata.set(datapayload, dataheader.length);
-			this.logDataSent(
-				'LogMessages.DataSent',
-				undefined,
-				fulldata.buffer.slice(1),
-			);
-			return [new DataView(fulldata.buffer)];
+
+			packets.push({
+				txData: new DataView(fulldata.buffer),
+				logCallback: () => {
+					this.logDataSent(
+						'LogMessages.DataSent',
+						undefined,
+						fulldata.buffer.slice(1),
+					);
+				},
+			});
 		} else if (
 			this.getHighThroughputModeSupport() &&
 			data.byteLength <= (mtu - 3) * 4
@@ -337,7 +352,6 @@ export abstract class Proteus
 			var fragmentsCount: number = 1;
 			let sequenceNumber: number =
 				Math.floor(Math.random() * (0xff + 1)) & 0xff;
-			let packets: DataView[] = [];
 			while (remainingTotalLength > 0) {
 				var fragmentLength: number = 0;
 				if (remainingTotalLength >= mtu - 3) {
@@ -366,39 +380,60 @@ export abstract class Proteus
 					),
 					3,
 				);
-				packets.push(new DataView(fragmentArray.buffer));
+
+				packets.push({
+					txData: new DataView(fragmentArray.buffer),
+					logCallback: () => {},
+				});
 				remainingTotalLength -= fragmentLength;
 				fragmentsCount++;
 			}
-			this.logDataSent(
-				'LogMessages.DataSentHighThroughput',
-				undefined,
-				data.buffer,
-			);
-			return packets;
+
+			packets[packets.length - 1].logCallback = () => {
+				this.logDataSent(
+					'LogMessages.DataSentHighThroughput',
+					undefined,
+					data.buffer,
+				);
+			};
 		} else {
 			this.logInfo('LogMessages.DataTooLarge');
-			return;
+			throw new Error();
 		}
+
+		return packets;
 	}
 
 	async initializeModule() {
 		super.initializeModule();
 		if (this.getMaxPayloadRequestSupport()) {
-			await this.getSPPBLEProfile().sendDataUnacknowledged(
-				this.deviceId,
-				this.formatmaxpayloadsize(),
-			);
 			try {
+				let mtuPacket = this.formatmaxpayloadsize();
+				await this.getSPPBLEProfile().sendData(
+					this.deviceId,
+					DataMode.UnacknowledgedData,
+					mtuPacket.txData,
+				);
+				mtuPacket.logCallback();
 				await this.waitForCommandResponse(ProteusCommand.CMD_GETSTATE_CNF);
-			} catch (error) {}
+			} catch (error) {
+				switch (true) {
+					case error instanceof TimeoutError: {
+						break;
+					}
+					default:
+						throw error;
+				}
+			}
 		}
 		if (this.getGPIOSupport()) {
-			await this.getSPPBLEProfile().sendDataUnacknowledged(
+			let readPinCfgPacket = this.formatreadpinconfiguration();
+			await this.getSPPBLEProfile().sendData(
 				this.deviceId,
-				this.formatreadpinconfiguration(),
+				DataMode.UnacknowledgedData,
+				readPinCfgPacket.txData,
 			);
-
+			readPinCfgPacket.logCallback();
 			await this.waitForCommandResponse(
 				ProteusCommand.CMD_GPIO_REMOTE_READCONFIG_CNF,
 			);
@@ -418,7 +453,7 @@ export abstract class Proteus
 	}
 
 	//#region GPIO send functions
-	formatreadpinconfiguration(): DataView {
+	formatreadpinconfiguration(): TxLogEntry {
 		if (!this.getGPIOSupport()) {
 			return;
 		}
@@ -427,15 +462,19 @@ export abstract class Proteus
 		let fulldata = new Uint8Array(cmdheader.length + cmd.length);
 		fulldata.set(cmdheader);
 		fulldata.set(cmd, cmdheader.length);
-		this.logRemoteCommand(
-			ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_READCONFIG_REQ],
-			undefined,
-			fulldata.buffer,
-		);
-		return new DataView(fulldata.buffer);
+		return {
+			txData: new DataView(fulldata.buffer),
+			logCallback: () => {
+				this.logRemoteCommand(
+					ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_READCONFIG_REQ],
+					undefined,
+					fulldata.buffer,
+				);
+			},
+		};
 	}
 
-	formatwritepinconfiguration(pins: GPIOPin[]): DataView {
+	formatwritepinconfiguration(pins: GPIOPin[]): TxLogEntry {
 		if (!this.getGPIOSupport()) {
 			return;
 		}
@@ -487,15 +526,19 @@ export abstract class Proteus
 		fulldata.set(cmdheader);
 		fulldata.set(cmd, cmdheader.length);
 		fulldata.set(datauint8, cmdheader.length + cmd.length);
-		this.logRemoteCommand(
-			ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_WRITECONFIG_REQ],
-			undefined,
-			fulldata.buffer,
-		);
-		return new DataView(fulldata.buffer);
+		return {
+			txData: new DataView(fulldata.buffer),
+			logCallback: () => {
+				this.logRemoteCommand(
+					ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_WRITECONFIG_REQ],
+					undefined,
+					fulldata.buffer,
+				);
+			},
+		};
 	}
 
-	formatreadpinvalues(pins: GPIOPin[]): DataView {
+	formatreadpinvalues(pins: GPIOPin[]): TxLogEntry {
 		if (!this.getGPIOSupport()) {
 			return;
 		}
@@ -513,15 +556,19 @@ export abstract class Proteus
 		fulldata.set(cmdheader);
 		fulldata.set(cmd, cmdheader.length);
 		fulldata.set(datauint8, cmdheader.length + cmd.length);
-		this.logRemoteCommand(
-			ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_READ_REQ],
-			undefined,
-			fulldata.buffer,
-		);
-		return new DataView(fulldata.buffer);
+		return {
+			txData: new DataView(fulldata.buffer),
+			logCallback: () => {
+				this.logRemoteCommand(
+					ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_READ_REQ],
+					undefined,
+					fulldata.buffer,
+				);
+			},
+		};
 	}
 
-	formatwritepinvalues(pins: GPIOPin[]): DataView {
+	formatwritepinvalues(pins: GPIOPin[]): TxLogEntry {
 		if (!this.getGPIOSupport()) {
 			return;
 		}
@@ -538,16 +585,20 @@ export abstract class Proteus
 		fulldata.set(cmdheader);
 		fulldata.set(cmd, cmdheader.length);
 		fulldata.set(datauint8, cmdheader.length + cmd.length);
-		this.logRemoteCommand(
-			ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_WRITE_REQ],
-			undefined,
-			fulldata.buffer,
-		);
-		return new DataView(fulldata.buffer);
+		return {
+			txData: new DataView(fulldata.buffer),
+			logCallback: () => {
+				this.logRemoteCommand(
+					ProteusCommand[ProteusCommand.CMD_GPIO_REMOTE_WRITE_REQ],
+					undefined,
+					fulldata.buffer,
+				);
+			},
+		};
 	}
 	//#endregion
 
-	formatmaxpayloadsize(): DataView {
+	formatmaxpayloadsize(): TxLogEntry {
 		if (!this.getMaxPayloadRequestSupport()) {
 			return;
 		}
@@ -556,12 +607,16 @@ export abstract class Proteus
 		let fulldata = new Uint8Array(cmdheader.length + cmd.length);
 		fulldata.set(cmdheader);
 		fulldata.set(cmd, cmdheader.length);
-		this.logRemoteCommand(
-			ProteusCommand[ProteusCommand.CMD_GETSTATE_REQ],
-			undefined,
-			fulldata.buffer,
-		);
-		return new DataView(fulldata.buffer);
+		return {
+			txData: new DataView(fulldata.buffer),
+			logCallback: () => {
+				this.logRemoteCommand(
+					ProteusCommand[ProteusCommand.CMD_GETSTATE_REQ],
+					undefined,
+					fulldata.buffer,
+				);
+			},
+		};
 	}
 
 	getGPIO(): GPIO {
@@ -579,7 +634,7 @@ export abstract class Proteus
 		return new Promise((resolve, reject) => {
 			const timeout = setTimeout(() => {
 				this.pendingCommandResponseResolver = null;
-				reject(new Error('Command response timed out'));
+				reject(new TimeoutError('Command response timed out'));
 			}, timeoutMs);
 
 			this.pendingCommandResponseResolver = (data: ProteusCommand) => {

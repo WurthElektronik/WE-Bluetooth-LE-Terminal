@@ -2,14 +2,14 @@ import { Encoder } from './Encoder';
 import { EncodingType } from './EncodingType';
 
 export abstract class HEX extends Encoder {
-	static BufferToEncoding(buffer: ArrayBuffer): string {
+	static BufferToEncoding(buffer: ArrayBufferLike): string {
 		return [...new Uint8Array(buffer)]
 			.map((b) => b.toString(16).padStart(2, '0'))
 			.join(' ')
 			.toUpperCase();
 	}
 
-	static EncodingToBuffer(encodingString: string): ArrayBuffer {
+	static EncodingToBuffer(encodingString: string): ArrayBufferLike {
 		return new Uint8Array(
 			encodingString
 				.replace(/ /g, '')

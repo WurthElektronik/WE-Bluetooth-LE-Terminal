@@ -26,13 +26,19 @@ import { HEX } from '../Encoders/HEX';
 import { BLE_CCCD_UUID, CCCD_Value } from '../BLEProfiles/CCCD';
 import { SkollI } from '../BLEModules/Skoll/SkollI';
 import { SPPBLEProfileType } from '../BLEProfiles/SPPBLEProfileType';
-import { WESPPProfile } from '../BLEProfiles/WESPPProfile';
-import { CYSPPProfile } from '../BLEProfiles/CYSPPProfile';
 import { DataMode } from '../BLEProfiles/DataMode';
 import { GeneralBLEProfile } from '../BLEProfiles/GeneralBLEProfile';
 import { GenericAccessProfile } from '../BLEProfiles/GenericAccessProfile';
+import { SPPBLECharacteristicType } from '../BLEProfiles/SPPBLECharacteristicType';
+import { BLE_PROFILES } from '../BLEProfiles/SPPBLEProfile.registry';
+import { SPPBLEProfileClass } from '../BLEProfiles/SPPBLEProfile';
 
 const START_NOTIFICATION_TIMEOUT_MS: number = 30000;
+
+export interface TxLogEntry {
+	txData: DataView;
+	logCallback: () => void;
+}
 
 @Injectable({
 	providedIn: 'root',
@@ -59,8 +65,7 @@ export class BleService {
 				? serviceUUIDFilters.map((filter) => filter.getServiceUUID())
 				: undefined,
 			optionalServices: [
-				WESPPProfile.getService().uuid,
-				CYSPPProfile.getService().uuid,
+				...BLE_PROFILES.map((p) => p.getTemplateServiceUUID()),
 				GenericAccessProfile.getService().uuid,
 			],
 			namePrefix: nameFilter ? nameFilter[0].getName() : undefined,
@@ -185,35 +190,39 @@ export class BleService {
 		let sppProfile = module.getSPPBLEProfile();
 
 		while (!this.connectedDevices.has(device.deviceId)) {
-			await BleClient.getServices(device.deviceId).then(async (services) => {
-				if (services.length != 0) {
-					if (
-						BleService.checkBLEProfileCompatability(
-							GenericAccessProfile,
-							services,
-							false,
-						)
-					) {
-						module.setDeviceName(
-							await GenericAccessProfile.readDeviceName(device.deviceId),
-						);
-					}
+			const services = await BleClient.getServices(device.deviceId);
 
-					if (
-						!BleService.checkBLEProfileCompatability(sppProfile, services, true)
-					) {
-						await BleClient.disconnect(device.deviceId);
-						return;
-					}
+			if (services.length == 0) {
+				continue;
+			}
 
-					module.logInfo('LogMessages.ServicesDiscovered');
-					this.connectedDevices.set(device.deviceId, module);
-				}
-			});
+			if (
+				BleService.checkBLEProfileCompatability(
+					GenericAccessProfile,
+					services,
+					false,
+				)
+			) {
+				module.setDeviceName(
+					await GenericAccessProfile.readDeviceName(device.deviceId),
+				);
+			}
+
+			if (
+				!BleService.checkBLEProfileCompatability(sppProfile, services, true)
+			) {
+				await BleClient.disconnect(device.deviceId);
+				throw new Error('Incompatable SPP Profile');
+			}
+
+			module.logInfo('LogMessages.ServicesDiscovered');
+			this.connectedDevices.set(device.deviceId, module);
 		}
 
+		let sppProfileTemplate = sppProfile.constructor as SPPBLEProfileClass;
+
 		module.logInfo('LogMessages.ProfileUsed', {
-			profile: SPPBLEProfileType[sppProfile.getType()],
+			profile: SPPBLEProfileType[sppProfileTemplate.getType()],
 		});
 
 		var txcharacteristic: BleCharacteristic;
@@ -221,29 +230,19 @@ export class BleService {
 		var descriptorvalue: DataView;
 
 		try {
-			switch (module.getDataMode()) {
-				default:
-				case DataMode.UnacknowledgedData:
-					await sppProfile.startReceiveDataUnacknowledged(
-						device.deviceId,
-						(value) => {
-							this.connectedDevices.get(device.deviceId).handlerx(value);
-						},
-						START_NOTIFICATION_TIMEOUT_MS,
-					);
-					txcharacteristic = sppProfile.getUnacknowledgedDataTXCharacteristic();
-					break;
-				case DataMode.AcknowledgedData:
-					await sppProfile.startReceiveDataAcknowledged(
-						device.deviceId,
-						(value) => {
-							this.connectedDevices.get(device.deviceId).handlerx(value);
-						},
-						START_NOTIFICATION_TIMEOUT_MS,
-					);
-					txcharacteristic = sppProfile.getAcknowledgedDataTXCharacteristic();
-					break;
-			}
+			await sppProfile.startReceiveData(
+				device.deviceId,
+				module.getDataMode(),
+				(value) => {
+					this.connectedDevices.get(device.deviceId).handlerx(value);
+				},
+				START_NOTIFICATION_TIMEOUT_MS,
+			);
+
+			txcharacteristic = sppProfile.getCharacteristic(
+				module.getDataMode(),
+				SPPBLECharacteristicType.TX,
+			);
 
 			descriptorvalue = await BleClient.readDescriptor(
 				device.deviceId,
@@ -282,7 +281,12 @@ export class BleService {
 			}
 		}
 
-		await this.connectedDevices.get(device.deviceId).initializeModule();
+		try {
+			await this.connectedDevices.get(device.deviceId).initializeModule();
+		} catch (error) {
+			await BleClient.disconnect(device.deviceId);
+			throw error;
+		}
 
 		if (this.connectedDevices.get(device.deviceId).getMTUSize() != undefined) {
 			await this.readmtu(device.deviceId);
@@ -294,27 +298,18 @@ export class BleService {
 		let sppProfile = module.getSPPBLEProfile();
 		var descriptorvalue: DataView;
 
-		switch (module.getDataMode()) {
-			default:
-			case DataMode.UnacknowledgedData:
-				descriptorvalue = await BleClient.readDescriptor(
-					deviceid,
-					sppProfile.getService().uuid,
-					sppProfile.getUnacknowledgedDataTXCharacteristic().uuid,
-					BLE_CCCD_UUID,
-				);
-				await sppProfile.stopReceiveDataUnacknowledged(deviceid);
-				break;
-			case DataMode.AcknowledgedData:
-				descriptorvalue = await BleClient.readDescriptor(
-					deviceid,
-					sppProfile.getService().uuid,
-					sppProfile.getAcknowledgedDataTXCharacteristic().uuid,
-					BLE_CCCD_UUID,
-				);
-				await sppProfile.stopReceiveDataAcknowledged(deviceid);
-				break;
-		}
+		descriptorvalue = await BleClient.readDescriptor(
+			deviceid,
+			sppProfile.getService().uuid,
+			sppProfile.getCharacteristic(
+				module.getDataMode(),
+				SPPBLECharacteristicType.TX,
+			).uuid,
+			BLE_CCCD_UUID,
+		);
+
+		await sppProfile.stopReceiveData(deviceid, module.getDataMode());
+
 		switch (descriptorvalue.getUint16(0, true)) {
 			default:
 			case CCCD_Value.Notification: {
@@ -349,17 +344,14 @@ export class BleService {
 				module.setSending(true);
 				let sppProfile = module.getSPPBLEProfile();
 				for (let i = 0; i < sendCount; i++) {
-					let dataFormatted: DataView[] = await module.formatdatatx(data);
+					let dataFormatted: TxLogEntry[] = await module.formatdatatx(data);
 					for (let packet of dataFormatted) {
-						switch (module.getDataMode()) {
-							default:
-							case DataMode.UnacknowledgedData:
-								await sppProfile.sendDataUnacknowledged(deviceid, packet);
-								break;
-							case DataMode.AcknowledgedData:
-								await sppProfile.sendDataAcknowledged(deviceid, packet);
-								break;
-						}
+						await sppProfile.sendData(
+							deviceid,
+							module.getDataMode(),
+							packet.txData,
+						);
+						packet.logCallback();
 					}
 					if (i != sendCount - 1) {
 						await new Promise((f) => setTimeout(f, sendDelay));
@@ -375,16 +367,7 @@ export class BleService {
 	async senddataunformatted(deviceId: string, data: DataView) {
 		let module = this.connectedDevices.get(deviceId);
 		let sppProfile = module.getSPPBLEProfile();
-
-		switch (module.getDataMode()) {
-			default:
-			case DataMode.UnacknowledgedData:
-				await sppProfile.sendDataUnacknowledged(deviceId, data);
-				break;
-			case DataMode.AcknowledgedData:
-				await sppProfile.sendDataAcknowledged(deviceId, data);
-				break;
-		}
+		await sppProfile.sendData(deviceId, module.getDataMode(), data);
 	}
 
 	async readrssi(deviceId: string) {

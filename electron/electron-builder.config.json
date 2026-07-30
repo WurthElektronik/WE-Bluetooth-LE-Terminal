@@ -6,9 +6,7 @@
   "files": [
     "assets/**/*",
     "build/**/*",
-    "capacitor.config.*",
-    "app/**/*",
-    "SelectBluetoothDevice/**/*"
+    "app/**/*"
   ],
   "publish": null,
   "win": {

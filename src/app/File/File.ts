@@ -1,8 +1,8 @@
 export class File {
 	private fileName: string;
-	private fileDataRaw: ArrayBuffer;
+	private fileDataRaw: ArrayBufferLike;
 
-	constructor(name: string, dataRaw: ArrayBuffer) {
+	constructor(name: string, dataRaw: ArrayBufferLike) {
 		this.fileName = name;
 		this.fileDataRaw = dataRaw;
 	}
@@ -11,13 +11,13 @@ export class File {
 		return this.fileName;
 	}
 
-	getFileDataRaw(): ArrayBuffer {
+	getFileDataRaw(): ArrayBufferLike {
 		return this.fileDataRaw;
 	}
 
 	static async parseDataBase64toBuffer(
 		fileDataBase64: string,
-	): Promise<ArrayBuffer> {
+	): Promise<ArrayBufferLike> {
 		let binaryString = atob(fileDataBase64);
 		let bytes = new Uint8Array(binaryString.length);
 		for (var i = 0; i < binaryString.length; i++) {

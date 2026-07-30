@@ -18,10 +18,10 @@ import { Proteus } from 'src/app/BLEModules/Proteus/Proteus';
 import { BleService } from 'src/app/services/ble.service';
 
 @Component({
-    selector: 'app-rw-gpio',
-    templateUrl: './rw-gpio.component.html',
-    styleUrls: ['./rw-gpio.component.scss'],
-    standalone: false
+	selector: 'app-rw-gpio',
+	templateUrl: './rw-gpio.component.html',
+	styleUrls: ['./rw-gpio.component.scss'],
+	standalone: false,
 })
 export class RwGpioComponent implements OnInit {
 	public id: string;
@@ -70,39 +70,39 @@ export class RwGpioComponent implements OnInit {
 		let configuredPinsArray: GPIOPin[] = Array.from(
 			this.gpio.getTempGPIOPins().values(),
 		).filter((pin) => pin.getIsConfigured() == true);
-		await this.ble.senddataunformatted(
-			this.id,
-			(<GPIOInterface>(<unknown>this.device)).formatreadpinvalues(
-				configuredPinsArray,
-			),
-		);
+		let readPinValues = (<GPIOInterface>(
+			(<unknown>this.device)
+		)).formatreadpinvalues(configuredPinsArray);
+		await this.ble.senddataunformatted(this.id, readPinValues.txData);
+		readPinValues.logCallback();
 	}
 
 	async readpinvalue() {
-		await this.ble.senddataunformatted(
-			this.id,
-			(<GPIOInterface>(<unknown>this.device)).formatreadpinvalues([
-				this.gpio.getTempGPIOPins().get(+this.selectedpin),
-			]),
-		);
+		let readPinValue = (<GPIOInterface>(
+			(<unknown>this.device)
+		)).formatreadpinvalues([
+			this.gpio.getTempGPIOPins().get(+this.selectedpin),
+		]);
+		await this.ble.senddataunformatted(this.id, readPinValue.txData);
+		readPinValue.logCallback();
 	}
 
 	async writeallpinconfig() {
-		await this.ble.senddataunformatted(
-			this.id,
-			(<GPIOInterface>(<unknown>this.device)).formatwritepinvalues(
-				Array.from(this.gpio.getTempGPIOPins().values()),
-			),
-		);
+		let writeAllPinCfg = (<GPIOInterface>(
+			(<unknown>this.device)
+		)).formatwritepinvalues(Array.from(this.gpio.getTempGPIOPins().values()));
+		await this.ble.senddataunformatted(this.id, writeAllPinCfg.txData);
+		writeAllPinCfg.logCallback();
 	}
 
 	async writepinconfig() {
-		await this.ble.senddataunformatted(
-			this.id,
-			(<GPIOInterface>(<unknown>this.device)).formatwritepinvalues([
-				this.gpio.getTempGPIOPins().get(+this.selectedpin),
-			]),
-		);
+		let writePinCfg = (<GPIOInterface>(
+			(<unknown>this.device)
+		)).formatwritepinvalues([
+			this.gpio.getTempGPIOPins().get(+this.selectedpin),
+		]);
+		await this.ble.senddataunformatted(this.id, writePinCfg.txData);
+		writePinCfg.logCallback();
 	}
 
 	pinchanged(pinid: number) {}

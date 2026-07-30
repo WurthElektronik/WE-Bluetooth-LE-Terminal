@@ -55,6 +55,13 @@
 				</ion-select>
 			</ion-col>
 			<ion-col size="auto">
+				<ion-button fill="clear" (click)="autoscroll = !autoscroll">
+					<ion-icon
+						color="dark"
+						slot="icon-only"
+						[name]="autoscroll ? 'arrow-down-circle' : 'arrow-down-circle-outline'"
+					></ion-icon>
+				</ion-button>
 				<ion-button fill="clear" (click)="devicepopoverclick($event)">
 					<ion-icon
 						color="dark"
@@ -137,7 +144,7 @@ this.ble.connectedDevices.get(this.id) != undefined) {
 					[disabled]="this.ble.connectedDevices.get(this.id).isSending()"
 					(click)="macroclick(macro)"
 				>
-					<ion-label> {{macro.macroName}} </ion-label>
+					<ion-label class="prewrap">{{macro.macroName}}</ion-label>
 				</ion-chip>
 			</ion-col>
 			}

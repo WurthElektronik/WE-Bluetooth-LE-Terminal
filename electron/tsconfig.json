@@ -1,15 +1,24 @@
 {
-  "compileOnSave": true,
-  "include": ["./src/**/*", "./capacitor.config.ts", "./capacitor.config.js"],
   "compilerOptions": {
-    "outDir": "./build",
-    "importHelpers": true,
-    "target": "ES2017",
+    /* Language & runtime */
+    "target": "ES2020",
     "module": "CommonJS",
+    "lib": ["ES2020", "DOM"],
+
+    /* Project structure */
+    "rootDir": "src",
+    "outDir": "build",
+
+    /* Node / Electron compatibility */
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types"],
-    "allowJs": true,
-    "rootDir": "."
-  }
+
+    /* Type safety */
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* Debugging */
+    "sourceMap": true
+  },
+  "include": ["src/**/*"]
 }

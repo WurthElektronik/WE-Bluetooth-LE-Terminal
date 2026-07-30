@@ -72,6 +72,10 @@
                 }
               ]
             },
+            "electron": {              
+              "outputPath": "electron/app",
+              "serviceWorker": false
+            },
             "ci": {
               "progress": false
             }

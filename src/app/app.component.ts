@@ -8,6 +8,8 @@ import { Platform } from '@ionic/angular';
 import { BleService } from './services/ble.service';
 import { CapacitorException } from '@capacitor/core';
 import { BleClient } from '@capacitor-community/bluetooth-le';
+import { getSavedSPPBLEUUIDOverrides } from './BLEProfiles/SPPBLEUUIDOverrides';
+import { BLE_PROFILES } from './BLEProfiles/SPPBLEProfile.registry';
 
 enum AppState {
 	NotSupported = 'NotSupported',
@@ -17,10 +19,10 @@ enum AppState {
 }
 
 @Component({
-    selector: 'app-root',
-    templateUrl: 'app.component.html',
-    styleUrls: ['app.component.scss'],
-    standalone: false
+	selector: 'app-root',
+	templateUrl: 'app.component.html',
+	styleUrls: ['app.component.scss'],
+	standalone: false,
 })
 export class AppComponent {
 	public state: AppState = AppState.Valid;
@@ -45,6 +47,12 @@ export class AppComponent {
 				.catch((e) => {});
 		} else {
 			this.translate.use(preflanguage.value);
+		}
+
+		for (const profile of BLE_PROFILES) {
+			try {
+				await getSavedSPPBLEUUIDOverrides(profile);
+			} catch (error) {}
 		}
 
 		if (!this.platform.is('desktop')) {

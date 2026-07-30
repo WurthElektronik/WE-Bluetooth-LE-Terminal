@@ -2,19 +2,19 @@ apply plugin: 'com.android.application'
 
 android {
 
-    namespace "com.eisos.android.terminal"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace = "com.eisos.android.terminal"
+    compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.eisos.android.terminal"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 251014
-        versionName "2.1.0"
+        versionCode 260722
+        versionName "2.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
     buildTypes {

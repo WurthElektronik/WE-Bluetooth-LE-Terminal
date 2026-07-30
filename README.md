@@ -34,12 +34,12 @@ For other ways to install Capacitor Framework by Ionic, refer to https://capacit
 | :--------: | :-----: |
 | Angular    | 20      |
 | Ionic      | 8       |
-| Capacitor  | 7       |
+| Capacitor  | 8       |
 
 | Platform | IDE                        | Target SDK Version | Minimum SDK Version |
 | :------: | :------------------------: | :----------------: | :-----------------: |
-| Android  | >= Android Studio 2024.2.1 | 35                 | 23 (WebView 107)    |
-| iOS      | >= Xcode 16.0              | N.A                | 14.0                |
+| Android  | >= Android Studio 2025.2.1 | 36                 | 24 (WebView 107)    |
+| iOS      | >= Xcode 26.0              | N.A                | 15.0                |
 
 ### Generating Progressive Web App
 
@@ -83,6 +83,11 @@ The resulting executable depends on which OS were these commands ran on.
 | macOS    | dmg, pkg        |
 | Linux    | AppImage, deb   |
 
+**mac OS** Both of these builds will result in a `.app` folder which on some devices will be reported as corrupted. This is due to the quarantine attribute on the file. In order to be able to run the `.app` the following command must be run
+```
+attr -d com.apple.quarantine <path to .app>
+```
+
 ---
 
 Navigate to ```./electron``` directory and run the following to install the dependencies for electron
@@ -92,7 +97,7 @@ npm install
 
 Navigate to the root directory and run
 ```
-ionic build --prod && npx cap copy @capacitor-community/electron
+ionic build --configuration production,electron
 ```
 
 Navigate back to ```./electron``` directory and run the following to build the portable executable

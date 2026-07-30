@@ -22,12 +22,10 @@ jobs:
           npm install -g @ionic/cli
           cd "${env:GITHUB_WORKSPACE}\electron"
           npm install
-      - name: Ionic production build
+      - name: Ionic production electron build
+        shell: cmd
         run: |
-          ionic build --prod
-      - name: Capacitor copy to @capacitor-community/electron
-        run: |
-          npx cap copy @capacitor-community/electron
+          ionic build --configuration production,electron
       - name: Build Capacitor Electron
         run: |
           cd "${env:GITHUB_WORKSPACE}\electron"
@@ -57,12 +55,9 @@ jobs:
           npm install -g @ionic/cli
           cd '${{ github.workspace }}/electron'
           npm install
-      - name: Ionic production build
+      - name: Ionic production electron build
         run: |
-          ionic build --prod
-      - name: Capacitor copy to @capacitor-community/electron
-        run: |
-          npx cap copy @capacitor-community/electron
+          ionic build --configuration production,electron
       - name: Build Capacitor Electron
         run: |
           cd '${{ github.workspace }}/electron'
@@ -92,12 +87,9 @@ jobs:
           npm install -g @ionic/cli
           cd '${{ github.workspace }}/electron'
           npm install
-      - name: Ionic production build
+      - name: Ionic production electron build
         run: |
-          ionic build --prod
-      - name: Capacitor copy to @capacitor-community/electron
-        run: |
-          npx cap copy @capacitor-community/electron
+          ionic build --configuration production,electron
       - name: Build Capacitor Electron
         run: |
           cd '${{ github.workspace }}/electron'

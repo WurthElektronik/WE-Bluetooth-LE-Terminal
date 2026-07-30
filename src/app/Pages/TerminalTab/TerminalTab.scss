@@ -1,70 +1,73 @@
-.container{
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+@use "../../../mixins" as mixins;
 
-  .nodeviceconnected{
-    font-weight:bold;
-    margin: auto;
-  }
+.container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
 
-  ion-segment-button {
-    text-transform:none;
-    max-width: none !important;
-  }
+.nodeviceconnected {
+	font-weight: bold;
+	margin: auto;
+}
 
-  .datasentmsg{
-    color:#db8a06;
-  }
-  
-  .datareceivedmsg{
-    color:#bbb323;
-  }
+ion-segment-button {
+	text-transform: none;
+	max-width: none !important;
+}
 
-  .infomsg{
-    color:var(--ion-color-primary);
-  }
+.datasentmsg {
+	color: #db8a06;
+}
 
-  .remotecommandmsg{
-    color:#48a9c5;
-  }
+.datareceivedmsg {
+	color: #bbb323;
+}
 
-  .msgfilter{
-    width:fit-content;
-  }
+.infomsg {
+	color: var(--ion-color-primary);
+}
 
-  .terminalpopover{
-    --width: 200px;
-  }
+.remotecommandmsg {
+	color: #48a9c5;
+}
 
-  .devicepopover{
-    --width: 220px;
-  }
-  .connectionprioritypopover{
-    --width: 100px;
-  }
+.msgfilter {
+	width: fit-content;
+}
 
-  .HEX{
-    font-family:monospace;
-    font-size: 16px;
-  }
+.terminalpopover {
+	--width: 200px;
+}
 
-  .ASCII{
-    word-wrap: break-word;
-    word-break: break-all;
-    white-space: pre-wrap;
-  }
+.devicepopover {
+	--width: 220px;
+}
+.connectionprioritypopover {
+	--width: 100px;
+}
 
-  .sendbutton{
-    width: 100%;
-  }
+.HEX {
+	font-family: monospace;
+	font-size: 16px;
+}
 
-  .deviceSegmentLabel{
-    font-weight: 600;
-    font-size: 16px;
-  }
+.ASCII {
+	@include mixins.prewrap;
+	word-wrap: break-word;
+	word-break: break-all;
+}
 
-  ion-select {
-    --highlight-color: var(--ion-color-primary);
-  }
+.sendbutton {
+	width: 100%;
+}
+
+.deviceSegmentLabel {
+	@include mixins.prewrap;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+ion-select {
+	--highlight-color: var(--ion-color-primary);
+}

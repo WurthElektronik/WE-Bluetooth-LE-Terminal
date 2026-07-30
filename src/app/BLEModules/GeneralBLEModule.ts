@@ -6,7 +6,11 @@ import { Subject } from 'rxjs';
 import { GeneralBLEProfile } from '../BLEProfiles/GeneralBLEProfile';
 import { DataMode } from '../BLEProfiles/DataMode';
 import { module_profile } from './ModuleProfile';
-import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
+import {
+	SPPBLEProfile,
+	SPPBLEProfileClass,
+} from '../BLEProfiles/SPPBLEProfile';
+import { TxLogEntry } from '../services/ble.service';
 
 export abstract class GeneralBLEModule {
 	private devicename: string;
@@ -15,10 +19,15 @@ export abstract class GeneralBLEModule {
 	onDataReceived: Subject<any> = new Subject<any>();
 	sending: Boolean = false;
 	mtuSize: number = undefined;
+	protected SPPBLEProfile: SPPBLEProfile;
 
 	constructor(bledevice: BleDevice) {
 		this.devicename = bledevice.name;
 		this.deviceId = bledevice.deviceId;
+		const ProfileClass = module_profile.get(this.getType());
+		this.SPPBLEProfile = ProfileClass
+			? new (ProfileClass as unknown as new () => SPPBLEProfile)()
+			: null;
 	}
 
 	abstract getType(): BLEModuleType;
@@ -30,7 +39,7 @@ export abstract class GeneralBLEModule {
 	logDataSent(
 		msginfo: string,
 		msginfoparameters: any = undefined,
-		msgdata: ArrayBuffer = undefined,
+		msgdata: ArrayBufferLike = undefined,
 	) {
 		this.logger.logMessage(
 			LogMessageType.DataSent,
@@ -43,7 +52,7 @@ export abstract class GeneralBLEModule {
 	logDataReceived(
 		msginfo: string,
 		msginfoparameters: any = undefined,
-		msgdata: ArrayBuffer = undefined,
+		msgdata: ArrayBufferLike = undefined,
 	) {
 		this.logger.logMessage(
 			LogMessageType.DataReceived,
@@ -56,7 +65,7 @@ export abstract class GeneralBLEModule {
 	logRemoteCommand(
 		msginfo: string,
 		msginfoparameters: any = undefined,
-		msgdata: ArrayBuffer = undefined,
+		msgdata: ArrayBufferLike = undefined,
 	) {
 		this.logger.logMessage(
 			LogMessageType.RemoteCommand,
@@ -95,15 +104,21 @@ export abstract class GeneralBLEModule {
 		this.onDataReceived.next(undefined);
 	}
 
-	async formatdatatx(data: DataView): Promise<DataView[]> {
+	async formatdatatx(data: DataView): Promise<TxLogEntry[]> {
 		var mtu = this.getMTUSize() || this.getDefaultMTUSize();
 		mtu -= 3; //this -3 is for the Bluetooth Attribute Protocol
 		if (data.byteLength > mtu) {
 			this.logInfo('LogMessages.DataTooLarge');
-			return;
+			throw new Error();
 		}
-		this.logDataSent('LogMessages.DataSent', undefined, data.buffer);
-		return [data];
+		return [
+			{
+				txData: data,
+				logCallback: () => {
+					this.logDataSent('LogMessages.DataSent', undefined, data.buffer);
+				},
+			},
+		];
 	}
 
 	getLoggerDataLoggedSubject(): Subject<any> {
@@ -141,7 +156,7 @@ export abstract class GeneralBLEModule {
 	}
 
 	getSPPBLEProfile(): SPPBLEProfile {
-		return module_profile.get(this.getType());
+		return this.SPPBLEProfile;
 	}
 
 	getDataMode(): DataMode {

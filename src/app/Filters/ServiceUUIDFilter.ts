@@ -2,12 +2,12 @@ import { SPPBLEProfileType } from '../BLEProfiles/SPPBLEProfileType';
 import { FilterType } from './FilterType';
 import { ScanFilter } from './ScanFilter';
 import { Pipe, PipeTransform } from '@angular/core';
-import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
+import { SPPBLEProfileClass } from '../BLEProfiles/SPPBLEProfile';
 
 export class ServiceUUIDFilter implements ScanFilter {
-	private profile: SPPBLEProfile;
+	private profile: SPPBLEProfileClass;
 
-	constructor(profile: SPPBLEProfile) {
+	constructor(profile: SPPBLEProfileClass) {
 		this.profile = profile;
 	}
 
@@ -20,7 +20,7 @@ export class ServiceUUIDFilter implements ScanFilter {
 	}
 
 	public getServiceUUID(): string {
-		return this.profile.getService().uuid;
+		return this.profile.getTemplateServiceUUID();
 	}
 
 	public getServiceName(): string {
@@ -42,9 +42,9 @@ export class ServiceUUIDFilter implements ScanFilter {
 }
 
 @Pipe({
-    name: 'ServiceUUIDFilterPipe',
-    pure: true,
-    standalone: false
+	name: 'ServiceUUIDFilterPipe',
+	pure: true,
+	standalone: false,
 })
 export class ServiceUUIDFilterPipe implements PipeTransform {
 	transform(value: ScanFilter): ServiceUUIDFilter {

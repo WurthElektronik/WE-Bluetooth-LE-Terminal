@@ -34,7 +34,7 @@
 							<ion-item
 								[ngClass]="this.editedMacro == macro ? 'edit-macro' : ''"
 							>
-								<ion-label> {{ macro.macroName }} </ion-label>
+								<ion-label class="prewrap">{{ macro.macroName }}</ion-label>
 								<ion-reorder slot="end"></ion-reorder>
 							</ion-item>
 							<ion-item-options side="end">

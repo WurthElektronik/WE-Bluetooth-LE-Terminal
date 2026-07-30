@@ -1,7 +1,7 @@
 const devicesIdList = new Map();
 
-let container = document.getElementById("container");
-let cancelButton = document.getElementById("cancelButton");
+let container = document.getElementById("container") as HTMLElement;
+let cancelButton = document.getElementById("cancelButton") as HTMLElement;
 
 window.electronionicbluetooth.onDeviceScanned((devices) => {
 	if (devicesIdList.size == 0) {

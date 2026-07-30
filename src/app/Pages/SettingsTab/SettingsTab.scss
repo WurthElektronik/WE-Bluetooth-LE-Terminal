@@ -1,0 +1,22 @@
+ion-list-header {
+	font-size: large;
+	font-weight: bold;
+}
+
+ion-list {
+	padding-top: 0px !important;
+}
+
+.sub-header {
+	--color: var(--ion-color-dark);
+	font-size: medium !important;
+}
+
+ion-input {
+	--highlight-color-invalid: var(--ion-color-primary);
+	--highlight-color-valid: var(--ion-color-primary);
+}
+
+.reset-uuid-button {
+	margin-left: 4px !important;
+}

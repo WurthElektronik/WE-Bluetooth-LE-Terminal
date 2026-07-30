@@ -1,124 +1,216 @@
-import type { CapacitorElectronConfig } from '@capacitor-community/electron';
-import { getCapacitorElectronConfig, setupElectronDeepLinking } from '@capacitor-community/electron';
-import type { MenuItemConstructorOptions } from 'electron';
-import { app, MenuItem, ipcMain, shell } from 'electron';
-import electronIsDev from 'electron-is-dev';
-import unhandled from 'electron-unhandled';
-import { autoUpdater } from 'electron-updater';
+import {
+	app,
+	BrowserWindow,
+	ipcMain,
+	shell,
+	nativeImage,
+	protocol,
+	net,
+} from 'electron';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { existsSync } from 'node:fs';
 
-import { ElectronCapacitorApp, setupContentSecurityPolicy, setupReloadWatcher } from './setup';
-import { ipcRenderer } from 'electron/renderer';
+const electronIsDev = !app.isPackaged;
 
-// Graceful handling of unhandled errors.
-unhandled();
+const MainWindowURL: string = 'app://localhost/';
 
-var BluetoothDeviceSelectCallback = null;
+var SelectBluetoothDeviceWindow: BrowserWindow;
+var MainWindow: BrowserWindow;
+var BluetoothDeviceSelectCallback: ((deviceId: string) => void) | null = null;
 
-// Define our menu templates (these are optional)
-const trayMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [new MenuItem({ label: 'Quit App', role: 'quit' })];
-const appMenuBarMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
-  { role: process.platform === 'darwin' ? 'appMenu' : 'fileMenu' },
-  { role: 'viewMenu' },
-];
+const createWindow = () => {
+	const icon = nativeImage.createFromPath(
+		path.join(
+			app.getAppPath(),
+			'assets',
+			process.platform === 'win32' ? 'appIcon.ico' : 'appIcon.png',
+		),
+	);
+	// Create the browser window.
+	MainWindow = new BrowserWindow({
+		show: false,
+		width: 1000,
+		height: 800,
+		icon: icon,
+		webPreferences: {
+			preload: path.join(app.getAppPath(), 'build', 'preload.js'),
+		},
+	});
 
-// Get Config options from capacitor.config
-const capacitorFileConfig: CapacitorElectronConfig = getCapacitorElectronConfig();
+	SelectBluetoothDeviceWindow = new BrowserWindow({
+		parent: MainWindow,
+		show: false,
+		modal: true,
+		maximizable: false,
+		maxHeight: 400,
+		maxWidth: 800,
+		height: 400,
+		width: 800,
+		movable: false,
+		resizable: false,
+		minimizable: false,
+		icon: icon,
+		webPreferences: {
+			nodeIntegration: true,
+			preload: path.join(
+				app.getAppPath(),
+				'build',
+				'SelectBluetoothDevice',
+				'SelectBluetoothDevicePreload.js',
+			),
+		},
+	});
 
-// Initialize our app. You can pass menu templates into the app here.
-// const myCapacitorApp = new ElectronCapacitorApp(capacitorFileConfig);
-const myCapacitorApp = new ElectronCapacitorApp(capacitorFileConfig, undefined, undefined);
+	MainWindow.loadURL(MainWindowURL);
 
-// If deeplinking is enabled then we will set it up here.
-if (capacitorFileConfig.electron?.deepLinkingEnabled) {
-  setupElectronDeepLinking(myCapacitorApp, {
-    customProtocol: capacitorFileConfig.electron.deepLinkingCustomProtocol ?? 'mycapacitorapp',
-  });
-}
+	SelectBluetoothDeviceWindow.loadFile(
+		path.join(app.getAppPath(), 'assets', 'SelectBluetoothDevice.html'),
+	);
+};
 
-// If we are in Dev mode, use the file watcher components.
-if (electronIsDev) {
-  setupReloadWatcher(myCapacitorApp);
-}
+app.commandLine.appendSwitch('enable-experimental-web-platform-features');
+app.commandLine.appendSwitch('enable-web-bluetooth');
 
-// Run Application
-(async () => {
+protocol.registerSchemesAsPrivileged([
+	{
+		scheme: 'app',
+		privileges: {
+			standard: true,
+			secure: true,
+			supportFetchAPI: true,
+			corsEnabled: true,
+			stream: true,
+		},
+	},
+]);
 
-  app.commandLine.appendSwitch("enable-experimental-web-platform-features");
-  app.commandLine.appendSwitch("enable-web-bluetooth")
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.whenReady().then(() => {
+	protocol.handle('app', async (request) => {
+		const url = new URL(request.url);
+		let filePath = url.pathname;
 
-  // Wait for electron app to be ready.
-  await app.whenReady();
-  // Security - Set Content-Security-Policy based on whether or not we are in dev mode.
-  setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());
-  // Initialize our app, build windows, and load content.
-  await myCapacitorApp.init();
-  // Check for updates if we are in a packaged app.
- // autoUpdater.checkForUpdatesAndNotify();
+		if (filePath.startsWith('/')) {
+			filePath = filePath.slice(1);
+		}
 
-  myCapacitorApp.getSelectBluetoothDeviceWindow().on('close',(event) =>{
-    event.preventDefault();
-    myCapacitorApp.getSelectBluetoothDeviceWindow().hide();
-    if(BluetoothDeviceSelectCallback){
-      BluetoothDeviceSelectCallback("");
-    }
-    BluetoothDeviceSelectCallback = null;
-    myCapacitorApp.getMainWindow().webContents.send('scan-cancelled');
-  });
-  
-  myCapacitorApp.getMainWindow().webContents.on('select-bluetooth-device', (event, deviceList, callback) => {
-    event.preventDefault();
-    myCapacitorApp.getSelectBluetoothDeviceWindow().webContents.send('device-scanned',deviceList);
-    BluetoothDeviceSelectCallback = callback
-  });
+		if (!filePath) {
+			filePath = 'index.html';
+		}
 
-  myCapacitorApp.getMainWindow().webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url);
-    return { action: 'deny' }
-  })
+		const fullPath = path.join(app.getAppPath(), 'app', filePath);
+		const exists = existsSync(fullPath);
 
-})();
+		const servePath = exists
+			? fullPath
+			: path.join(app.getAppPath(), 'app', 'index.html');
 
-// Handle when all of our windows are close (platforms have their own expectations).
-app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+		return net.fetch(pathToFileURL(servePath).toString());
+	});
+
+	createWindow();
+
+	// On OS X it's common to re-create a window in the app when the
+	// dock icon is clicked and there are no other windows open.
+	app.on('activate', () => {
+		if (BrowserWindow.getAllWindows().length === 0) {
+			createWindow();
+		}
+	});
+
+	if (!electronIsDev) {
+		MainWindow.setMenu(null);
+	}
+
+	MainWindow.webContents.on(
+		'select-bluetooth-device',
+		(
+			event: Event,
+			deviceList: BluetoothDevice[],
+			callback: (deviceId: string) => void,
+		) => {
+			event.preventDefault();
+			SelectBluetoothDeviceWindow.webContents.send(
+				'device-scanned',
+				deviceList,
+			);
+			BluetoothDeviceSelectCallback = callback;
+		},
+	);
+
+	MainWindow.webContents.setWindowOpenHandler((details) => {
+		shell.openExternal(details.url);
+		return { action: 'deny' };
+	});
+
+	MainWindow.webContents.on('will-navigate', (event, url) => {
+		if (url.startsWith(MainWindowURL)) {
+			return;
+		}
+		event.preventDefault();
+		shell.openExternal(url);
+	});
+
+	SelectBluetoothDeviceWindow.on('close', (event) => {
+		event.preventDefault();
+		SelectBluetoothDeviceWindow.hide();
+		if (BluetoothDeviceSelectCallback) {
+			BluetoothDeviceSelectCallback('');
+		}
+		BluetoothDeviceSelectCallback = null;
+		MainWindow.webContents.send('scan-cancelled');
+	});
+
+	MainWindow.once('ready-to-show', () => {
+		MainWindow.show();
+		MainWindow.focus();
+
+		if (electronIsDev) {
+			MainWindow.webContents.openDevTools();
+		}
+	});
 });
 
-// When the dock icon is clicked.
-app.on('activate', async function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (myCapacitorApp.getMainWindow().isDestroyed()) {
-    await myCapacitorApp.init();
-  }
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
 });
 
-// Place all ipc or other electron api calls and custom functionality under this line
-ipcMain.on('device-selected', (event, id) => {
-  myCapacitorApp.getSelectBluetoothDeviceWindow().hide();
-  BluetoothDeviceSelectCallback(id);
-  BluetoothDeviceSelectCallback = null;
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and import them here.
+ipcMain.on('device-selected', (event, id: string) => {
+	SelectBluetoothDeviceWindow.hide();
+	BluetoothDeviceSelectCallback?.(id);
+	BluetoothDeviceSelectCallback = null;
 });
 
 ipcMain.on('scan-start', (event) => {
-  myCapacitorApp.getSelectBluetoothDeviceWindow().webContents.send('clear-scan');
-  let [mainWindowWidth, mainWindowHeight] = myCapacitorApp.getMainWindow().getContentSize();
-  let [mainWindowX, mainWindowY] = myCapacitorApp.getMainWindow().getPosition();
-  let [SelectBluetoothDeviceWidth, SelectBluetoothDeviceHeight] = myCapacitorApp.getSelectBluetoothDeviceWindow().getContentSize();
-  myCapacitorApp.getSelectBluetoothDeviceWindow().setPosition(
-      Math.round(mainWindowX + (mainWindowWidth / 2) - (SelectBluetoothDeviceWidth / 2)),
-      Math.round(mainWindowY + (mainWindowHeight / 2) - (SelectBluetoothDeviceHeight / 2)),
-    );
-  if (electronIsDev) {
-    myCapacitorApp.getSelectBluetoothDeviceWindow().webContents.openDevTools();
-  }
-  myCapacitorApp.getSelectBluetoothDeviceWindow().show();
+	SelectBluetoothDeviceWindow.webContents.send('clear-scan');
+	let [mainWindowWidth, mainWindowHeight] = MainWindow.getContentSize();
+	let [mainWindowX, mainWindowY] = MainWindow.getPosition();
+	let [SelectBluetoothDeviceWidth, SelectBluetoothDeviceHeight] =
+		SelectBluetoothDeviceWindow.getContentSize();
+	SelectBluetoothDeviceWindow.setPosition(
+		Math.round(
+			mainWindowX + mainWindowWidth / 2 - SelectBluetoothDeviceWidth / 2,
+		),
+		Math.round(
+			mainWindowY + mainWindowHeight / 2 - SelectBluetoothDeviceHeight / 2,
+		),
+	);
+	if (electronIsDev) {
+		SelectBluetoothDeviceWindow.webContents.openDevTools();
+	}
+	SelectBluetoothDeviceWindow.show();
 });
 
 ipcMain.on('scan-stop', (event) => {
-  myCapacitorApp.getSelectBluetoothDeviceWindow().hide();
+	SelectBluetoothDeviceWindow.hide();
 });
-

@@ -12,7 +12,11 @@ import { ScanSort } from './ScanSort';
 import { ModalController } from '@ionic/angular';
 import { SelectModuleComponent } from 'src/app/Components/select-module/select-module.component';
 import { environment } from '../../../environments/environment';
-import { testdevice, testscanresult } from 'src/app/TestDevice/TestBLEDevice';
+import {
+	testdevice,
+	testModuleInstance,
+	testscanresult,
+} from 'src/app/TestDevice/TestBLEDevice';
 import { TestModule } from 'src/app/TestDevice/TestModule';
 import { Device } from '@capacitor/device';
 import { ScanFilter } from 'src/app/Filters/ScanFilter';
@@ -27,10 +31,10 @@ import { CYSPPProfile } from 'src/app/BLEProfiles/CYSPPProfile';
 import { RSSIFilter } from 'src/app/Filters/RSSIFilter';
 
 @Component({
-    selector: 'app-scantab',
-    templateUrl: 'ScanTab.html',
-    styleUrls: ['ScanTab.scss'],
-    standalone: false
+	selector: 'app-scantab',
+	templateUrl: 'ScanTab.html',
+	styleUrls: ['ScanTab.scss'],
+	standalone: false,
 })
 export class ScanTab {
 	scanning: boolean = false;
@@ -229,10 +233,7 @@ export class ScanTab {
 			item.device == testdevice &&
 			!this.ble.connectedDevices.has(item.device.deviceId)
 		) {
-			this.ble.connectedDevices.set(
-				item.device.deviceId,
-				new TestModule(item.device),
-			);
+			this.ble.connectedDevices.set(item.device.deviceId, testModuleInstance);
 			await this.ble.connectedDevices
 				.get(item.device.deviceId)
 				.initializeModule();
@@ -247,7 +248,7 @@ export class ScanTab {
 			item == testdevice &&
 			!this.ble.connectedDevices.has(item.deviceId)
 		) {
-			this.ble.connectedDevices.set(item.deviceId, new TestModule(item));
+			this.ble.connectedDevices.set(item.deviceId, testModuleInstance);
 			await this.ble.connectedDevices.get(item.deviceId).initializeModule();
 		} else {
 			this.connect(item);

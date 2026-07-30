@@ -17,10 +17,10 @@ import { Macro } from 'src/app/Macro/Macro';
 import { MacroService } from 'src/app/services/macro.service';
 
 @Component({
-    selector: 'app-macro-manage',
-    templateUrl: './macro-manage.component.html',
-    styleUrls: ['./macro-manage.component.scss'],
-    standalone: false
+	selector: 'app-macro-manage',
+	templateUrl: './macro-manage.component.html',
+	styleUrls: ['./macro-manage.component.scss'],
+	standalone: false,
 })
 export class MacroManageComponent implements OnInit {
 	public macroName: string = '';
@@ -212,7 +212,7 @@ export class MacroManageComponent implements OnInit {
 				readData: true,
 				types: ['application/json'],
 			});
-			let data: ArrayBuffer = await File.parseDataBase64toBuffer(
+			let data: ArrayBufferLike = await File.parseDataBase64toBuffer(
 				result.files[0].data,
 			);
 			await MacroService.setSavedMacros(

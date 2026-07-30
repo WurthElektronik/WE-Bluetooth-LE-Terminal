@@ -5,14 +5,14 @@ export class LogMessage {
 	private timestamp: number;
 	private msginfo: string;
 	private msginfoparameters: any;
-	private msgdata: ArrayBuffer;
+	private msgdata: ArrayBufferLike;
 
 	constructor(
 		type: LogMessageType,
 		timestamp: number,
 		msginfo: string,
 		msginfoparameters: any = undefined,
-		msgdata: ArrayBuffer = undefined,
+		msgdata: ArrayBufferLike = undefined,
 	) {
 		this.type = type;
 		this.timestamp = timestamp;
@@ -34,7 +34,7 @@ export class LogMessage {
 		return hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
 	}
 
-	getMsgData(): ArrayBuffer {
+	getMsgData(): ArrayBufferLike {
 		return this.msgdata;
 	}
 

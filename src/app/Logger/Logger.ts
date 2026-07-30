@@ -22,7 +22,7 @@ export class Logger {
 		type: LogMessageType,
 		msginfo: string,
 		msginfoparameters: any = undefined,
-		msgdata: ArrayBuffer = undefined,
+		msgdata: ArrayBufferLike = undefined,
 	) {
 		this.logmessages.push(
 			new LogMessage(type, Date.now(), msginfo, msginfoparameters, msgdata),

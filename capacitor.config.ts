@@ -18,7 +18,11 @@ const config: CapacitorConfig = {
       resizeOnFullScreen: false
     },
     EdgeToEdge: {
-      backgroundColor: "#e3000b"
+      backgroundColor: "#e3000b",
+      navigationBarColor: "#00000000"
+    },
+    SystemBars: {
+      insetsHandling: 'disable'
     }
   }
 };

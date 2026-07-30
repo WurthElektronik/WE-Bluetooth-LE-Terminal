@@ -51,6 +51,7 @@ export class TerminalTab {
 	public devicepopoveropen: Boolean = false;
 	public connectionprioritypopoveropen: Boolean = false;
 	@ViewChild('ioncontent') content: IonContent;
+	public autoscroll: Boolean = true;
 	public payload: string = undefined;
 	public selectedencoding: Encoder = ASCII;
 	public randompayload: Boolean = false;
@@ -87,14 +88,10 @@ export class TerminalTab {
 
 	async ngOnInit() {
 		this.platform.keyboardDidShow.subscribe((ev) => {
-			setTimeout(() => {
-				this.content.scrollToBottom(0);
-			}, 20);
+			this.scrollToBottom();
 		});
 		this.platform.keyboardDidHide.subscribe((ev) => {
-			setTimeout(() => {
-				this.content.scrollToBottom(0);
-			}, 20);
+			this.scrollToBottom();
 		});
 		this.translateService.onLangChange.subscribe(() => {
 			let filterkeys: string[] = [];
@@ -128,14 +125,11 @@ export class TerminalTab {
 					.get(this.id)
 					.getLoggerDataLoggedSubject()
 					.subscribe(async () => {
-						this.ngZone.run(() => {}); // needed to make sure changes are reflected in the UI
-						setTimeout(() => {
-							this.content.scrollToBottom(0);
-						}, 20);
+						this.ngZone.run(() => {
+							this.scrollToBottom();
+						}); // needed to make sure changes are reflected in the UI
 					});
-				setTimeout(() => {
-					this.content.scrollToBottom(0);
-				}, 20);
+				this.scrollToBottom();
 			}
 		});
 	}
@@ -271,9 +265,7 @@ export class TerminalTab {
 				console.log(error);
 			}
 
-			setTimeout(() => {
-				this.content.scrollToBottom(0);
-			}, 20);
+			this.scrollToBottom();
 		} catch (error) {
 			this.translateService
 				.get(error.message)
@@ -310,9 +302,7 @@ export class TerminalTab {
 			}
 		}
 
-		setTimeout(() => {
-			this.content.scrollToBottom(0);
-		}, 20);
+		this.scrollToBottom();
 	}
 
 	onSendCountInput(event) {
@@ -479,5 +469,15 @@ export class TerminalTab {
 		await modal.onWillDismiss();
 
 		this.macros = await MacroService.getSavedMacros();
+	}
+
+	scrollToBottom() {
+		if (!this.autoscroll) {
+			return;
+		}
+
+		requestAnimationFrame(() => {
+			this.content.scrollToBottom(0);
+		});
 	}
 }

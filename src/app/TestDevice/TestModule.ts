@@ -7,16 +7,15 @@ import { GPIOPin } from '../BLEModules/GPIO/GPIOPin';
 import { GeneralBLEModule } from '../BLEModules/GeneralBLEModule';
 import { GPIO } from '../BLEModules/GPIO/GPIO';
 import { GPIOInterface } from '../BLEModules/GPIO/GPIOInterface';
-import { GeneralBLEProfile } from '../BLEProfiles/GeneralBLEProfile';
-import { WESPPProfile } from '../BLEProfiles/WESPPProfile';
-import { SPPBLEProfile } from '../BLEProfiles/SPPBLEProfile';
 import { TestSPPProfile } from './TestSPPProfile';
+import { TxLogEntry } from '../services/ble.service';
 
 export class TestModule extends GeneralBLEModule implements GPIOInterface {
 	private gpio: GPIO = undefined;
 
 	constructor(bledevice: BleDevice) {
 		super(bledevice);
+		this.SPPBLEProfile = new TestSPPProfile();
 		this.gpio = new GPIO(
 			new Map<number, GPIOPin>([
 				[1, new GPIOPin(1, 'Test Pin 1', false)],
@@ -61,7 +60,7 @@ export class TestModule extends GeneralBLEModule implements GPIOInterface {
 		);
 	}
 
-	formatreadpinconfiguration(): DataView {
+	formatreadpinconfiguration(): TxLogEntry {
 		this.gpio.getGPIOPins().get(1).setPinType(0);
 		this.gpio.getGPIOPins().get(2).setPinType(1);
 		this.gpio.getGPIOPins().get(3).setPinType(2);
@@ -72,15 +71,15 @@ export class TestModule extends GeneralBLEModule implements GPIOInterface {
 		throw new Error('Method not implemented.');
 	}
 
-	formatwritepinconfiguration(pins: GPIOPin[]): DataView {
+	formatwritepinconfiguration(pins: GPIOPin[]): TxLogEntry {
 		throw new Error('Method not implemented.');
 	}
 
-	formatreadpinvalues(pins: GPIOPin[]): DataView {
+	formatreadpinvalues(pins: GPIOPin[]): TxLogEntry {
 		throw new Error('Method not implemented.');
 	}
 
-	formatwritepinvalues(pins: GPIOPin[]): DataView {
+	formatwritepinvalues(pins: GPIOPin[]): TxLogEntry {
 		throw new Error('Method not implemented.');
 	}
 
@@ -98,9 +97,5 @@ export class TestModule extends GeneralBLEModule implements GPIOInterface {
 
 	getRemoteCommandSupport(): Boolean {
 		return this.getGPIOSupport();
-	}
-
-	getSPPBLEProfile(): SPPBLEProfile {
-		return TestSPPProfile;
 	}
 }

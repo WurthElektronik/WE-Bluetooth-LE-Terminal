@@ -11,7 +11,11 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Globalization } from '@awesome-cordova-plugins/globalization/ngx';
-import { ServiceWorkerModule } from '@angular/service-worker';
+import {
+	ServiceWorkerModule,
+	SwRegistrationOptions,
+} from '@angular/service-worker';
+import { Platform } from '@ionic/angular';
 
 @NgModule({
 	declarations: [AppComponent],
@@ -28,16 +32,19 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 				deps: [HttpClient],
 			},
 		}),
-		ServiceWorkerModule.register('ngsw-worker.js', {
-			enabled: !isDevMode(),
-			// Register the ServiceWorker as soon as the application is stable
-			// or after 30 seconds (whichever comes first).
-			registrationStrategy: 'registerWhenStable:30000',
-		}),
+		ServiceWorkerModule.register('ngsw-worker.js'),
 	],
 	providers: [
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		Globalization,
+		{
+			provide: SwRegistrationOptions,
+			useFactory: (platform: Platform) => ({
+				enabled: !isDevMode() && !platform.is('electron'),
+				registrationStrategy: 'registerWhenStable:30000',
+			}),
+			deps: [Platform],
+		},
 	],
 	bootstrap: [AppComponent],
 })
